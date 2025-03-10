@@ -58,7 +58,7 @@ the cluster with workload and distributes queries evenly.
 
 ## Handle writes
 
-The load balancer is smart and can split read queries from write queries. This strategy is effective 99% of the time, since `SELECT` queries that write to the database
+The load balancer can split read `SELECT` queries from write queries. This strategy is effective 99% of the time, since `SELECT` queries that write to the database
 are rare and are typically used for database maintenance.
 
 If PgDog detects that a query is _not_ a `SELECT`, like an `INSERT` or and `UPDATE`, and it's configuration contains a primary,
@@ -72,7 +72,7 @@ one database. For example:
 ```toml
 [[databases]]
 name = "prod"
-role = "replica"
+role = "primary"
 host = "10.0.0.1"
 
 [[databases]]

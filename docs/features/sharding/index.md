@@ -1,30 +1,38 @@
 # Sharding overview
 
-!!! note
-    This feature is under active development. It's not ready production use.
+Sharding PostgreSQL splits the database and all its tables and indices between multiple machines. Each machine runs its own PostgreSQL server, while PgDog takes care of routing queries and moving data between servers.
 
-Sharding PostgreSQL databases involves splitting the database between multiple machines and routing queries to the right machines using a sharding function. Like its [predecessor](https://github.com/levkk/pgcat), PgDog supports sharded PostgreSQL deployments and can route queries to the correct shards automatically, implemented as a [plugin](../plugins/index.md).
+## Sharding basics
+
+Before diving more in depth, let's take a look at the fundamentals. Each PostgreSQL server in a sharded cluster is called a **shard**. Each shard contains a subset of the total data, determined by a **sharding function**. A sharding function is some code that takes arbitrary data, typically a table column, and converts it to a **shard number**. A shard number is a unique identifier for each shard in the cluster, starting at 0 and ending with _N - 1_ where _N_ is total number of shards in the cluster.
 
 <center style="margin-top: 2rem;">
     <img src="/images/sharding.png" width="70%" alt="Sharding" />
-    <p><i>Sharded database routing.</i></p>
 </center>
 
-## Architecture
+### Sharding function
 
-There are two ways for database clients to query sharded databases: by connecting to specific shard, or by querying all shards and aggregating the results. The former is commonly used in OLTP (transactional) systems, e.g. real time applications, and the latter is more commonly used in OLAP (analytical) databases, e.g. batch reports generation.
+A sharding function is typically based on some kind of hash. This hash ensures that data is distributed evenly between shards, no matter what that data is.
 
-PgDog has good support for single shard queries, and adding support for aggregates over time[^1].
+For example, SHA-256, a popular hashing function used for checking the integrity of files and TLS certificates, takes an arbitrary amount of data as input and produces a single 64-digit hexadecimal number. If we were to use that hash for sharding, we would take that number and divide it by the number of shards in the configuration. The remainder of that division would be the shard where that data should go.
 
-[^1]: Aggregation can get pretty complex and sometimes requires query rewriting. Examples can be found in the PostgreSQL's [postgres_fdw](https://www.postgresql.org/docs/current/postgres-fdw.html) extension.
+```
+shard_number = hash(data) % num_shards
+```
 
-### SQL parser
+PgDog uses a different [hashing function](sharding-functions.md), but the idea remains the same.
 
-The [`pgdog-routing`](https://github.com/levkk/pgdog/tree/main/plugins/pgdog-routing) plugin parses queries using [`pg_query`](https://docs.rs/pg_query/latest/pg_query/) and can [calculate](automatic-routing.md) the shard based on a column value specified in the query. This allows applications to shard their databases without code modifications. For queries where this isn't possible, clients can specify the desired shard (or sharding key) in a [query comment](manual-routing.md).
+## Routing queries
 
-### Multi-shard queries
+To route queries, PgDog first needs to understand them. To make this work, it uses the [`pg_query`](https://docs.rs/pg_query/latest/pg_query/) crate, which bundles the PostgreSQL parser and comes with Rust bindings to its internals. This allows PgDog to parse any valid SQL query that PostgreSQL can execute.
 
-When the sharding key isn't available or impossible to extract from a query, PgDog can route the query to all shards and return results combined in a [single response](cross-shard.md). Clients using this feature are not aware they are communicating with a sharded database and can treat PgDog connections like normal.
+PostgreSQL uses two kinds of protocols to send queries from clients to servers: the [simple protocol](internals/query-protocol.md#simple-protocol) and the [extended protocol](internals/query-protocol.md#extended-protocol). PgDog understands both of them, can extract query parameters and, using its sharding function, determine where queries should go.
+
+### Cross-shard queries
+
+When a query contains not enough parameters to determine the shard number, PgDog falls back to sending this query to all shards and collecting the results transparently to the client. This ensures that applications that don't know about sharding can continue to work normally.
+
+While application developers should make every effort to avoid include sharding hints in their queries, this ensures that applications continue to work when that's not possible or not desired, like aggregate queries used for reporting and analytics.
 
 ## Learn more
 

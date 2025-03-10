@@ -1,6 +1,6 @@
 nav:
   - 'index.md'
-  - 'automatic-routing.md'
+  - 'query-routing.md'
   - 'manual-routing.md'
   - 'cross-shard.md'
   - 'sharding-functions.md'

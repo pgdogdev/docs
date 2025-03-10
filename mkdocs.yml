@@ -8,6 +8,8 @@ theme:
   name: material
   features:
     - content.code.copy
+    - search.suggest
+    - search.share
   font:
     text: IBM Sans Plex
     code: IBM Plex Mono
@@ -21,7 +23,7 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: "white"
+      primary: "blue"
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -29,7 +31,7 @@ theme:
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: "black"
+      primary: "blue"
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
@@ -48,6 +50,7 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  - md_in_html
 plugins:
   - search
   - awesome-pages

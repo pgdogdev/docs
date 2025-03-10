@@ -2,3 +2,9 @@ table {
     table-layout: fixed !important;
     display: table !important;
 }
+
+/* .grid {
+    display: grid;
+    place-items: start;
+    grid-template-columns: repeat(2, 1fr);
+} */

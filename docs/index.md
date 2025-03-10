@@ -1,10 +1,21 @@
 # PgDog
 
-[PgDog](https://github.com/levkk/pgdog) is a PostgreSQL query router, pooler, proxy and load balancer written in Rust. Spiritual successor to
-[pgcat](https://github.com/levkk/pgcat), PgDog comes with a lot of similar features, better performance,
-and introduces new features like plugins and cross-shard queries.
+[PgDog](https://github.com/levkk/pgdog) is a PostgreSQL connection pooler, query router, load balancer and logical replication manager. With support for automatic sharding, PgDog scales databases into petabytes without compromising PostgreSQL features loved by developers.
 
-PostgreSQL deployments of any size can be proxied by PgDog, ranging from a single database to hundreds of primaries and replicas in a sharded configuration.
+## The Problem
+
+Unlike NoSQL databases, like Cassandra or DynamoDB, PostgreSQL is a database that runs on a single machine. Once the resources of that machine are exceeded, applications have to find new, creative ways to buy more capacity, like reducing usage through caching or by batching workloads. Meanwhile, database operators are faced with increasing operating costs, like delayed vacuums, bloat and unreliable performance.
+
+The solution to this problem is **sharding**: splitting a database and all its tables between multiple machines equally.
+
+## Sharding PostgreSQL
+
+Sharding PostgreSQL is a two-part problem. On the one hand, the data needs to be moved to multiple machines without losing rows or causing downtime for the application. On the other, once the data is split, applications need a way to send queries to the machines hosting the data.
+
+1. Split tables between machines, without losing data or causing downtime for the application
+2. Once sharded, applications need to send their queries to the right shard(s)
+
+PgDog solves both simelteneously. It understands the logical replication protocol used by PostgreSQL and can move (and shard) data between databases, in real time. It comes with its own SQL parser, and can extract routing hints from queries automatically, without applications having to modify their queries in any way.
 
 ## Installation
 

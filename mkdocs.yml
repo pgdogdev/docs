@@ -8,6 +8,9 @@ theme:
   name: material
   features:
     - content.code.copy
+  font:
+    text: IBM Sans Plex
+    code: IBM Plex Mono
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"

@@ -6,7 +6,7 @@
 
 Unlike NoSQL databases, PostgreSQL can serve `INSERT`, `UPDATE`, and `DELETE` queries from only one machine. Once the capacity of that machine is exceeded, applications have to find new and creative ways to reduce their impact on the database, like batching requests or delaying workloads to run overnight.
 
-As the same time, database operators are faced with increasing operating costs, like behind schedule vacuums, table bloat and downtime. Incidents are frequent and engineers are more focused on not breaking the DB than building new features.
+At the same time, database operators are faced with increasing operating costs, like behind schedule vacuums, table bloat and downtime. Incidents are frequent and engineers are more focused on not breaking the DB than building new features.
 
 
 ## Sharding PostgreSQL

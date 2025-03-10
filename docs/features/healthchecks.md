@@ -1,23 +1,45 @@
-# Healthchecks
+# Health checks
 
-Databases proxied by PgDog are regularly checked with healthchecks. A healthcheck is a simple query, e.g.
-`SELECT 1`, which ensures the database is reachable and able to answer requests.
+Databases proxied by PgDog are regularly checked with health checks. A health check is a simple query, e.g.
+`SELECT 1`, that ensures the database is reachable and able to process queries.
 
-If a database fails a healthcheck, it's placed in a list of banned hosts. Banned databases are removed
-from the load balancer and will not serve transactions. This allows PgDog to reduce errors clients see
+## How it works
+
+If a database fails a health check, it's placed in a list of banned hosts. Banned databases are removed
+from the load balancer and will not serve queries. This allows PgDog to reduce errors clients see
 when a database fails, for example due to hardware issues.
 
 <center>
   <img src="/images/healtchecks.png" width="65%" alt="Healtchecks"/>
-  <p><i>Replica failure</i></p>
 </center>
+
+### Checking connections
+
+In addition to checking databases, PgDog ensures that every connection in the pool is healthy on a regular basis. Before giving a connection
+to a client, PgDog will occasionally send the same simple query to the server, and if the query fails, ban the entire database from serving any more queries.
+
+To reduce the overhead of health checks, connection-specific checks are done infrequently, configurable via the `healtcheck_interval` setting.
+
+### Triggering bans
+
+A single health check failure will prevent the entire database from serving traffic, which may seem aggressive at first, but reduces the error rate dramatically in heavily used production deployments. PostgreSQL is very reliable, so even a single query failure may indicate an issue with hardware or network connectivity.
+
+
+#### Failsafe
+
+To avoid health checks taking a database cluster offline, the load balancer has a built-in safety mechanism. If all replicas fail health checks, the banned host list is cleared and all databases are allowed to serve traffic again. This ensures that intermittent network failures don't impact database operations severely. Once the banned host list is cleared, load balancing returns to its initial, normal state.
+
+#### Ban expiration
+
+Host bans have an expiration. Once the ban expires, the replica is unbanned and allowed to serve traffic again. This is done to maintain a healthy level of traffic across all databases and to allow for intermittent
+issues, like network connectivity, to resolve themselves without manual intervention.
 
 ## Configuration
 
-Healthchecks are enabled by default and are used for all databases. Healthcheck interval is configurable
+Health checks are **enabled** by default and are used for all databases. Health check interval is configurable
 on a global and database levels.
 
-The default healthcheck interval is **30 seconds**.
+By default, a database is issued a health check every **30 seconds**:
 
 ```toml
 [global]
@@ -30,28 +52,11 @@ healthcheck_interval = 60_000 # ms
 
 ### Timeouts
 
-By default, PgDog gives the database **5 seconds** to answer a healthcheck. If it doesn't receive a reply,
-the database will be banned from serving traffic for a configurable amount of time. Both the healthcheck timeout
-and the ban time are configurable.
+By default, PgDog gives the database **5 seconds** to answer a health check. This is configurable with `healthcheck_timeout`. If it doesn't receive a reply,
+the database will be banned from serving traffic for an amount of time, configurable with `ban_timeout`:
 
 ```toml
 [global]
 healthcheck_timeout = 5_000 # 5 seconds
 ban_timeout = 60_000 # 1 minute
 ```
-
-### Ban expiration
-
-By default, a ban has an expiration. Once the ban expires, the replica is unbanned and placed back into
-rotation. This is done to maintain a healthy level of traffic across all databases and to allow for intermittent
-issues, like network connectivity, to resolve themselves without manual intervention.
-
-### Failsafe
-
-If all databases in a cluster are banned due to a healthcheck failure, PgDog assumes that healthchecks
-are returning incorrect information and unbans all databases in the cluster. This protects against false positives
-and ensures the cluster continues to serve traffic.
-
-## Learn more
-
-- [Load balancer](load-balancer.md)

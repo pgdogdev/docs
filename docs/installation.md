@@ -5,28 +5,37 @@ PgDog is easily compiled from source. For production deployments, a `Dockerfile`
 
 ## Dependencies
 
-Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make sure to have a working version of a C/C++ compiler installed:
+Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make sure to have a working version of a C/C++ compiler installed.
 
-=== "Mac"
-    Install [XCode](https://developer.apple.com/xcode/).
+#### Mac OS
 
-=== "Ubuntu"
-    Install Clang:
+Install [XCode](https://developer.apple.com/xcode/) and CMake from brew:
 
-    ```bash
-    sudo apt update && \
-    apt install -y clang build-essentials
-    ```
+```bash
+brew install cmake
+```
 
-=== "Arch"
-    Install Clang:
+#### Ubuntu
 
-    ```bash
-    sudo pacman -S base-devel clang
-    ```
+Install Clang and CMake:
 
-=== "Windows"
-    Install [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/).
+```bash
+sudo apt update && \
+apt install -y clang build-essential cmake
+```
+
+#### Arch Linux:
+
+Install Clang and CMake:
+
+```bash
+sudo pacman -Syu base-devel clang cmake
+```
+
+#### Windows
+
+Install [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/).
+Make sure to include CMake in the installation.
 
 ### Rust compiler
 
@@ -60,11 +69,17 @@ The passwords are stored in a separate file to simplify deployments in environme
 secrets can be safely encrypted, like Kubernetes or AWS EC2.
 
 Both files can to be placed in the current working directory (`$PWD`) for PgDog to detect them. Alternatively,
-you can specify their location when starting PgDog, using the `--config` and `--secrets` arguments.
+you can specify their location when starting PgDog, using the `--config` and `--users` arguments:
+
+```bash
+./target/release/pgdog \
+    --config /path/to/pgdog.toml \
+    --users path/to/users.toml
+```
 
 #### Example `pgdog.toml`
 
-Most PgDog configuration options have sensible defaults. This allows a basic primary-only configuration to be pretty short:
+Most PgDog configuration options have sensible defaults. This allows a basic, single database configuration, to be pretty short:
 
 ```toml
 [general]
@@ -92,24 +107,27 @@ password = "hunter2"
 
 Starting PgDog can be done by running the binary in `target/release` folder or with Cargo:
 
-
-=== "Command"
-    ```bash
-    cargo run --release
-    ```
-
-=== "Output"
-    ```
-    INFO 🐕 PgDog 0.1.0
-    INFO loaded pgdog.toml
-    INFO loaded users.toml
-    INFO loaded "pgdog_routing" plugin [1.0461ms]
-    INFO 🐕 PgDog listening on 0.0.0.0:6432
-    INFO new server connection [127.0.0.1:5432]
-    ```
+```bash
+cargo run --release
+```
 
 ## Next steps
 
-* [Features](features/index.md)
-* [Configuration](configuration/index.md)
-* [Architecture](architecture/index.md)
+<div class="grid">
+    <div>
+        <h4><a href="/features/">Features</a></h4>
+        <p>Read more about PgDog features like load balancing, supported authentication mechanisms, TLS, health checks, and more.</p>
+    </div>
+    <div>
+        <h4><a href="/administration/">Administration</a></h4>
+        <p>Learn how to operate PgDog in production, like fetching real time statistics from the admin database or updating configuration.</p>
+    </div>
+    <div>
+        <h4><a href="/architecture/">Architecture</a></h4>
+        <p>Read about PgDog internals and how it works under the hood.</p>
+    </div>
+    <div>
+        <h4><a href="/configuration/">Configuration</a></h4>
+        <p>Reference for PgDog configuration like maximum server connections, number of shards, and more.</p>
+    </div>
+</div>

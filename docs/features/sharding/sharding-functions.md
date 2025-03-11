@@ -22,4 +22,4 @@ SELECT satisfies_hash_partition(
 This function will return true if the sharding key should be placed in the specified shard, given the total number of shards in the cluster.
 
 While the interface of this function isn't particularly intuitive, it's used inside PostgreSQL partitions to ensure data integrity. It's also used by PgDog to prevent incorrectly sharded rows from being
-sent to shards.
+sent to shards. See [logical replication](internals/logical-replication/index.md) for more details on the implementation.

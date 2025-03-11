@@ -10,7 +10,7 @@ If you're not familiar with sharding fundamentals, take a look at the [sharding 
 
 ### Routing queries
 
-PgDog is first and foremost a query router. It extracting sharding hints directly from SQL queries using a SQL parser. Read more about it in [query routing](query-routing.md).
+PgDog is first and foremost a query router. It extracts sharding hints directly from SQL queries using a SQL parser. Read more about it in [query routing](query-routing.md).
 
 [**→ Query routing**](query-routing.md)
 

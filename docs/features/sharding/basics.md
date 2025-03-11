@@ -15,7 +15,7 @@ shard_number = hash(data) % num_shards
 ```
 
 
-## Glossary
+## Language
 
 Some terms and expressions used in the documentation may be new to some readers. They are defined below.
 

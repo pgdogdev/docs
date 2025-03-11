@@ -1,4 +1,4 @@
-# Features overview
+# PgDog features
 
 PgDog contains multiple foundational and unique features which make it a great choice
 for modern PostgreSQL deployments.
@@ -10,21 +10,16 @@ load balancing, healthchecks, and query routing have been battle-tested and work
 ## Summary
 
 
-!!! note
-    PgDog is just getting started and most features are incomplete. The documentation
-    is sometimes written to reflect the desired state. In the case where the feature is not
-    complete, a note is added to that effect.
-
-| Feature | Description | State |
-|---------|-------------|-------|
-| [Transaction mode](transaction-mode.md) | Multiplex transactions and servers for busy PostgreSQL deployments. | ✔️ Good |
-| [Load balancer](load-balancer.md) | Split query traffic evenly across multiple databases. | 🔨 Work in progress |
-| [Healthchecks](healthchecks.md) | Periodically check databases to ensure they are up and can serve queries. | ✔️ Good |
-| [Live configuration reloading](../configuration/index.md) | Update configuration at runtime without having to restart PgDog. | 🔨 Work in progress |
-| [Sharding](sharding/index.md) | Automatic query routing using a sharding key to scale writes horizontally. | 🔨 Work in progress |
-| [Plugins](plugins/index.md) | Pluggable libraries to parse and route queries, loaded at runtime. | ✔️ Good |
-| [Authentication](authentication.md) | Support for various PostgreSQL authentication mechanisms, e.g. `SCRAM-SHA-256`. | 🔨 Work in progress |
-| [Session mode](session-mode.md) | Compatibility mode with direct Postgres connections. | 🔨 Work in progress |
+| Feature | Description |
+|---------|-------------|
+| [Load balancer](load-balancer.md) | Distribute `SELECT` queries evenly between replicas. |
+| [Health checks](healthchecks.md) | Check databases are up and running, and can serve queries. |
+| [Transaction mode](transaction-mode.md) | Share PostgreSQL connections between thousands of clients, a necessary feature for production deployments. |
+| [Hot reload](../configuration/index.md) | Update configuration at runtime without restarting PgDog. |
+| [Sharding](sharding/index.md) | Automatic query routing and logical replication between data nodes to scale PostgreSQL horizontally. |
+| [Plugins](plugins/index.md) | Pluggable libraries to add functionality to PgDog at runtime. |
+| [Authentication](authentication.md) | Support for various PostgreSQL authentication mechanisms, like `SCRAM-SHA-256`. |
+| [Session mode](session-mode.md) | Compatibility mode with direct PostgreSQL connections. |
 
 ## OS support
 

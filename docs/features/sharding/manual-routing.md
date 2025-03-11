@@ -52,4 +52,4 @@ Some web frameworks support adding comments to queries easily. For example, if y
 
 Others make it pretty difficult, but still possible. For example, Laravel has a [plugin](https://github.com/spatie/laravel-sql-commenter) to make it work while SQLAlchemy makes you write some [code](https://github.com/sqlalchemy/sqlalchemy/discussions/11115).
 
-For this reason, it's best to use [automatic routing](automatic-routing.md) as much as possible.
+For this reason, it's best to use [automatic routing](query-routing.md) as much as possible.

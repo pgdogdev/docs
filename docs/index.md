@@ -1,94 +1,45 @@
-# PgDog
+# Introduction to PgDog
 
-[PgDog](https://github.com/levkk/pgdog) is a PostgreSQL query router, pooler, proxy and load balancer written in Rust. Spiritual successor to
-[pgcat](https://github.com/levkk/pgcat), PgDog comes with a lot of similar features, better performance,
-and introduces new features like plugins and cross-shard queries.
+[PgDog](https://github.com/pgdogdev/pgdog) is a sharder, connection pooler and load balancer for PostgreSQL. Written in Rust, PgDog is fast, reliable and scales databases horizontally without requiring changes to application code.
 
-PostgreSQL deployments of any size can be proxied by PgDog, ranging from a single database to hundreds of primaries and replicas in a sharded configuration.
+## The problem
 
-## Installation
+Unlike NoSQL databases, PostgreSQL can serve `INSERT`, `UPDATE`, and `DELETE` queries from only one machine. Once the capacity of that machine is exceeded, applications have to find new and creative ways to reduce their impact on the database, like batching requests or delaying workloads to run overnight.
 
-PgDog is easily compiled from source. Before proceeding, make sure you have the latest version of the Rust
-compiler, available from [rust-lang.org](https://rust-lang.org).
-
-### Checkout the code
-
-PgDog source code can be downloaded from [GitHub](https://github.com/levkk/pgdog):
-
-```bash
-git clone https://github.com/levkk/pgdog && \
-cd pgdog
-```
-
-### Compile PgDog
-
-PgDog should be compiled in release mode to make sure you get all performance benefits. You can do this with Cargo:
-
-```bash
-cargo build --release
-```
-
-### Configuration
-
-PgDog is [configured](configuration/index.md) via two files:
-
-* [`pgdog.toml`](configuration/index.md) which contains general pooler settings and PostgreSQL server information
-* [`users.toml`](configuration/users.toml/users.md) which contains passwords for users allowed to connect to the pooler
-
-The passwords are stored in a separate file to simplify deployments in environments where
-secrets can be safely encrypted, like Kubernetes or AWS EC2.
-
-Both files can to be placed in the current working directory (CWD) for PgDog to detect them. Alternatively,
-you can pass the `--config` and `--secrets` arguments with their locations when starting PgDog.
-
-#### Example `pgdog.toml`
-
-Most PgDog configuration options have sensible defaults. This allows a basic primary-only configuration to be pretty short:
-
-```toml
-[general]
-host = "0.0.0.0"
-port = 6432
-
-[[databases]]
-name = "postgres"
-host = "127.0.0.1"
-```
-
-#### Example `users.toml`
-
-This configuration file contains a mapping between databases, users and passwords. Users not specified in this file
-won't be able to connect to PgDog:
-
-```toml
-[[users]]
-name = "alice"
-database = "postgres"
-password = "hunter2"
-```
-
-### Launch the pooler
-
-Starting the pooler can be done by running the binary in `target/release` folder or with Cargo:
+At the same time, database operators are faced with increasing operating costs, like behind schedule vacuums, table bloat and downtime. Incidents are frequent and engineers are more focused on not breaking the DB than building new features.
 
 
-=== "Command"
-    ```bash
-    cargo run --release
-    ```
+## Sharding PostgreSQL
 
-=== "Output"
-    ```
-    INFO 🐕 PgDog 0.1.0
-    INFO loaded pgdog.toml
-    INFO loaded users.toml
-    INFO loaded "pgdog_routing" plugin [1.0461ms]
-    INFO 🐕 PgDog listening on 0.0.0.0:6432
-    INFO new server connection [127.0.0.1:5432]
-    ```
+The solution to an overextended database is **sharding**: splitting all tables and indices equally between multiple machines. For example, if your primary database is 750 GB, splitting it into 3 shards will produce 3 databases of 250 GB each. As databases get smaller, vacuums start to catch up, indices fit into memory again, and queries run faster with reliable performance.
 
-## Next steps
+As shards store more data and grow, they can be split again, scaling PostgreSQL horizontally. Sharded databases can grow into petabytes (that's thousands of TB), while serving OLTP and OLAP use cases.
 
-* [Features](features/index.md)
-* [Configuration](configuration/index.md)
-* [Architecture](architecture/index.md)
+## How PgDog works
+
+PgDog operates on the application layer of the stack: it speaks PostgreSQL and understands not only the queries sent by applications but also the logical replication protocol used by the server. This allows it to transparently route queries while moving data between machines to create more capacity.
+
+While PgDog focuses a lot on sharding PostgreSQL, it is also a load balancer and transaction pooler that can be used with simpler PostgreSQL deployments.
+
+This documentation provides a detailed overview of all PgDog features, along with reference material for production operations.
+
+## Read more
+
+<div class="grid">
+    <div>
+        <h4><a href="/features/">Features</a></h4>
+        <p>Read more about PgDog features like load balancing, supported authentication mechanisms, TLS, health checks, and more.</p>
+    </div>
+    <div>
+        <h4><a href="/administration/">Administration</a></h4>
+        <p>Learn how to operate PgDog in production, like fetching real time statistics from the admin database or updating configuration.</p>
+    </div>
+    <div>
+        <h4><a href="/installation/">Installation</a></h4>
+        <p>Install PgDog on your Linux server or on your Linux/Mac/Windows machine for local development.</p>
+    </div>
+    <div>
+        <h4><a href="/configuration/">Configuration</a></h4>
+        <p>Reference for PgDog configuration like maximum server connections, number of shards, and more.</p>
+    </div>
+</div>

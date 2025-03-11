@@ -1,14 +1,20 @@
 # Transaction mode
 
-In transaction mode, PgDog is able to multiplex client transactions with several PostgreSQL backend servers. This
-allows the pooler to serve thousands of clients using only dozens of actual server connections. This feature is essential for at-scale PostgreSQL deployments since Postgres is not able to maintain
-more than a few thousand concurrently open connections.
+Transaction mode allows PgDog to share just a few PostgreSQL server connections with thousands of clients.
+
+## How it works
+
+All queries served by PostgreSQL run inside transactions. Transactions can be started manually by sending a `BEGIN` query. If a transaction is not started, each query sent to PostgreSQL is executed inside its own, automatic, transaction.
+
+PgDog takes advantage of this behavior and can separate client transactions inside client connections and send them, individually, to the first available PostgreSQL server in its connection pool.
 
 <center>
   <img src="/images/transaction-mode.png" width="65%" alt="Load balancer" />
-  <p><i>In transaction mode, multiple clients can reuse one Postgres connection.</i></p>
 </center>
 
+In practice, this allows thousands of client connections to use just one PostgreSQL server connection to execute queries. Most connection pools will have multiple server connections, so hundreds of thousands of clients can connect to PgDog and execute queries over just a handful of PostgreSQL server connections.
+
+This feature is essential for busy applications to use PostgreSQL in production.
 
 ## Enable transaction mode
 
@@ -28,7 +34,7 @@ and user level:
     pooler_mode = "transaction"
     ```
 
-## Session state
+<!-- ## Session state
 
 !!! note
     This feature is a work in progress.
@@ -42,4 +48,4 @@ BEGIN;
 SET LOCAL statement_timeout = '30s';
 SELECT * FROM my_table;
 COMMIT;
-```
+``` -->

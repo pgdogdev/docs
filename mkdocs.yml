@@ -1,6 +1,6 @@
 site_name: PgDog
-repo_url: "https://github.com/levkk/pgdog"
-site_url: "https://pgdog.dev"
+repo_url: "https://github.com/pgdogdev/pgdog"
+site_url: "https://docs.pgdog.dev"
 extra_css:
   - style.css
 site_description: "PgDog - PostgreSQL query router, pooler, load balancer, and sharding proxy."
@@ -8,6 +8,11 @@ theme:
   name: material
   features:
     - content.code.copy
+    - search.suggest
+    - search.share
+  font:
+    text: IBM Sans Plex
+    code: IBM Plex Mono
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
@@ -18,7 +23,7 @@ theme:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: "white"
+      primary: "blue"
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
@@ -26,7 +31,7 @@ theme:
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: "black"
+      primary: "blue"
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
@@ -45,6 +50,8 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  - md_in_html
 plugins:
   - search
   - awesome-pages
+  - macros

@@ -1,31 +1,44 @@
+---
+next_steps:
+  - ["Health checks", "/features/healthchecks/", "Learn how PgDog ensures only healthy databases serve read queries."]
+---
+
 # Load balancer
 
 PgDog operates at the application layer (OSI Level 7) and is capable of load balancing queries across
-multiple PostgreSQL databases.
+multiple PostgreSQL replicas.
+
+## How it works
+
+When a query is sent to PgDog, it inspects it using a SQL language parser. If the query is a `SELECT` and PgDog is configured to proxy database replicas, it will send that query
+to one of the replicas. This allows to distribute queries between multiple databases, sprading the load evenly.
 
 <center>
   <img src="/images/replicas.png" width="65%" alt="Load balancer" />
 </center>
 
-## Strategies
+### Strategies
 
-The load balancer is configurable and can route queries
+The PgDog load balancer is configurable and can route queries
 using one of several strategies:
 
 * Random (default)
 * Least active connections
 * Round robin
 
+Choosing a strategy depends on your query workload and the size of replica databases. Each strategy has its pros and cons. If you're not sure, using the **random** strategy is usually good enough
+for most deployments.
 
-### Random
+
+#### Random
 
 Queries are sent to a database based using a random number generator modulus the number of replicas in the pool.
-This strategy is the simplest and often effective at splitting traffic evenly across the cluster. It's unbiased
+This strategy is the simplest to understand and often effective at splitting traffic evenly across the cluster. It's unbiased
 and assumes nothing about available resources or query performance.
 
 This strategy is used by **default**.
 
-### Least active connections
+#### Least active connections
 
 PgDog keeps track of how many active connections each database has and can route queries to databases
 which are least busy executing requests. This allows to "bin pack" the cluster based on how seemingly active
@@ -34,7 +47,7 @@ which are least busy executing requests. This allows to "bin pack" the cluster b
 This strategy is useful when all databases have identical resources and all queries have roughly the same
 cost and runtime.
 
-### Round robin
+#### Round robin
 
 This strategy is often used in HTTP load balancers like nginx to route requests to hosts in the
 same order they appear in the configuration. Each database receives exactly one query before the next
@@ -42,6 +55,14 @@ one is used.
 
 This strategy makes the same assumptions as [least active connections](#least-active-connections), except it makes no attempt to bin pack
 the cluster with workload and distributes queries evenly.
+
+## Handle writes
+
+The load balancer can split read `SELECT` queries from write queries. This strategy is effective 99% of the time, since `SELECT` queries that write to the database
+are rare and are typically used for database maintenance.
+
+If PgDog detects that a query is _not_ a `SELECT`, like an `INSERT` or and `UPDATE`, and it's configuration contains a primary,
+that query will be sent to that database exclusively. This allows a PgDog deployment to proxy an entire PostgreSQL cluster without configuring separate read and write endpoints.
 
 ## Configuration
 
@@ -51,7 +72,7 @@ one database. For example:
 ```toml
 [[databases]]
 name = "prod"
-role = "replica"
+role = "primary"
 host = "10.0.0.1"
 
 [[databases]]
@@ -60,6 +81,6 @@ role = "replica"
 host = "10.0.0.2"
 ```
 
-## Learn more
+## Next steps
 
-- [Healthchecks](healthchecks.md)
+{{ next_steps_links(next_steps) }}

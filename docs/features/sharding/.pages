@@ -1,5 +1,6 @@
 nav:
   - 'index.md'
+  - 'basics.md'
   - 'query-routing.md'
   - 'manual-routing.md'
   - 'cross-shard.md'

@@ -181,7 +181,7 @@ The vast majority of the Rust standard library and crates avoid panicking and re
     Better error handling is on the roadmap, e.g. by using macros
     that wrap plugin code into a panic handler. That being said, since
     plugins do expose `extern "C"` functions, this limitation should be
-    explicitely stated to plugin authors.
+    explicitly stated to plugin authors.
 
 ## Learn more
 

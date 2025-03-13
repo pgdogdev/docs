@@ -24,7 +24,7 @@ sudo apt update && \
 apt install -y clang build-essential cmake
 ```
 
-#### Arch Linux:
+#### Arch Linux
 
 Install Clang and CMake:
 

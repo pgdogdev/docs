@@ -71,3 +71,7 @@ This assumes that all shards in the cluster have an identical schema. This is ty
 ### Cross-shard changes
 
 Currently, PgDog doesn't use 2-phase commit to synchronize changes across all shards. Support for this feature is currently being built, and will require database operators to enable [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html).
+
+## Aggregates
+
+Support for aggregates is currently in progress. See [issue #40](https://github.com/pgdogdev/pgdog/issues/40) for updates.

@@ -11,7 +11,7 @@ PgDog sends DDL queries to all shards concurrently. A DDL query is a statement t
 
 ```postgresql
 CREATE TABLE IF NOT EXISTS "users" (
-  "id" BIGINT,
+  "id" BIGSERIAL PRIMARY KEY,
   "email" VARCHAR NOT NULL UNIQUE
 )
 ```

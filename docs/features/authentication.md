@@ -5,6 +5,11 @@ PostgreSQL servers support many authentication mechanisms. PgDog supports a subs
 Authentication is **enabled** by default. Applications connecting to PgDog must provide a username and password which is [configured](../configuration/users.toml/users.md) in `users.toml`. For connecting to PostgreSQL databases,
 PgDog currently supports only `SCRAM-SHA-256`.
 
+!!! note
+    Currently, PgDog uses MD5 authentication with clients that connect over TLS.
+    This is due to a potential bug in our SCRAM implementation. See [issue #48](https://github.com/pgdogdev/pgdog/issues/48)
+    for updates on this.
+
 
 ## Add users
 

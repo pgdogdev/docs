@@ -7,12 +7,14 @@ Database settings configure which databases PgDog is proxying. This is a TOML li
 name = "prod"
 host = "10.0.0.1"
 port = 5432
+shard = 0
 
 [[databases]]
 name = "prod"
 host = "10.0.0.2"
 port = 5432
 role = "replica"
+shard = 0
 ```
 
 ### `name`
@@ -63,3 +65,9 @@ Default: **none** (see [`users.toml`](../users.toml/users.md))
 Password to use when creating backend connections to PostgreSQL. If not set, this defaults to `password` in [`users.toml`](../users.toml/users.md). This setting is used to override `users.toml` configuration values.
 
 Default: **none** (see [`users.toml`](../users.toml/users.md))
+
+### `shard`
+
+The shard number for this database. Only required if your database contains more than one shard. Shard numbers start at 0.
+
+Default: **`0`**

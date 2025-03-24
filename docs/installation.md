@@ -1,15 +1,35 @@
 
 # Installation
 
-PgDog is easily compiled from source. For production deployments, a `Dockerfile` is provided in the repository. If you prefer to deploy on bare metal or you're looking to run PgDog locally, you'll need to install a few dependencies.
+## Kubernetes
 
-## Dependencies
+PgDog comes with its own [Helm chart](https://github.com/pgdogdev/helm). You can install it from git:
+
+```bash
+git clone https://github.com/pgdogdev/helm pgdog-helm && \
+cd pgdog-helm &&
+helm install -f values.yaml pgdog ./
+```
+
+## Docker
+
+Docker images are built automatically for each commit in GitHub. You can fetch them directly from the [repository](https://github.com/pgdogdev/pgdog/pkgs/container/pgdog):
+
+```bash
+docker run ghcr.io/pgdogdev/pgdog:main
+```
+
+## From source
+
+PgDog is easily compiled from source. For production deployments, a `Dockerfile` is provided in the [repository](https://github.com/pgdogdev/pgdog/tree/main/Dockerfile). If you prefer to deploy on bare metal or you're looking to run PgDog locally, you'll need to install a few dependencies.
+
+### Dependencies
 
 Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make sure to have a working version of a C/C++ compiler installed.
 
 #### Mac OS
 
-Install [XCode](https://developer.apple.com/xcode/) and CMake from brew:
+Install [XCode](https://developer.apple.com/xcode/) from the App Store and CMake from brew:
 
 ```bash
 brew install cmake

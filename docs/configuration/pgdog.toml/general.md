@@ -148,3 +148,9 @@ Default: unset
 The port used for sending and receiving broadcast messages.
 
 Default: **`6433`**
+
+### `openmetrics_port`
+
+The port used for the OpenMetrics HTTP endpoint.
+
+Default: unset (disabled)

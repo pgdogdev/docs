@@ -31,7 +31,7 @@ You can connect to the admin database using any PostgreSQL client. It supports c
     PGPASSWORD=admin psql -h 127.0.0.1 -p 6432 -U admin admin -c 'SHOW POOLS'
     ```
 
-### OpenMetrics
+## OpenMetrics
 
 !!! note
     OpenMetrics suppport is currently a work in progress. Some metrics are missing.

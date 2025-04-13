@@ -16,7 +16,7 @@ In practice, this allows thousands of client connections to use just one Postgre
 
 This feature is essential for busy applications to use PostgreSQL in production.
 
-## Enable transaction mode
+### Enable transaction mode
 
 Transaction mode is **enabled** by default. This is controllable via configuration, at the global
 and user level:
@@ -34,18 +34,37 @@ and user level:
     pooler_mode = "transaction"
     ```
 
-<!-- ## Session state
+### Session-level state
 
-!!! note
-    This feature is a work in progress.
+Clients can set session-level variables, e.g., by passing them in connection parameters or using the `SET` command. This works fine when connecting to Postgres directly, but PgDog shares server
+connections between multiple clients. To avoid session-level state leaking between clients, PgDog tracks connection parameters for each client and updates connection settings before
+giving a connection to a client.
 
-Since clients in transaction mode reuse PostgreSQL server connections, it's possible for session-level variables and state to leak between clients. PgDog keeps track of connection state modifications and can automatically clean up server connections after a transaction. While this helps prevent session variables leakage between clients, this does have a small performance overhead.
+#### Specify connection parameters
 
-To avoid this, clients using PgDog in transaction mode should avoid the usage of `SET` statements and use `SET LOCAL` inside an explicit transaction instead:
+Most Postgres connection drivers support passing parameters in the connection URL. Using the special `options` setting, each parameter is specified using the `-c` flag, for example:
+
+```
+postgres://user@host:6432/db?options=-c%20statement_timeout%3D3s
+```
+
+This sets the `statement_timeout` setting to `3s` (3 seconds). Each time this client
+executes a transaction, PgDog will check the value for `statement_timeout` on the server connection,
+and if it differs, issue a command to Postgres to update it:
 
 ```postgresql
-BEGIN;
-SET LOCAL statement_timeout = '30s';
-SELECT * FROM my_table;
-COMMIT;
-``` -->
+SET statement_timeout TO '3s';
+```
+
+
+#### Tracking `SET` commands
+
+If the client manually changes server settings, i.e., by issuing `SET` commands, the server will send the updated setting
+in a `ParameterStatus` message. PgDog will see this message and update client connection parameters accordingly, as to avoid
+issuing unnecessary `SET` statements on subsequent transactions.
+
+#### Latency
+
+PgDog keeps a real-time mapping for servers and their parameters, so checking the current value for any parameter doesn't require PgDog to talk
+to the database. Additionally, it's typically expected that applications have similar connection parameters, so PgDog won't have
+to perform this action often.

@@ -141,7 +141,7 @@ Send multicast packets to this address on the local network. Configuring this se
 mutual service discovery. Instances of PgDog running on the same network will be able to see
 each other.
 
-Default: unset
+Default: **none** (disabled)
 
 ### `broadcast_port`
 
@@ -153,7 +153,7 @@ Default: **`6433`**
 
 The port used for the OpenMetrics HTTP endpoint.
 
-Default: unset (disabled)
+Default: **unset** (disabled)
 
 ### `autodb`
 
@@ -166,3 +166,16 @@ Available options are:
 - `enabled_plain`
 
 Default: **`disabled`**
+
+### `prepared_statements`
+
+Enables support for prepared statements. Available options are:
+
+- `disabled`
+- `extended`
+- `full`
+
+Full enables support for rewriting prepared statements sent over the simple protocol. Extended handles prepared statements sent normally
+using the extended protocol.
+
+Default: **`extended`**

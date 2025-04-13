@@ -38,16 +38,23 @@ This allows to separate client and server credentials. In case your clients acci
 
 ## Passthrough authentication
 
-!!! note
-    This feature is a work in progress.
+Passthrough authentication is a feature where instead of storing passwords in `users.toml`, PgDog attempts to connect to Postgres using the credentials provided by the client. Passthrough authentication simplifies PgDog deployments by using a single source of truth for authentication and doesn't require passwords to be stored outside the database.
 
-Passthrough authentication is a feature where instead of storing passwords in `users.toml`, PgDog connects to the database server and queries it for the password stored in `pg_shadow`. It then matches
-this password to what the user supplied, and if they match, authorizes the connection.
+Passthrough authentication is disabled by default and can be enabled with configuration:
 
-Passthrough authentication simplifies PgDog deployments by using a single source of truth for authentication.
+```toml
+[general]
+autodb = "enabled"
+```
 
-Currently, passthrough authentication is a work-in-progress. You can track progress in [issue #6](https://github.com/levkk/pgdog/issues/6).
+This will require clients to send passwords in plain text. PgDog will create a connection pool for the database/user pair and the provided password. The database must exist in `pgdog.toml`.
 
-## Security
+The connection pool is dynamic and will be removed when PgDog is restarted or the configuration is reloaded. As long as `autodb` is enabled between config changes, clients shouldn't be impacted, since connection pools will be recreated next time clients reconnect.
+
+### Security
+
+Sending plain text passwords over unencrypted connections isn't great, even if PgDog and Postgres are on the same local network. For this reason, `autodb = "enabled"` will only work if PgDog is configured to use encryption. If you want to override this and send passwords in plain text, set `autodb` to `"enable_plain"`.
+
+## Password security
 
 Since PgDog stores passwords in a separate configuration file, it's possible to encrypt it at rest without compromising the DevOps experience. For example, Kubernetes provides built-in [secrets management](https://kubernetes.io/docs/concepts/configuration/secret/) to manage this.

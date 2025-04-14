@@ -155,7 +155,7 @@ The port used for the OpenMetrics HTTP endpoint.
 
 Default: **unset** (disabled)
 
-### `autodb`
+### `passthrough_auth`
 
 Toggle automatic creation of connection pools given the user name, database and password. See [authentication](../../features/authentication.md#passthrough-authentication).
 

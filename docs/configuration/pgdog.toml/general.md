@@ -179,3 +179,21 @@ Full enables support for rewriting prepared statements sent over the simple prot
 using the extended protocol.
 
 Default: **`extended`**
+
+### `query_timeout`
+
+Maximum amount of time to wait for Postgres query to finish executing. Use only in unreliable network conditions or when Postgres runs on unreliable hardware.
+
+Default: **disabled**
+
+### `connect_timeout`
+
+Maximum amount of time to allow for PgDog to create a connection to Postgres.
+
+Default: **`300`** (5s)
+
+### `checkout_timeout`
+
+Maximum amount of time a client is allowed to wait for a connection from the pool.
+
+Default: **`300`** (5s)

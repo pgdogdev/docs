@@ -3,6 +3,11 @@
 `COPY` is a special PostgreSQL command that ingests a file directly into a database table. This allows to ingest data faster than by using individual `INSERT` queries.
 PgDog supports parsing this command, sharding the file automatically, and splitting the data between shards, transparently to the application.
 
+<center style="margin-top: 2rem;">
+    <img src="/images/wire-protocol-copy.png" width="90%" alt="Cross-shard queries" />
+</center>
+
+
 ## How it works
 
 Data sent via `COPY` is formatted using one of 3 possible formats:

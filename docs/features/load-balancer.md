@@ -10,11 +10,11 @@ multiple PostgreSQL replicas.
 
 ## How it works
 
-When a query is sent to PgDog, it inspects it using a SQL language parser. If the query is a `SELECT` and PgDog is configured to proxy database replicas, it will send that query
-to one of the replicas. This allows to distribute queries between multiple databases, sprading the load evenly.
+When a query is sent to PgDog, it inspects it using a SQL parser. If the query is a `SELECT` and PgDog is configured to proxy database replicas, it will send that query
+to one of the replicas. This allows to distribute queries between multiple databases, spreading the load evenly.
 
 <center>
-  <img src="/images/replicas.png" width="65%" alt="Load balancer" />
+  <img src="/images/replicas.png" width="60%" alt="Load balancer" />
 </center>
 
 ### Strategies
@@ -49,20 +49,24 @@ cost and runtime.
 
 #### Round robin
 
-This strategy is often used in HTTP load balancers like nginx to route requests to hosts in the
+This strategy is often used in HTTP load balancers, like nginx, to route requests to hosts in the
 same order they appear in the configuration. Each database receives exactly one query before the next
 one is used.
 
 This strategy makes the same assumptions as [least active connections](#least-active-connections), except it makes no attempt to bin pack
-the cluster with workload and distributes queries evenly.
+the cluster with workload, and distributes queries evenly.
 
-## Handle writes
+## Handling writes
 
 The load balancer can split read `SELECT` queries from write queries. This strategy is effective 99% of the time, since `SELECT` queries that write to the database
 are rare and are typically used for database maintenance.
 
+!!! note
+    `SELECT ... FOR UPDATE` is routed to the primary because it likely means the
+    row is about to be updated.
+
 If PgDog detects that a query is _not_ a `SELECT`, like an `INSERT` or and `UPDATE`, and it's configuration contains a primary,
-that query will be sent to that database exclusively. This allows a PgDog deployment to proxy an entire PostgreSQL cluster without configuring separate read and write endpoints.
+that query will be sent to primary. This allows a PgDog deployment to proxy an entire PostgreSQL cluster without creating separate read and write endpoints.
 
 ## Configuration
 
@@ -81,6 +85,6 @@ role = "replica"
 host = "10.0.0.2"
 ```
 
-## Next steps
+## Read more
 
 {{ next_steps_links(next_steps) }}

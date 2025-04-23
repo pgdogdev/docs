@@ -1,5 +1,9 @@
 # Plugins overview
 
+!!! warning
+    Plugins are currently disabled. The C FFI interface is too awkward to pass all the required
+    context to the query router.
+
 One of features that make PgDog particularly powerful is its plugin system. Users of PgDog can write plugins
 in any language and inject them inside the query router to direct query traffic, to rewrite queries, or to block
 them entirely and return custom results.

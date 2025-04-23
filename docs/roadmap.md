@@ -40,3 +40,5 @@ Features around moving data to/from shards, resharding to scale deployments, and
 | Shard re-balancing | Not started yet. See Logical replication above. We'll be creating shards (instances) automatically and moving data between databases. |
 | Schema management | Automatic schema management to ensure all shards have identical tables. We have some basic code to read schema off of shards, but it's not actively used yet. |
 | Primary key generation | Partially started. Automatic generation of sharded primary keys and non-sharded primary keys. This allows for Postgres to be used for generating primary keys without relying on 3rd party ID servers. We have a function for the sharded primary key. Still have to write one for non-sharded keys (it'll rely on the shard number as well, but won't be hashed). |
+| Unique indexes | Not currently supported. Requires query rewriting and separate execution engine to validate uniqueness across all shards. |
+| CHECK constraints | Not currently supported. Requires the same functionality as unique indexes. |

@@ -45,3 +45,19 @@ The data type of the column. Currently, the options are:
 
 - `bigint`
 - `uuid`
+
+## Omnisharded tables
+
+Omnisharded tables are tables that have the same data on all shards. They typically are small and contain metadata, e.g., list of countries, cities, etc., and are used in joins. PgDog allows to read from
+these tables directly and load balances traffic across all shards evenly.
+
+```toml
+[[omnisharded_tables]]
+database = "prod"
+tables = [
+    "settings",
+    "cities",
+    "terms_of_service",
+    "ip_blocks",
+]
+```

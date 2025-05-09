@@ -197,3 +197,20 @@ Default: **`300`** (5s)
 Maximum amount of time a client is allowed to wait for a connection from the pool.
 
 Default: **`300`** (5s)
+
+### `auth_type`
+
+What kind of authentication mechanism to use for client connections.
+
+Currently supported:
+
+- `scram` (SCRAM-SHA-256)
+- `md5` (MD5)
+
+Default: **`scram`**
+
+### `mirror_queue`
+
+Size of requests that can wait while the mirror database processes other requests. Increase this to lose less traffic while replaying, in case the mirror database is slower than production.
+
+Default: **128**

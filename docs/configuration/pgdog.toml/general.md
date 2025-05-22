@@ -214,3 +214,16 @@ Default: **`scram`**
 Size of requests that can wait while the mirror database processes other requests. Increase this to lose less traffic while replaying, in case the mirror database is slower than production.
 
 Default: **128**
+
+### `read_write_split`
+
+How to handle the separation of read and write queries.
+
+Available options:
+
+- `include_primary`
+- `exclude_primary`
+
+Include primary uses the primary database as well as the replicas to serve read  queries. Exclude primary will send all read queries to replicas, leaving the primary to serve only writes.
+
+Default: **`include_primary`**

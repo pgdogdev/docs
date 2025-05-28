@@ -155,6 +155,12 @@ The port used for the OpenMetrics HTTP endpoint.
 
 Default: **unset** (disabled)
 
+### `openmetrics_namespace`
+
+Prefix added to all metric names exposed via the OpenMetrics endpoint.
+
+Default: **none**
+
 ### `passthrough_auth`
 
 Toggle automatic creation of connection pools given the user name, database and password. See [authentication](../../features/authentication.md#passthrough-authentication).

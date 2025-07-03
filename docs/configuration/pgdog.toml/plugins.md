@@ -1,5 +1,9 @@
 # Plugin settings
 
+!!! warning
+    Plugins are not currently supported anymore. We will pick them up again if there is more interest
+    from the community.
+
 [Plugins](../../features/plugins/index.md) are dynamically loaded at pooler startup. These settings control which plugins are loaded. In the future, more
 options will be available to configure plugin behavior.
 

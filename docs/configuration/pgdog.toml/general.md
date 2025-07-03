@@ -109,7 +109,7 @@ Default: **`5_000`** (5s)
 
 ### `ban_timeout`
 
-Connectionn pools blocked from serving traffic due to an error will be placed back into active rotation after this long. This ensures
+Connection pools blocked from serving traffic due to an error will be placed back into active rotation after this long. This ensures
 that servers don't stay blocked forever due to healthcheck false positives.
 
 Default: **`300_000`** (5 minutes)
@@ -120,6 +120,38 @@ How long to wait for active clients to finish transactions when shutting down. T
 queries as possible.
 
 Default: **`60_000`** (60s)
+
+
+### `query_timeout`
+
+Maximum amount of time to wait for Postgres query to finish executing. Use only in unreliable network conditions or when Postgres runs on unreliable hardware.
+
+Default: **disabled**
+
+### `connect_timeout`
+
+Maximum amount of time to allow for PgDog to create a connection to Postgres.
+
+Default: **`300`** (5s)
+
+### `connect_attempts`
+
+Maximum number of retries for Postgres server connection attempts. When exceeded, an error is returned to the pool
+and the pool will be banned from serving more queries.
+
+Default: **`1`**
+
+### `connect_attempt_delay`
+
+Amount of time to wait between connection attempt retries.
+
+Default: **`0`** (0ms)
+
+### `checkout_timeout`
+
+Maximum amount of time a client is allowed to wait for a connection from the pool.
+
+Default: **`300`** (5s)
 
 ## Load balancer
 
@@ -162,6 +194,8 @@ The port used for sending and receiving broadcast messages.
 
 Default: **`6433`**
 
+## Monitoring
+
 ### `openmetrics_port`
 
 The port used for the OpenMetrics HTTP endpoint.
@@ -174,48 +208,7 @@ Prefix added to all metric names exposed via the OpenMetrics endpoint.
 
 Default: **none**
 
-### `passthrough_auth`
-
-Toggle automatic creation of connection pools given the user name, database and password. See [authentication](../../features/authentication.md#passthrough-authentication).
-
-Available options are:
-
-- `disabled`
-- `enabled`
-- `enabled_plain`
-
-Default: **`disabled`**
-
-### `prepared_statements`
-
-Enables support for prepared statements. Available options are:
-
-- `disabled`
-- `extended`
-- `full`
-
-Full enables support for rewriting prepared statements sent over the simple protocol. Extended handles prepared statements sent normally
-using the extended protocol.
-
-Default: **`extended`**
-
-### `query_timeout`
-
-Maximum amount of time to wait for Postgres query to finish executing. Use only in unreliable network conditions or when Postgres runs on unreliable hardware.
-
-Default: **disabled**
-
-### `connect_timeout`
-
-Maximum amount of time to allow for PgDog to create a connection to Postgres.
-
-Default: **`300`** (5s)
-
-### `checkout_timeout`
-
-Maximum amount of time a client is allowed to wait for a connection from the pool.
-
-Default: **`300`** (5s)
+## Authentication
 
 ### `auth_type`
 
@@ -227,6 +220,37 @@ Currently supported:
 - `md5` (MD5)
 
 Default: **`scram`**
+
+`md5` is very quick but not secure, while `scram` authentication is slow but has better security features. If security isn't a concern but latency for connection creation is, consider using `md5`.
+
+### `passthrough_auth`
+
+Toggle automatic creation of connection pools given the user name, database and password. See [passthrough authentication](../../features/authentication.md#passthrough-authentication).
+
+Available options are:
+
+- `disabled`
+- `enabled`
+- `enabled_plain`
+
+Default: **`disabled`**
+
+## Prepared statements
+
+### `prepared_statements`
+
+Enables support for prepared statements. Available options are:
+
+- `disabled`
+- `extended`
+- `full`
+
+Full enables support for rewriting prepared statements sent over the simple protocol. Extended handles prepared statements sent normally
+using the extended protocol. `full` attempts to rewrite prepared statements sent over using the simple protocol.
+
+Default: **`extended`**
+
+## Misc
 
 ### `mirror_queue`
 

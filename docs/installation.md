@@ -41,7 +41,7 @@ Install Clang and CMake:
 
 ```bash
 sudo apt update && \
-apt install -y clang build-essential cmake
+apt install -y cmake clang curl pkg-config libssl-dev git build-essential
 ```
 
 #### Arch Linux
@@ -49,7 +49,7 @@ apt install -y clang build-essential cmake
 Install Clang and CMake:
 
 ```bash
-sudo pacman -Syu base-devel clang cmake
+sudo pacman -Syu base-devel clang cmake git
 ```
 
 #### Windows

@@ -49,5 +49,5 @@ openmetrics_port = 9090
 Once PgDog is restarted, the endpoint will be available on `http://0.0.0.0:9090` and can be queried with any HTTP client, for example:
 
 ```bash
-curl http://127.0.0.1:9000/metrics
+curl http://127.0.0.1:9090/metrics
 ```

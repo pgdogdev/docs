@@ -49,11 +49,11 @@ passthrough_auth = "enabled"
 
 This will require clients to send passwords in plain text. PgDog will create a connection pool for the database/user pair and the provided password. The database must exist in `pgdog.toml`.
 
-The connection pool is dynamic and will be removed when PgDog is restarted or the configuration is reloaded. As long as `passthrough_auth` is enabled between config changes, clients shouldn't be impacted, since connection pools will be recreated next time clients reconnect.
+The connection pool is dynamic and will be removed when PgDog is restarted. As long as `passthrough_auth` is enabled between config changes, clients shouldn't be impacted, since connection pools will be recreated next time clients reconnect or execute a query.
 
 ### Security
 
-Sending plain text passwords over unencrypted connections isn't great, even if PgDog and Postgres are on the same local network. For this reason, `passthrough_auth = "enabled"` will only work if PgDog is configured to use encryption. If you want to override this and send passwords in plain text, set `passthrough_auth` to `"enable_plain"`.
+Sending plain text passwords over unencrypted connections isn't great, even if PgDog and Postgres are on the same local network. For this reason, `passthrough_auth = "enabled"` will only work if PgDog is configured to use TLS encryption. If you want to override this and send passwords in plain text, set `passthrough_auth` to `"enable_plain"`.
 
 ## Password security
 

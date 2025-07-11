@@ -250,6 +250,14 @@ using the extended protocol. `full` attempts to rewrite prepared statements sent
 
 Default: **`extended`**
 
+### `prepared_statements_limit`
+
+Number of prepared statements that will be allowed for each server connection. If this limit is reached, least used statement is closed
+and replaced with the newest one. Additionally, any unused statements in the [global cache](../../features/prepared-statements.md) above this
+limit will be removed.
+
+Default: **`none`** (unlimited)
+
 ## Misc
 
 ### `mirror_queue`

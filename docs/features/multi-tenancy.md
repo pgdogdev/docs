@@ -1,7 +1,7 @@
 # Multi-tenancy
 
 !!! note
-    This is a new experimental feature. Feedback welcome.
+    This is a new experimental feature. [Feedback welcome](mailto:hi@pgdog.dev).
 
 PgDog can enforce the use of a specific column on all queries to make sure your apps are not breaking tenant isolation rules.
 

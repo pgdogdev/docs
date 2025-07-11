@@ -1,23 +1,21 @@
 # Supported queries
 
-[Automatic routing](query-routing.md) in PgDog works by parsing queries and extracting the sharding key. SQL is a complex language and we are aiming to support as many queries as possible. As the development moves forward, this page will be updated with the types of queries we support for automatic query routing.
+[Automatic routing](query-routing.md) in PgDog works by parsing queries and extracting the sharding key. SQL is a complex language and we are aiming to support as many queries as possible. As the development moves forward, this page will be updated with latest features.
 
-## Queries
+Postgres has 3 kinds of queries, each handled a little bit differently in a sharded context:
 
-Postgres has 3 kinds of statements, all of which are supported by PgDog:
+1. CRUD statements (`INSERT`, `UPDATE`, `SELECT`, `DELETE`, `COPY`) are parsed for sharding keys and routed to one or more shards
+5. DDL statements (e.g., `CREATE TABLE`, `BEGIN`, `ROLLBACK`, etc.) are sent to all shards in parallel
+6. `SET` statements are intercepted and client state is updated to keep track of session variables
 
-1. CRUD statements that change, read, update or delete data from tables: `INSERT`, `UPDATE`, `SELECT`, `DELETE`.
-5. DDL statements that change the schema or control transaction state, e.g., `CREATE TABLE`, `BEGIN`, `ROLLBACK`, etc.
-6. `SET` statements which update connection session state, e.g., `SET statement_timeout TO 0`.
-
-How PgDog handles each kind of statements is documented below.
+## CRUD
 
 ### `SELECT`
 
-`SELECT` queries are the core feature of PostgreSQL and support a wide range of access patterns. Currently, PgDog is able to extract sharding keys from the following queries:
+`SELECT` queries are the core feature of PostgreSQL and support a wide range of access patterns. PgDog parses the `WHERE` clause looking for sharding keys and supports the following patterns:
 
-1. The sharding key is equal to a single value
-2. The key is several values in an `IN` statement
+1. A column is equal to a value
+2. A column is matched against a list of values using `IN`
 
 #### Examples
 
@@ -29,9 +27,49 @@ SELECT * FROM users WHERE user_id = $1
 SELECT * FROM users WHERE id IN ($1, $2, $3)
 ```
 
-Queries that don't match this pattern will currently be routed to all shards.
+Queries that don't match this pattern presently will be routed to all shards. We are continuously adding support for more complex patterns.
+
+#### `SELECT` queries that write
+
+Some `SELECT` queries can perform writes, like inside a CTE, for example:
+
+```postgresql
+WITH t AS (
+  INSERT INTO users (id, email) VALUES (1, 'test@test.com') RETURNING *
+)
+SELECT * FROM t;
+```
+
+PgDog handles this automatically by scanning CTEs and redirecting the entire statement to the primary database. Currently, the sharding key is not extracted from CTEs, so this query will be routed to all shards.
 
 ### `UPDATE` and `DELETE`
 
+Both `UPDATE` and `DELETE` queries work the same way as `SELECT` queries. The `WHERE` clause is checked for a sharding key using one of the 2 supported patterns and if a key is found, the query is routed to the right shard. Statements without a key are sent to all shards, in parallel.
 
-## UPDATE queries
+#### Examples
+
+```postgresql
+-- UPDATE query
+UPDATE users SET admin = true WHERE id = $1;
+
+-- DELETE query
+DELETE FROM users WHERE id IN ($1, $2, $3);
+```
+
+### `INSERT`
+
+`INSERT` queries need to specify the column names in order for PgDog to be able to extract the sharding key from the tuple:
+
+```postgresql
+INSERT INTO users (id, email) VALUES ($1, $2);
+```
+
+Currently, PgDog only supports `INSERT` statements with one tuple in the `VALUES` clause. In the future, statements with multiple tuples will be rewritten and sent separately to each matching shard.
+
+### `COPY`
+
+`COPY` statements are automatically sharded between all shards. See [COPY](copy.md) for more details.
+
+## DDL
+
+DDL statements are sent to all shards in parallel. Currently, PgDog doesn't use 2-phase commit so consider using idempotent schema changes to guarantee consistency across shards.

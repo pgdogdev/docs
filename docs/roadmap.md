@@ -25,7 +25,7 @@ Features around query execution in a direct-to-shard or multi-shard context.
 | Multi-tuple INSERTs | Rewrite query to support multiple `VALUES` tuples and send tuples individually to their respective shards. Not implemented yet. |
 | Query router | Works well for most queries supported by the parser. Direct-to-shard, multi-shard, and all-shard queries are detected and routed accordingly. |
 | Cross-shard queries | Queries spanning multiple shards are supported, for most simple use cases. See below for details. |
-| Cross-shard sorting | `SELECT ... ORDER BY ...`-style queries work transparently. Data types supported in the `ORDER BY` clause are: `BIGINT`, `INTEGER`, `TEXT`/`VARCHAR`. Missing: dates/timestamps, other Postgres types. |
+| Cross-shard sorting | `SELECT ... ORDER BY ...`-style queries work automatically. Data types supported in the `ORDER BY` clause are: `BIGINT`, `INTEGER`, `TEXT`/`VARCHAR`. Missing: dates/timestamps, other Postgres types. |
 | Cross-shard aggregates | Basic aggregates like `count`, `max`, `min`, `sum` are supported with/without `GROUP BY` clause. Missing aggregates include: `avg`, `percentile_cont` (and `disc`), `JSON`, and others. Some require query rewriting. |
 | Query rewriting | Rewriting queries is only supported for renaming prepared statements. Query rewriting to support aggregates or cross-shard joins is not yet. |
 | Cross-shard joins | Not supported yet. Requires query rewriting and implementing inner/outer hash joins inside PgDog. |

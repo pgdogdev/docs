@@ -16,7 +16,7 @@ PgDog is first and foremost a query router. It extracts sharding hints directly 
 
 ### Cross-shard queries
 
-When sharding hints are not present in a query, either accidently or on purpose, PgDog falls back to sending those queries to all shards. This is called a cross-shard query and results are assembled by PgDog, transparently to the client.
+When sharding hints are not present in a query, either accidentally or on purpose, PgDog falls back to sending those queries to all shards. This is called a cross-shard query and results are assembled by PgDog, invisible to the client.
 
 [**→ Cross-shard queries**](cross-shard.md)
 

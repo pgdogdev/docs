@@ -68,6 +68,19 @@ are rare and are typically used for database maintenance.
 If PgDog detects that a query is _not_ a `SELECT`, like an `INSERT` or and `UPDATE`, and it's configuration contains a primary,
 that query will be sent to primary. This allows a PgDog deployment to proxy an entire PostgreSQL cluster without creating separate read and write endpoints.
 
+### CTEs that write
+
+Some `SELECT` queries can trigger a write to the database from a CTE, for example:
+
+```postgresql
+WITH t AS (
+  INSERT INTO users (email) VALUES ('test@test.com') RETURNING id
+)
+SELECT * FROM users INNER JOIN t ON t.id = users.id
+```
+
+PgDog will check all CTEs and if any of them contain queries that could write, it will send that query to the primary.
+
 ## Configuration
 
 The load balancer is enabled automatically when a database cluster contains more than

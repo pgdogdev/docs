@@ -2,7 +2,7 @@
 
 Database mirroring replicates traffic, byte for byte, from one database to another. This allows to test how databases respond to production traffic, without breaking production databases.
 
-### How it works
+## How it works
 
 !!! note
     This feature is still experimental. Please [report](https://github.com/pgdogdev/pgdog/issues) any issues you may run into.
@@ -13,7 +13,7 @@ Mirroring in PgDog is asynchronous and shouldn't impact production traffic: tran
   <img src="/images/mirroring.png" width="80%" height="auto" alt="Mirroring" style="width: 80%;">
 </center>
 
-#### Configuring mirroring
+### Configuring mirroring
 
 To use mirroring, first configure both the mirror and the production database in `pgdog.toml`. Once you have it running, add `mirror_of` to all instances of the mirror database:
 
@@ -35,6 +35,20 @@ You can connect to the mirror database like any other. The same connection pool 
 
 Each client connected to the main database has its own queue, so concurrency scales linearly with the number of clients and executed queries.
 
-#### Comparison to Postgres replication
+#### Mirror queue
+
+If the mirror database(s) can't keep up with production traffic, queries will back up in the queue. To make sure it doesn't overflow and cause out-of-memory errors, the size of the queue is configurable:
+
+```toml
+[general]
+mirror_queue = 500
+```
+
+If the queue is full, all subsequent queries will be dropped until there is space in the queue again.
+
+!!! warning
+    Since mirror queues can drop queries, it is not a replacement for Postgres replication and should be used for testing & benchmarking purposes only.
+
+### Comparison to Postgres replication
 
 Mirroring is a best effort strategy for replaying queries. There are no retries or guarantees that the statements are executed in the same order on the mirror. It should be used strictly for benchmarking or testing mirror databases, not for reliably replicating data.

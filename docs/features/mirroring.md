@@ -48,7 +48,3 @@ If the queue is full, all subsequent queries will be dropped until there is spac
 
 !!! warning
     Since mirror queues can drop queries, it is not a replacement for Postgres replication and should be used for testing & benchmarking purposes only.
-
-### Comparison to Postgres replication
-
-Mirroring is a best effort strategy for replaying queries. There are no retries or guarantees that the statements are executed in the same order on the mirror. It should be used strictly for benchmarking or testing mirror databases, not for reliably replicating data.

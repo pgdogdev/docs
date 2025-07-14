@@ -115,3 +115,15 @@ GROUP BY email;
     In the future, PgDog will be automatically rewriting queries to ensure
     aggregates can be calculated transparently to the client. See [Roadmap](../../roadmap.md) for
     more details.
+
+
+## Disabling cross-shard queries
+
+Cross-shard queries can be disabled with a configuration setting:
+
+```toml
+[general]
+cross_shard_disabled = true
+```
+
+If enabled and a query doesn't have a sharding key, PgDog will return an error instead.

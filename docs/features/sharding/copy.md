@@ -10,17 +10,15 @@ PgDog supports parsing this command, sharding the file automatically, and splitt
 
 ## How it works
 
-Data sent via `COPY` is formatted using one of 3 possible formats:
+PgDog supports data sent via `COPY` formatted using any one of the 3 possible formats:
 
 - CSV (comma-separated values)
 - Text (PostgreSQL version of CSV, with `\t` as the delimiter)
 - Binary (not frequently used)
 
-PgDog supports both CSV and text formats out of the box.
-
 ### Expected syntax
 
-`COPY` commands sent through PgDog should specify table columns explicitly. This allows PgDog to parse the data stream correctly, knowing which column is the sharding key.
+`COPY` commands sent through PgDog should specify table columns explicitly. This allows itg to parse the data stream correctly, knowing which column is the sharding key.
 
 Take the following example:
 
@@ -54,4 +52,4 @@ This query specifies the column order, the file format, and that the file contai
 
 ## Performance
 
-Theoretically, by adding _N_ nodes to a sharded cluster, the performance of `COPY` increases _N_ times. Data sent through `COPY` is ingested into shards in parallel. This makes the performance of `COPY` as fast as data nodes can write data and the network can send/receive messages. The cost of parsing and sharding CSV data in PgDog is negligibly small.
+By adding _N_ nodes to a sharded cluster, the performance of `COPY` increases _N_ times. Data sent through `COPY` is ingested into shards in parallel. This makes the performance of `COPY` as fast as data nodes can write data and the network can send/receive messages. The cost of parsing and sharding CSV data in PgDog is negligibly small.

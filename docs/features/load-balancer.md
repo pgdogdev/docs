@@ -101,3 +101,9 @@ host = "10.0.0.2"
 ## Read more
 
 {{ next_steps_links(next_steps) }}
+
+## Demo
+
+<center>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/ZaCy_FPjfFI?si=QVETqaOiKbLtucl1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</center>

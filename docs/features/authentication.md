@@ -84,7 +84,9 @@ The connection pool is dynamic and will created the first time a client connects
 
 ### Security
 
-Sending plain text passwords over unencrypted connections isn't great, even if PgDog and Postgres are on the same local network. For this reason, `passthrough_auth = "enabled"` will only work if PgDog is configured to use TLS encryption. If you want to override this and send passwords in plain text, set `passthrough_auth` to `"enabled_plain"`:
+Sending plain text passwords over unencrypted connections isn't ideal, even if PgDog and Postgres are on the same local network. For this reason, `passthrough_auth = "enabled"` will only work if PgDog is configured to use [TLS encryption](tls.md).
+
+If you don't want to setup TLS (it has some impact on latency), you can override this behavior and send passwords via a plain text (unsecured) connection:
 
 ```toml
 [general]

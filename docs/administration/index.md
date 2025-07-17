@@ -23,6 +23,8 @@ The admin database name is [configurable](../configuration/pgdog.toml/admin.md).
 | `RECONNECT` | Re-create all server connections using existing configuration. |
 | `PAUSE` | Pause all pools. Clients will wait for connections until pools are resumed. Can be used for gracefully restarting PostgreSQL servers. |
 | `RESUME` | Resume all pools. Clients are able to check out connections again. |
+| `SHOW PREPARED` | List prepared statements currently in the cache. |
+| `SHOW QUERY_CACHE` | List statements currently in the AST cache used for query routing. |
 
 ## Shutting down PgDog
 

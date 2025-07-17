@@ -114,7 +114,7 @@ While more often used to atomically perform writes to multiple tables, transacti
 
 !!! note
     This is common with background jobs that get triggered after a row has been inserted by an HTTP controller.
-    The job queue is typically configured to read data from a replica which is a few milliseconds behind the primary and, unless specifically handled, result in a "record not found" error.
+    The job queue is often configured to read data from a replica, which is a few milliseconds behind the primary and, unless specifically handled, could run into "record not found" errors.
 
 
 ## Configuration

@@ -69,7 +69,7 @@ SELECT * FROM "users" ORDER BY 1, 3
 
 DDL statements, i.e., queries that modify the database schema, like `CREATE TABLE`, are sent to all shards simultaneously. This allows clients to modify all shard schemas at the same time and requires no special changes to systems used for schema management and migrations.
 
-This assumes that all shards in the cluster have an identical schema. This is typically desired to make management of sharded databases simpler, but in cases where this is not possible, DDL queries can always be routed to specific shards using [manual routing](manual-routing.md).
+This assumes that all shards in the cluster have an identical schema. This is typically desired to make management of sharded databases simpler, but in scenarios where this is not possible, DDL queries can always be routed to specific shards using [manual routing](manual-routing.md).
 
 !!! note
     PgDog doesn't use two-phase commit so make sure your DDL

@@ -1,7 +1,6 @@
 nav:
   - 'index.md'
-  - 'load-balancer.md'
-  - 'healthchecks.md'
+  - 'load-balancer'
   - 'transaction-mode.md'
   - 'sharding'
   - 'plugins'

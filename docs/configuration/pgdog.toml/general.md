@@ -112,7 +112,7 @@ Default: **`30_000`** (30s)
 
 #### Note on `min_pool_size`
 
-[Healthchecks](../../features/healthchecks.md) try to use existing idle connections to validate the database is up and running. If there are no idle connections available, PgDog will create an ephemeral connection to perform the healthcheck. If you want to avoid this, make sure to have `min_pool_size` to be at least `1`.
+[Healthchecks](../../features/load-balancer/healthchecks.md) try to use existing idle connections to validate the database is up and running. If there are no idle connections available, PgDog will create an ephemeral connection to perform the healthcheck. If you want to avoid this, make sure to have `min_pool_size` to be at least `1`.
 
 ### `idle_healthcheck_delay`
 
@@ -181,7 +181,7 @@ Default: **`300`** (5s)
 
 ### `load_balancing_strategy`
 
-Which strategy to use for load balancing read queries. See [load balancer](../../features/load-balancer.md) for more details. Available options are:
+Which strategy to use for load balancing read queries. See [load balancer](../../features/load-balancer/index.md) for more details. Available options are:
 
 * `random`
 * `least_active_connections`

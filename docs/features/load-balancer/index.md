@@ -3,7 +3,7 @@ next_steps:
   - ["Health checks", "/features/healthchecks/", "Learn how PgDog ensures only healthy databases serve read queries."]
 ---
 
-# Load balancer
+# Load balancer overview
 
 PgDog operates at the application layer (OSI Level 7) and is capable of load balancing queries across
 multiple PostgreSQL replicas.

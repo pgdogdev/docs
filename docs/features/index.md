@@ -13,8 +13,8 @@ Short summary of currently implemented features.
 
 | Feature | Description |
 |---------|-------------|
-| [Load balancer](load-balancer.md) | Distribute `SELECT` queries evenly between replicas. Separate reads from writes with a single endpoint. |
-| [Health checks](healthchecks.md) | Check databases are up and running, and can serve queries. |
+| [Load balancer](load-balancer/index.md) | Distribute `SELECT` queries evenly between replicas. Separate reads from writes with a single endpoint. |
+| [Health checks](load-balancer/healthchecks.md) | Check databases are up and running, and can serve queries. |
 | [Transaction mode](transaction-mode.md) | Share PostgreSQL connections between thousands of clients, a necessary feature for production deployments. |
 | [Hot reload](../configuration/index.md) | Update configuration at runtime without restarting PgDog. |
 | [Sharding](sharding/index.md) | Automatic query routing and logical replication between data nodes to scale PostgreSQL horizontally. |

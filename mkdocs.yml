@@ -61,3 +61,7 @@ plugins:
   - search
   - awesome-pages
   - macros
+  - redirects:
+      redirect_maps:
+        'features/healthchecks.md': 'features/load-balancer/healthchecks.md'
+      

@@ -88,9 +88,9 @@ PgDog has limited support for aggregate functions. Currently, the following func
 * `count()` / `count(*)`
 * `sum()`
 
-Aggregates have to be executed over supported data types, i.e.: `bigint`, `integer`, `float` and `double precision`.
+Aggregates have to be executed over [supported](#supported-data-types) data types.
 
-## Limitations
+### Limitations
 
 Not all aggregates can be calculated in a cross-shard query. For example, `avg()` requires both the sum and the count of all values, which a query result won't have. In this case, the query needs to be rewritten to include both values.
 
@@ -115,7 +115,7 @@ GROUP BY email;
     aggregates can be calculated transparently to the client. See our [roadmap](../../roadmap.md) for
     more details.
 
-### Supported data types
+## Supported data types
 
 Processing results in PgDog requires it to parse Postgres data types from the wire protocol. Postgres supports many data types and PgDog, currently, can only handle a some of them. Clients can request results to be encoded in either `text` or `binary` encoding and supporting both requires special handling as well.
 
@@ -138,7 +138,7 @@ Processing results in PgDog requires it to parse Postgres data types from the wi
 !!! note
     `VECTOR` type doesn't have a fixed OID in Postgres because it comes from an extension (`pgvector`). We infer it from the `<->` operator used in the `ORDER BY` clause.
 
-### Disable cross-shard queries
+## Disable cross-shard queries
 
 Cross-shard queries can be disabled with a configuration setting:
 

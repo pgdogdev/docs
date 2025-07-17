@@ -42,7 +42,7 @@ The number of prepared statements and what they are can be tracked by executing 
 SHOW PREPARED;
 ```
 
-Additionally, each server connection entry in [`SHOW SERVERS`](../administration/servers.md) will report the number of currently active statements.
+Additionally, each server connection entry in [`SHOW SERVERS`](../administration/servers.md) will report the number of currently prepared statements.
 
 ### Simple protocol
 
@@ -65,10 +65,14 @@ PREPARE __pgdog_1 AS SELECT * FROM users;
 ```
 
 Statements sent over the simple protocol are not checked against the global cache. Each new statement is given a unique
-global name. Since this requires PgDog to parse _each_ incoming query, and that's computationally expensive, this feature is diabled
-by default.
+global name. Since this requires PgDog to parse _each_ incoming query, and that's computationally expensive, this feature is **disabled** by default.
 
-You can enable it by setting to `prepared_statements` to `"full"`.
+You can enable it by setting to `prepared_statements` to `"full"`:
+
+```toml
+[general]
+prepared_statements = "full"
+```
 
 Statements prepared using this method can be executed normally with `Bind` and `Execute` messages. Result data types can be inspected with `Describe`, just
 like a regular prepared statement.

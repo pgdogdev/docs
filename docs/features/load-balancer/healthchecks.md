@@ -21,7 +21,7 @@ To reduce the overhead of health checks, connection-specific checks are done inf
 
 ```toml
 [general]
-healthcheck_interval = 1_000 # Run a health check every second
+healthcheck_interval = 30_000 # Run a health check every 30 seconds
 ```
 
 Health checks are **enabled** by default. The default setting value is `30_000` (30 seconds).
@@ -45,8 +45,10 @@ This behavior is controlled with the `ban_timeout` setting:
 
 ```toml
 [general]
-ban_timeout = 60_000 # Expire bans automatically after 1 minute
+ban_timeout = 300_000 # Expire bans automatically after 5 minutes
 ```
+
+The default value is `300_000` (5 minutes).
 
 ### Health check timeout
 
@@ -56,3 +58,5 @@ By default, PgDog gives the database **5 seconds** to answer a health check. Thi
 [global]
 healthcheck_timeout = 5_000 # 5 seconds in ms
 ```
+
+The default value is `5_000` (5 seconds).

@@ -71,6 +71,30 @@ Default: **none**
 !!! note
     This setting cannot be changed at runtime.
 
+### `tls_verify`
+
+How to handle TLS connections to Postgres servers. By default, PgDog will attempt to establish TLS and will accept _any_ server certificate.
+
+Default: **`prefer`**
+
+Available options are:
+
+* `none` (disable TLS)
+* `prefer` (no certificate validation)
+* `verify_ca` (validate certificate only)
+* `verify_full` (validate certificate _and_ matching hostname)
+
+!!! note
+    This setting cannot be changed at runtime.
+
+### `tls_server_ca_certificate`
+
+Path to a certificate bundle used to validate the server certificate on TLS connection creation. Used in conjunction with `verify_ca` or `verify_full` in [`tls_verify`](#tls_verify).
+
+!!! note
+    This setting cannot be changed at runtime.
+
+
 ## Healthchecks
 
 ### `healthcheck_interval`

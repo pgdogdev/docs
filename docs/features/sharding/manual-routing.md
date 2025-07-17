@@ -1,7 +1,7 @@
 # Manual routing
 
 In case the sharding key is not configured or can't be extracted from the query,
-PgDog supports explicit sharding directions, provided by the client in a query comment.
+PgDog supports explicit sharding directions, provided by the client in a query comment or a `SET` statement.
 
 ## Shard number
 
@@ -14,13 +14,13 @@ Queries that need to be routed to a specific shard can include the shard number 
 For example, the following query will be routed to shard `1`:
 
 ```postgresql
-/* pgdog_shard: 1 */ SELECT * FROM "users" WHERE "email" = $1
+/* pgdog_shard: 1 */ SELECT * FROM users WHERE email = 'test@test.com'
 ```
 
 The comment can appear anywhere in the query, including in the beginning and at the end.
 
 !!! note
-    If you are using prepared statements, comments don't work very well. Consider using `SET` instead (see below).
+    If you are using prepared statements, comments will be treated as unique and increase the size of the statement cache by the number of shards in the cluster. If this is too memory-intensive, consider using [`SET`](#set) instead.
 
 ### `SET`
 
@@ -33,9 +33,8 @@ SET pgdog.shard TO 1;
 
 This statement must be executed inside a transaction to make sure PgDog routes only that one transaction to the specified shard.
 
-### Shard numbering scheme
-
-PgDog shards are numbered from 0 to _N - 1_, where _N_ is the total number of shards. For example, in a 3-shard system, shard `0` is the first shard while shard `2` is the third shard.
+!!! note
+    PgDog shards are numbered from 0 to _N - 1_, where _N_ is the total number of shards. For example, in a 3-shard system, shard `0` is the first shard while shard `2` is the third shard.
 
 ### Sharding key
 
@@ -49,18 +48,26 @@ PgDog will extract this value from the query and apply the [sharding function](s
 
 ```postgresql
 /* pgdog_sharding_key: 25 */
-INSERT INTO "orders" ("payment_id", "product_id")
-VALUES ($1, $2) RETURNING *;
+INSERT INTO orders (payment_id, product_id)
+VALUES (1, 2) RETURNING *;
 ```
 
-The same can be done using `SET`, inside a transaction:
+Since the sharding key has extremely high cardinality, using this method with prepared statements won't work. In that case, consider using `SET` instead:
 
 ```postgresql
 BEGIN;
 SET pgdog.sharding_key TO '25';
 ```
 
-## Usage in frameworks
+## Best practices
+
+On average, comment-based routing is best used for one-off or DDL queries, e.g., changing the schema on a particular shard or querying shard(s) ad-hoc.
+
+Simple queries are not cached by the AST cache in PgDog and require it to re-parse every single query using `pg_query`. The overhead for this operation is measurable in large queries and can impact application latency.
+
+Inside your app, consider using `SET` instead, which you can send [asynchronously](https://www.postgresql.org/docs/current/libpq-async.html).
+
+## Usage in ORMs
 
 Some web frameworks support easily adding comments to queries. For example, if you're using Rails, you can add a sharding hint to your queries like so:
 

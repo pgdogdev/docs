@@ -9,6 +9,7 @@ load balancing, healthchecks, and query routing have been battle-tested and work
 
 ## Summary
 
+Short summary of currently implemented features.
 
 | Feature | Description |
 |---------|-------------|
@@ -17,6 +18,7 @@ load balancing, healthchecks, and query routing have been battle-tested and work
 | [Transaction mode](transaction-mode.md) | Share PostgreSQL connections between thousands of clients, a necessary feature for production deployments. |
 | [Hot reload](../configuration/index.md) | Update configuration at runtime without restarting PgDog. |
 | [Sharding](sharding/index.md) | Automatic query routing and logical replication between data nodes to scale PostgreSQL horizontally. |
+| [Prepared statements](prepared-statements.md) | Support for Postgres named prepared statements. |
 | [Plugins](plugins/index.md) | Pluggable libraries to add functionality to PgDog at runtime. |
 | [Authentication](authentication.md) | Support for various PostgreSQL authentication mechanisms, like `SCRAM-SHA-256`. |
 | [Session mode](session-mode.md) | Compatibility mode with direct PostgreSQL connections. |

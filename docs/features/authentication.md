@@ -1,14 +1,45 @@
 # Authentication
 
-PostgreSQL servers support many authentication mechanisms. PgDog supports a subset of those, with the aim to support all of them over time. Since PostgreSQL 14, `SCRAM-SHA-256` is widely used to encrypt passwords and PgDog supports this algorithm for both client and server connections.
+PostgreSQL servers support many authentication mechanisms. PgDog supports a subset of those, with the aim to support all of them over time. Since PostgreSQL 14, `scram-sha-256` is widely used to encrypt passwords and PgDog supports this algorithm for both client and server connections.
 
-Authentication is **enabled** by default. Applications connecting to PgDog must provide a username and password which is [configured](../configuration/users.toml/users.md) in `users.toml`. For connecting to PostgreSQL databases,
-PgDog currently supports only `SCRAM-SHA-256`.
+Authentication is **enabled** by default. Applications connecting to PgDog must provide a username and password which is [configured](../configuration/users.toml/users.md) in `users.toml`.
+
+
+## Supported methods
+
+PgDog implements a subset of authentication methods supported by Postgres. We're continuously working on adding more. The following table summarizes which algorithms are supported for client and server connections.
+
+| Authentication method | Client connections | Server connections |
+|-|-|-|
+| `scram-sha-256` | :material-check-circle-outline: | :material-check-circle-outline: |
+| `scram-sha-256-plus` | No | No |
+| `md5` | :material-check-circle-outline: | :material-check-circle-outline: |
+| `plain` | Only for [passthrough](#passthrough-authentication) | :material-check-circle-outline: |
+| `trust` | :material-check-circle-outline: | :material-check-circle-outline: |
 
 !!! note
-    Currently, PgDog uses MD5 authentication with clients that connect over TLS.
+    Currently, PgDog uses `md5` authentication with clients that connect over TLS.
     This is due to a potential bug in our SCRAM implementation. See [issue #48](https://github.com/pgdogdev/pgdog/issues/48)
     for updates on this.
+
+### Client authentication
+
+By default, client connections will use `scram-sha-256` for password encryption during the authentication handshake. This method is secure and recommended in production. PgDog does support using others, and you can change it with configuration:
+
+```toml
+[general]
+auth_method = "scram"
+```
+
+Available options currently are:
+
+- `scram` (SCRAM-SHA-256)
+- `md5`
+- `trust` (No authentication)
+
+### Server authentication
+
+Server authentication method is controlled by PostgreSQL. PgDog will use whatever method Postgres requests during connection creation, which is configurable in [`pg_hba.conf`](https://www.postgresql.org/docs/current/auth-pg-hba-conf.html).
 
 
 ## Add users
@@ -22,7 +53,7 @@ database = "pgdog"
 password = "hunter2"
 ```
 
-PgDog will expect clients connecting as `pgdog` to provide the password `hunter2` (hashed with `SCRAM-SHA-256`), and will use the same username and password to connect to PostgreSQL.
+PgDog will expect clients connecting as `pgdog` to provide the password `hunter2` (hashed with `scram-sha-256` by default), and will use the same username and password to connect to PostgreSQL.
 
 #### Override server credentials
 
@@ -49,11 +80,16 @@ passthrough_auth = "enabled"
 
 This will require clients to send passwords in plain text. PgDog will create a connection pool for the database/user pair and the provided password. The database must exist in `pgdog.toml`.
 
-The connection pool is dynamic and will be removed when PgDog is restarted. As long as `passthrough_auth` is enabled between config changes, clients shouldn't be impacted, since connection pools will be recreated next time clients reconnect or execute a query.
+The connection pool is dynamic and will created the first time a client connects. When configuration is reloaded, the connection pool is removed. As long as `passthrough_auth` is enabled between config changes, clients won't be impacted, since connection pools will be recreated next time clients reconnect or execute a query.
 
 ### Security
 
-Sending plain text passwords over unencrypted connections isn't great, even if PgDog and Postgres are on the same local network. For this reason, `passthrough_auth = "enabled"` will only work if PgDog is configured to use TLS encryption. If you want to override this and send passwords in plain text, set `passthrough_auth` to `"enable_plain"`.
+Sending plain text passwords over unencrypted connections isn't great, even if PgDog and Postgres are on the same local network. For this reason, `passthrough_auth = "enabled"` will only work if PgDog is configured to use TLS encryption. If you want to override this and send passwords in plain text, set `passthrough_auth` to `"enabled_plain"`:
+
+```toml
+[general]
+passthrough_auth = "enabled_plain"
+```
 
 ## Password security
 

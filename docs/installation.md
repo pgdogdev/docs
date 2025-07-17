@@ -61,7 +61,7 @@ Make sure to include CMake in the installation.
 
 Since PgDog is written in Rust, make sure to install the latest version of the [compiler](https://rust-lang.org).
 
-## Build from source
+### Compile PgDog
 
 PgDog source code can be downloaded from [GitHub](https://github.com/pgdogdev/pgdog):
 
@@ -70,15 +70,21 @@ git clone https://github.com/pgdogdev/pgdog && \
 cd pgdog
 ```
 
-### Compile PgDog
-
 PgDog should be compiled in release mode to make sure you get all performance benefits. You can do this with Cargo:
 
 ```bash
 cargo build --release
 ```
 
-### Configuration
+### Launch PgDog
+
+Starting PgDog can be done by running the binary in `target/release` folder or with Cargo:
+
+```bash
+cargo run --release
+```
+
+## Configuration
 
 PgDog is [configured](configuration/index.md) via two files:
 
@@ -92,12 +98,10 @@ Both files can to be placed in the current working directory (`$PWD`) for PgDog 
 you can specify their location when starting PgDog, using the `--config` and `--users` arguments:
 
 ```bash
-./target/release/pgdog \
-    --config /path/to/pgdog.toml \
-    --users path/to/users.toml
+pgdog --config /path/to/pgdog.toml --users path/to/users.toml
 ```
 
-#### Example `pgdog.toml`
+#### `pgdog.toml`
 
 Most PgDog configuration options have sensible defaults. This allows a basic, single database configuration, to be pretty short:
 
@@ -111,10 +115,9 @@ name = "postgres"
 host = "127.0.0.1"
 ```
 
-#### Example `users.toml`
+#### `users.toml`
 
-This configuration file contains a mapping between databases, users and passwords. Users not specified in this file
-won't be able to connect to PgDog:
+This configuration file contains a mapping between databases, users and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file won't be able to connect to PgDog:
 
 ```toml
 [[users]]
@@ -123,13 +126,9 @@ database = "postgres"
 password = "hunter2"
 ```
 
-### Launch PgDog
-
-Starting PgDog can be done by running the binary in `target/release` folder or with Cargo:
-
-```bash
-cargo run --release
-```
+!!! note
+    PgDog creates connection pools for each user/database pair. If no users are specified in `users.toml`,
+    connection pools will not be created at pooler startup.
 
 ## Next steps
 

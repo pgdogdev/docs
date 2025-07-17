@@ -75,9 +75,9 @@ This assumes that all shards in the cluster have an identical schema. This is ty
     PgDog doesn't use two-phase commit so make sure your DDL
     statements are idempotent and can be retried in case of an error.
 
-### Cross-shard changes
+### Two-phase commit
 
-Currently, PgDog doesn't use 2-phase commit to synchronize changes across all shards. Support for this feature is currently being built, and will require database operators to enable [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html).
+Currently, PgDog doesn't use two-phase commit to synchronize changes across all shards. Support for this feature is currently being built, and will require database operators to enable [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html).
 
 ## Aggregates
 

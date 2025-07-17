@@ -13,15 +13,16 @@ Short summary of currently implemented features.
 
 | Feature | Description |
 |---------|-------------|
-| [Load balancer](load-balancer.md) | Distribute `SELECT` queries evenly between replicas. |
+| [Load balancer](load-balancer.md) | Distribute `SELECT` queries evenly between replicas. Separate reads from writes with a single endpoint. |
 | [Health checks](healthchecks.md) | Check databases are up and running, and can serve queries. |
 | [Transaction mode](transaction-mode.md) | Share PostgreSQL connections between thousands of clients, a necessary feature for production deployments. |
 | [Hot reload](../configuration/index.md) | Update configuration at runtime without restarting PgDog. |
 | [Sharding](sharding/index.md) | Automatic query routing and logical replication between data nodes to scale PostgreSQL horizontally. |
 | [Prepared statements](prepared-statements.md) | Support for Postgres named prepared statements. |
 | [Plugins](plugins/index.md) | Pluggable libraries to add functionality to PgDog at runtime. |
-| [Authentication](authentication.md) | Support for various PostgreSQL authentication mechanisms, like `SCRAM-SHA-256`. |
+| [Authentication](authentication.md) | Support for various PostgreSQL authentication mechanisms, like SCRAM. |
 | [Session mode](session-mode.md) | Compatibility mode with direct PostgreSQL connections. |
+| [Metrics](metrics.md) | Real time reporting, including Prometheus/OpenMetrics and admin database. |
 
 ## OS support
 

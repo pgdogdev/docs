@@ -52,9 +52,9 @@ This setting accepts almost identival values to the `sslmode` parameter used by 
 | Value | Description |
 |-|-|
 | `disable` | Don't use TLS. |
-| `prefer` | Use TLS if available, accept any certificate |
-| `verify_ca` |  Use TLS, validate the certificate provided by Postgres |
-| `verify_full` | Use TLS and validate the hostname against the certificate provided by |
+| `prefer` | Use TLS if available, accept any certificate. |
+| `verify_ca` |  Use TLS, validate the certificate provided by Postgres. |
+| `verify_full` | Use TLS and validate the hostname against the certificate provided by Postgres. |
 
 If you use `verify_ca` or `verify_full` and your certificate is not signed by a well known CA, you can configure PgDog to validate it using your own certificate chain:
 

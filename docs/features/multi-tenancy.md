@@ -56,9 +56,10 @@ The mapping is configurable separately for each tenant ID. Here, you have two op
 List-based is the most natural mapping for multitenant systems where your tenants are uniquely identified by a value. For example, using configuration, you can tell PgDog to route tenants 1, 5, and 1,000 to shard 0:
 
 ```toml
-[[sharded_mapping]]
+[[sharded_mappings]]
 database = "prod"
 column = "tenant_id"
+kind = "list"
 values = [1, 5, 1_000]
 shard = 0
 ```
@@ -70,16 +71,18 @@ You can specify as many mappings as you need and the list of values can contain 
 Range-based mapping is identical to `PARTITION BY RANGE` in Postgres and can be used creatively to separate tenants based on a range of values. For example, you can map tenants with IDs between 1 and 100 to shard 0 and everyone else to shard 1 like so:
 
 ```toml
-[[sharded_mapping]]
+[[sharded_mappings]]
 database = "prod"
 column = "tenant_id"
+kind = "range"
 start = 1
 end = 100
 shard = 0
 
-[[sharded_mapping]]
+[[sharded_mappings]]
 database = "prod"
 column = "tenant_id"
+kind = "range"
 start = 100
 shard = 0
 ```

@@ -97,9 +97,10 @@ To configure either one, you need to specify the value-to-shard mapping in the c
 ### Lists
 
 ```toml
-[[sharded_mapping]]
+[[sharded_mappings]]
 database = "prod"
 column = "tenant_id"
+kind = "list"
 values = [1, 2, 3, 4, 5]
 shard = 0
 ```
@@ -116,9 +117,10 @@ WHERE tenant_id = 4 AND user_id = 1235
 ### Range
 
 ```toml
-[[sharded_mapping]]
+[[sharded_mappings]]
 database = "prod"
 column = "tenant_id"
+kind = "range"
 start = 1
 end = 100
 shard = 0

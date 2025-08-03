@@ -17,6 +17,12 @@ pub_sub_channel_size = 4096
 
 Clients can then use Postgres pub/sub like normal. PgDog will intercept all commands and process them internally. How each command is handled is described below.
 
+
+<center>
+  <img src="/images/pub_sub.png" width="100%" height="auto" alt="Pub/sub">
+</center>
+
+
 ### `LISTEN`
 
 When PgDog receives a `LISTEN channel` command, it will register itself with Postgres on the requested channel, on the client's behalf. It does that over a dedicated server connection. If multiple clients request to listen on the same channel, PgDog will register itself only once.

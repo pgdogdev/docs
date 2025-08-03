@@ -282,6 +282,14 @@ limit will be removed.
 
 Default: **`none`** (unlimited)
 
+## Pub/sub
+
+### `pub_sub_channel_size`
+
+Enables support for [pub/sub](../../features/pub_sub.md) and configures the size of the background task queue.
+
+Default: **`none`** (disabled)
+
 ## Misc
 
 ### `mirror_queue`

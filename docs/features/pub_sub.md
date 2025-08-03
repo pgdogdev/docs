@@ -1,5 +1,8 @@
 # Pub/sub
 
+!!! note
+    This feature is still experimental.
+
 Postgres has native support for pub/sub through [`LISTEN`](https://www.postgresql.org/docs/current/sql-listen.html) and [`NOTIFY`](https://www.postgresql.org/docs/current/sql-notify.html) commands. If you're not familiar, pub/sub stands for publish/subscribe and allows
 to send and listen for arbitrary messages, in real time, by using Postgres as the message broker.
 

@@ -156,6 +156,7 @@ async function verifySnippet(snippet: Snippet): Promise<VerificationResult> {
 
   const overallSuccess = configValid || usersValid;
   if (overallSuccess) {
+    console.log(`${snippet.file}:${snippet.line} verified successfully`);
     return { success: true };
   }
 

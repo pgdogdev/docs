@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [main]
 jobs:
-  verify-toml:
+  verify-tomls:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

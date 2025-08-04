@@ -6,7 +6,5 @@ __pycache__
 .DS_Store
 
 # bun
-tests/bun/.gitignore
-tests/bun/README.md
-tests/bun/node_modules/
-tests/bun/tomls/*.toml
+ci/bun/node_modules/
+ci/bun/tmp/*.toml

@@ -6,7 +6,7 @@ const TOML_SNIPPET_REGEX = /^([ \t]*)```toml[^\n]*\r?\n([\s\S]*?)^\1```/gm;
 const DOCS_ROOT_DIRECTORY = `${process.cwd()}/docs`;
 const OUTPUT_DIRECTORY = `${process.cwd()}/tests/bun/tmp`;
 
-// const DOCKER_IMAGE = "ghcr.io/pgdogdev/pgdog:main";
+// TODO -> Remove hash when Docker image is updated
 const DOCKER_IMAGE =
   "ghcr.io/pgdogdev/pgdog:main@sha256:3036d2ac7b684643dd187c42971f003f9d76e5f54cd129dcba742c309d7debd0";
 
@@ -169,20 +169,22 @@ async function verifyConfigSnippet(snippet: Snippet): Promise<boolean> {
   const outputFilePath = `${OUTPUT_DIRECTORY}/${snippet.file}`;
   const containerFilePath = "/pgdog.toml";
 
+  const cmd = [
+    "docker",
+    "run",
+    "--rm",
+    "--entrypoint",
+    "pgdog",
+    "-v",
+    `${outputFilePath}:${containerFilePath}`,
+    DOCKER_IMAGE,
+    "configcheck",
+    "--config",
+    containerFilePath,
+  ];
+
   const result = Bun.spawnSync({
-    cmd: [
-      "docker",
-      "run",
-      "--rm",
-      "--entrypoint",
-      "pgdog",
-      "-v",
-      `${outputFilePath}:${containerFilePath}`,
-      DOCKER_IMAGE,
-      "configcheck",
-      "--config",
-      containerFilePath,
-    ],
+    cmd,
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -195,20 +197,22 @@ async function verifyUsersSnippet(snippet: Snippet): Promise<boolean> {
   const outputFilePath = `${OUTPUT_DIRECTORY}/${md5}.toml`;
   const containerFilePath = "/users.toml";
 
+  const cmd = [
+    "docker",
+    "run",
+    "--rm",
+    "--entrypoint",
+    "pgdog",
+    "-v",
+    `${outputFilePath}:${containerFilePath}`,
+    DOCKER_IMAGE,
+    "configcheck",
+    "--users",
+    containerFilePath,
+  ];
+
   const result = Bun.spawnSync({
-    cmd: [
-      "docker",
-      "run",
-      "--rm",
-      "--entrypoint",
-      "pgdog",
-      "-v",
-      `${outputFilePath}:${containerFilePath}`,
-      DOCKER_IMAGE,
-      "configcheck",
-      "--users",
-      containerFilePath,
-    ],
+    cmd,
     stdout: "pipe",
     stderr: "pipe",
   });

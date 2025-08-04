@@ -16,7 +16,7 @@ jobs:
           bun-version: latest
       - name: Install dependencies
         run: bun install
-        working-directory: tests/bun
+        working-directory: ci/bun
       - name: Run all tests
         run: bun run "ci/bun/scripts/verifyTomls.ts"
       - name: Upload log artifact

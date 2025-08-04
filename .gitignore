@@ -1,5 +1,12 @@
+# python
 venv
 site
 __pycache__
 *:Zone.Identifier
 .DS_Store
+
+# bun
+tests/bun/.gitignore
+tests/bun/README.md
+tests/bun/node_modules/
+tests/bun/tomls/*.toml

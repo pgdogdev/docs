@@ -7,6 +7,7 @@ const DOCS_ROOT_DIRECTORY = `${process.cwd()}/docs`;
 const OUTPUT_DIRECTORY = `${process.cwd()}/tests/bun/tmp`;
 
 // TODO -> Remove hash when Docker image is updated
+// const DOCKER_IMAGE = "ghcr.io/pgdogdev/pgdog:main";
 const DOCKER_IMAGE =
   "ghcr.io/pgdogdev/pgdog:main@sha256:3036d2ac7b684643dd187c42971f003f9d76e5f54cd129dcba742c309d7debd0";
 
@@ -30,18 +31,18 @@ async function main() {
   await Promise.all(snippets.map(createFileForSnippet));
 
   // Verify each snippet off the latest Docker image
-  const results = await Promise.all(snippets.map(verifySnippet));
+  for (const snippet of snippets) {
+    const result = await verifySnippet(snippet);
+
+    if (!result.success) {
+      console.error(result.errorMessage);
+      await cleanup();
+      process.exit(1);
+    }
+  }
 
   // Remove temporary files
   await cleanup();
-
-  // Exit with error code if any verification failed
-  const errors = results.filter((result) => !result.success);
-  if (errors.length > 0) {
-    console.error("Errors occurred during verification:");
-    errors.forEach((result) => console.error(`- ${result.errorMessage}`));
-    process.exit(1);
-  }
 
   // Exit with success status code
   console.log("\nAll snippets verified successfully!");
@@ -148,7 +149,6 @@ type VerificationResult =
       errorMessage: string;
     };
 
-const RETRY_INTERVAL = 2 * 60 * 1000;
 const MAX_RETRIES = 3;
 
 // The TOML snippets are either pgdog.toml or users.toml
@@ -161,27 +161,23 @@ async function verifySnippet(snippet: Snippet): Promise<VerificationResult> {
   while (attempts < MAX_RETRIES) {
     attempts++;
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
+    const configValid = await verifyConfigSnippet(snippet);
+
+    if (configValid) {
       console.log(
-        `Could not verify ${snippet.file}:${snippet.line} within two minutes... retrying`,
+        `${snippet.file}:${snippet.line} is a valid pgdog.toml snippet`,
       );
-    }, RETRY_INTERVAL);
-
-    const [configValid, usersValid] = await Promise.all([
-      verifyConfigSnippet(snippet, controller),
-      verifyUsersSnippet(snippet, controller),
-    ]).catch(() => [false, false]);
-
-    clearTimeout(timeoutId);
-
-    if (configValid || usersValid) {
-      console.log(`${snippet.file}:${snippet.line} verified successfully`);
       return { success: true };
     }
 
-    await sleep(RETRY_INTERVAL);
+    const usersValid = await verifyUsersSnippet(snippet);
+
+    if (usersValid) {
+      console.log(
+        `${snippet.file}:${snippet.line} is a valid users.toml snippet`,
+      );
+      return { success: true };
+    }
   }
 
   return {
@@ -190,10 +186,7 @@ async function verifySnippet(snippet: Snippet): Promise<VerificationResult> {
   };
 }
 
-async function verifyConfigSnippet(
-  snippet: Snippet,
-  abortController: AbortController,
-): Promise<boolean> {
+async function verifyConfigSnippet(snippet: Snippet): Promise<boolean> {
   const outputFilePath = `${OUTPUT_DIRECTORY}/${snippet.file}`;
   const containerFilePath = "/pgdog.toml";
 
@@ -215,16 +208,12 @@ async function verifyConfigSnippet(
     cmd,
     stdout: "pipe",
     stderr: "pipe",
-    signal: abortController.signal,
   });
 
   return result.success;
 }
 
-async function verifyUsersSnippet(
-  snippet: Snippet,
-  abortController: AbortController,
-): Promise<boolean> {
+async function verifyUsersSnippet(snippet: Snippet): Promise<boolean> {
   const md5 = hash(snippet);
   const outputFilePath = `${OUTPUT_DIRECTORY}/${md5}.toml`;
   const containerFilePath = "/users.toml";
@@ -247,7 +236,6 @@ async function verifyUsersSnippet(
     cmd,
     stdout: "pipe",
     stderr: "pipe",
-    signal: abortController.signal,
   });
 
   return result.success;

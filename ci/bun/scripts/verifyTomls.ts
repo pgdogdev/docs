@@ -44,7 +44,7 @@ async function main() {
   }
 
   // Exit with success status code
-  console.log("All snippets verified successfully!");
+  console.log("\nAll snippets verified successfully!");
   process.exit(0);
 }
 
@@ -148,15 +148,40 @@ type VerificationResult =
       errorMessage: string;
     };
 
-async function verifySnippet(snippet: Snippet): Promise<VerificationResult> {
-  // The TOML snippets are either pgdog.toml or users.toml
-  // We don't annotate the config type so we need to check for both.
-  const configValid = await verifyConfigSnippet(snippet);
-  const usersValid = await verifyUsersSnippet(snippet);
+const RETRY_INTERVAL = 2 * 60 * 1000;
+const MAX_RETRIES = 3;
 
-  const overallSuccess = configValid || usersValid;
-  if (overallSuccess) {
-    return { success: true };
+// The TOML snippets are either pgdog.toml or users.toml
+// We don't annotate the config type so we need to check for both.
+// Retries every two minutes because the script occasionally fails. No idea why.
+// The GitHub job will die after 10 minutes so we don't need an exponential backoff.
+async function verifySnippet(snippet: Snippet): Promise<VerificationResult> {
+  let attempts = 0;
+
+  while (attempts < MAX_RETRIES) {
+    attempts++;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+      console.log(
+        `Could not verify ${snippet.file}:${snippet.line} within two minutes... retrying`,
+      );
+    }, RETRY_INTERVAL);
+
+    const [configValid, usersValid] = await Promise.all([
+      verifyConfigSnippet(snippet, controller),
+      verifyUsersSnippet(snippet, controller),
+    ]).catch(() => [false, false]);
+
+    clearTimeout(timeoutId);
+
+    if (configValid || usersValid) {
+      console.log(`${snippet.file}:${snippet.line} verified successfully`);
+      return { success: true };
+    }
+
+    await sleep(RETRY_INTERVAL);
   }
 
   return {
@@ -165,7 +190,10 @@ async function verifySnippet(snippet: Snippet): Promise<VerificationResult> {
   };
 }
 
-async function verifyConfigSnippet(snippet: Snippet): Promise<boolean> {
+async function verifyConfigSnippet(
+  snippet: Snippet,
+  abortController: AbortController,
+): Promise<boolean> {
   const outputFilePath = `${OUTPUT_DIRECTORY}/${snippet.file}`;
   const containerFilePath = "/pgdog.toml";
 
@@ -187,12 +215,16 @@ async function verifyConfigSnippet(snippet: Snippet): Promise<boolean> {
     cmd,
     stdout: "pipe",
     stderr: "pipe",
+    signal: abortController.signal,
   });
 
   return result.success;
 }
 
-async function verifyUsersSnippet(snippet: Snippet): Promise<boolean> {
+async function verifyUsersSnippet(
+  snippet: Snippet,
+  abortController: AbortController,
+): Promise<boolean> {
   const md5 = hash(snippet);
   const outputFilePath = `${OUTPUT_DIRECTORY}/${md5}.toml`;
   const containerFilePath = "/users.toml";
@@ -215,9 +247,16 @@ async function verifyUsersSnippet(snippet: Snippet): Promise<boolean> {
     cmd,
     stdout: "pipe",
     stderr: "pipe",
+    signal: abortController.signal,
   });
 
   return result.success;
+}
+
+// -----------------------------------------------------------------------------
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // -----------------------------------------------------------------------------

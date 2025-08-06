@@ -242,10 +242,4 @@ async function verifyUsersSnippet(snippet: Snippet): Promise<boolean> {
 }
 
 // -----------------------------------------------------------------------------
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-// -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------

@@ -22,11 +22,12 @@ jobs:
         working-directory: ci/bun
 
       - name: Collect snippets
-        run: bun run "ci/bun/scripts/collectSnippets.ts"
-        working-directory: ci/bun
+        run: bun run collectSnippets.ts
+        working-directory: ci/bun/scripts
 
       - name: Verify snippets
-        run: bash ci/bash/verify_snippets.bash
+        run: bash verify_snippets.bash
+        working-directory: ci/bash
 
       - name: Upload log artifact
         if: always()

@@ -290,10 +290,16 @@ Enables support for [pub/sub](../../features/pub_sub.md) and configures the size
 
 Default: **`none`** (disabled)
 
-## Misc
+## Mirroring
 
 ### `mirror_queue`
 
-Size of requests that can wait while the mirror database processes other requests. Increase this to lose less traffic while replaying, in case the mirror database is slower than production.
+How many transactions can wait while the mirror database processes previous requests. Increase this to lose less traffic while replaying, in case the mirror database is slower than production.
 
-Default: **128**
+Default: **`128`**
+
+### `mirror_exposure`
+
+How many transactions to send to the mirror as a fraction of regular traffic. Acceptable value is a floating point number between 0.0 (0%) and 1.0 (100%).
+
+Default: **`1.0`**

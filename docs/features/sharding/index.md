@@ -36,7 +36,7 @@ If direct-to-shard queries are desired but the query doesn't have enough informa
 
 PgDog's most impressive feature is its ability to shard existing databases. The migration process uses logical replication and can be done without taking databases offline for maintenance.
 
-[**→ Sharding existing databases**](existing.md)
+[**→ Sharding existing databases**](resharding/index.md)
 
 
 

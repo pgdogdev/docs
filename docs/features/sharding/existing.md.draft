@@ -1,3 +1,5 @@
+
+
 # Existing databases
 
 PgDog was built with the goal of sharding databases without downtime. It uses logical replication in the background to move (and shard) data between nodes. The base case for this process is a 1 shard database, i.e. an "unsharded" database.

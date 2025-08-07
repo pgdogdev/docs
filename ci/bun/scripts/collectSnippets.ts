@@ -4,11 +4,7 @@
 const TOML_SNIPPET_REGEX = /^([ \t]*)```toml[^\n]*\r?\n([\s\S]*?)^\1```/gm;
 
 const DOCS_ROOT_DIRECTORY = `${process.cwd()}/docs`;
-const OUTPUT_DIRECTORY = `${process.cwd()}/tests/bun/tmp`;
-
-// TODO -> Remove hash when Docker image is updated
-const DOCKER_IMAGE =
-  "ghcr.io/pgdogdev/pgdog:main@sha256:3036d2ac7b684643dd187c42971f003f9d76e5f54cd129dcba742c309d7debd0";
+const OUTPUT_DIRECTORY = `${process.cwd()}/ci/tmp`;
 
 const SnippetsByMd5 = new Map<string, Snippet>();
 
@@ -28,24 +24,6 @@ async function main() {
 
   // Create one temporary {md5}.toml file for each snippet
   await Promise.all(snippets.map(createFileForSnippet));
-
-  // Verify each snippet off the latest Docker image
-  const results = await Promise.all(snippets.map(verifySnippet));
-
-  // Remove temporary files
-  await cleanup();
-
-  // Exit with error code if any verification failed
-  const errors = results.filter((result) => !result.success);
-  if (errors.length > 0) {
-    console.error("Errors occurred during verification:");
-    errors.forEach((result) => console.error(`- ${result.errorMessage}`));
-    process.exit(1);
-  }
-
-  // Exit with success status code
-  console.log("All snippets verified successfully!");
-  process.exit(0);
 }
 
 // -----------------------------------------------------------------------------
@@ -124,101 +102,29 @@ async function setup() {
 
 // -----------------------------------------------------------------------------
 
-async function cleanup() {
-  await Bun.$`rm -rf ${OUTPUT_DIRECTORY}`.nothrow();
-}
-
-// -----------------------------------------------------------------------------
-
 async function createFileForSnippet(snippet: Snippet) {
+  const prefix = guessType(snippet.content);
   const md5 = hash(snippet);
-  const filename = `${md5}.toml`;
+  const filename = `${prefix}_${md5}.toml`;
   const outputFilePath = `${OUTPUT_DIRECTORY}/${filename}`;
 
-  // Write snippet content with trailing newline
-  await Bun.write(outputFilePath, `${snippet.content}\n`);
+  const content = [
+    `# file: ${snippet.file}`,
+    `# line_number: ${snippet.line}`,
+    "",
+    `${snippet.content}`,
+    "",
+  ].join("\n");
+
+  await Bun.write(outputFilePath, content);
 }
 
 // -----------------------------------------------------------------------------
 
-type VerificationResult =
-  | { success: true }
-  | {
-      success: false;
-      errorMessage: string;
-    };
+type ConfigOrUsers = "config" | "users";
 
-async function verifySnippet(snippet: Snippet): Promise<VerificationResult> {
-  // The TOML snippets are either pgdog.toml or users.toml
-  // We don't annotate the config type so we need to check for both.
-  const configValid = await verifyConfigSnippet(snippet);
-  const usersValid = await verifyUsersSnippet(snippet);
-
-  const overallSuccess = configValid || usersValid;
-  if (overallSuccess) {
-    console.log(`${snippet.file}:${snippet.line} verified successfully`);
-    return { success: true };
-  }
-
-  return {
-    success: false,
-    errorMessage: `Validation failed for ${snippet?.file ?? "unknown"}:${snippet?.line ?? "?"}`,
-  };
-}
-
-async function verifyConfigSnippet(snippet: Snippet): Promise<boolean> {
-  const outputFilePath = `${OUTPUT_DIRECTORY}/${snippet.file}`;
-  const containerFilePath = "/pgdog.toml";
-
-  const cmd = [
-    "docker",
-    "run",
-    "--rm",
-    "--entrypoint",
-    "pgdog",
-    "-v",
-    `${outputFilePath}:${containerFilePath}`,
-    DOCKER_IMAGE,
-    "configcheck",
-    "--config",
-    containerFilePath,
-  ];
-
-  const result = Bun.spawnSync({
-    cmd,
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-
-  return result.success;
-}
-
-async function verifyUsersSnippet(snippet: Snippet): Promise<boolean> {
-  const md5 = hash(snippet);
-  const outputFilePath = `${OUTPUT_DIRECTORY}/${md5}.toml`;
-  const containerFilePath = "/users.toml";
-
-  const cmd = [
-    "docker",
-    "run",
-    "--rm",
-    "--entrypoint",
-    "pgdog",
-    "-v",
-    `${outputFilePath}:${containerFilePath}`,
-    DOCKER_IMAGE,
-    "configcheck",
-    "--users",
-    containerFilePath,
-  ];
-
-  const result = Bun.spawnSync({
-    cmd,
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-
-  return result.success;
+function guessType(snippetContent: string): ConfigOrUsers {
+  return snippetContent.includes("[[users]]") ? "users" : "config";
 }
 
 // -----------------------------------------------------------------------------

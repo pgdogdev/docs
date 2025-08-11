@@ -17,7 +17,7 @@ The admin database isn't 100% compatible with PgBouncer. We have additional fiel
 
 ## Sharding
 
-Sharding is a novel feature not available in other connection poolers. We've added a "dry run" mode to allow you to experiment with it in production, without changing how your databases work.
+Sharding is a novel feature not available in other connection poolers. We've added a ["dry run" mode](features/sharding/dry-run.md) to allow you to experiment with it in production, without changing how your databases work.
 
 In dry run mode, PgDog will parse every single query and record the decision of its query router in an admin view. You can see, in real time, how many queries would go to a single shard (vs. cross-shard), by querying that view:
 

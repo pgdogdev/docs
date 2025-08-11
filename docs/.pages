@@ -3,5 +3,7 @@ nav:
   - 'installation.md'
   - 'features'
   - 'configuration'
+  - 'administration'
+  - 'architecture'
   - '...'
   - 'about.md'

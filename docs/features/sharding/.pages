@@ -6,4 +6,5 @@ nav:
   - 'cross-shard.md'
   - 'sharding-functions.md'
   - 'copy.md'
+  - 'resharding'
   - '...'

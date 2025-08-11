@@ -303,3 +303,11 @@ Default: **`128`**
 How many transactions to send to the mirror as a fraction of regular traffic. Acceptable value is a floating point number between 0.0 (0%) and 1.0 (100%).
 
 Default: **`1.0`**
+
+## Sharding
+
+### `dry_run`
+
+Enable the query parser in single-shard deployments and record its decisions. Can be used to test compatibility with a future sharded deployment, in production. Routing decisions are available in the query cache, visible by running `SHOW QUERY_CACHE` in the [admin](../administration/index.md) database.
+
+Default: **`false`** (disabled)

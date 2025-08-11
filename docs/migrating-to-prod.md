@@ -22,5 +22,5 @@ Sharding is a novel feature not available in other connection poolers. We've add
 In dry run mode, PgDog will parse every single query and record the decision of its query router in an admin view. You can see, in real time, how many queries would go to a single shard (vs. cross-shard), by querying that view:
 
 ```
-SHOW QUERY_CACHE:
+SHOW QUERY_CACHE;
 ```

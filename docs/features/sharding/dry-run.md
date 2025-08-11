@@ -1,6 +1,6 @@
 # Dry run mode
 
-In dry run mode, PgDog will parse every single query and record the routing decision in the [admin database](../../administration/index.md). If you're experimenting with sharding, this allows you to test the compatibility of your application, without resharding data in production.
+In dry run mode, PgDog will parse every single query and record the routing decision in the [admin database](../../administration/index.md). If you're experimenting with sharding, this allows you to test the compatibility of your application without resharding data in production.
 
 ## How it works
 
@@ -31,6 +31,6 @@ SHOW QUERY_CACHE;
 
 ### Performance impact
 
-Since parsing queries isn't free, there is a small performance impact for enabling dry run mode. If your clients are using prepared statements, `pg_query` outputs will be cached and the same statements from this or other clients will not be parsed again. The cache is quite quick, so the impact of sharding at the pooler is minimal.
+Since parsing queries isn't free, there is a small performance impact when enabling dry run mode. If your clients are using prepared statements, `pg_query` outputs will be cached and the same statements from this or other clients will not be parsed again. The cache is quite fast, so the impact of query parsing is minimal.
 
 If your client is using the simple protocol, i.e., stores parameter values directly in the SQL, PgDog is unable to take advantage of its cache. Each query will have different parameters, and is, effectively, unique. Therefore, the query has to be "normalized" (parameter values replaced with placeholders, e.g., `$1`) before the query router decision can be recorded. This is done automatically and has an additional performance impact.

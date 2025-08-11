@@ -308,6 +308,6 @@ Default: **`1.0`**
 
 ### `dry_run`
 
-Enable the query parser in single-shard deployments and record its decisions. Can be used to test compatibility with a future sharded deployment, in production. Routing decisions are available in the query cache, visible by running `SHOW QUERY_CACHE` in the [admin](../administration/index.md) database.
+Enable the query parser in single-shard deployments and record its decisions. Can be used to test compatibility with a future sharded deployment in production. Routing decisions are available in the query cache, visible by running `SHOW QUERY_CACHE` in the [admin](../../administration/index.md) database. See [dry run mode](../../features/sharding/dry-run.md) for more details.
 
 Default: **`false`** (disabled)

@@ -1,11 +1,6 @@
 # Plugin settings
 
-!!! warning
-    Plugins are not currently supported anymore. We will pick them up again if there is more interest
-    from the community.
-
-[Plugins](../../features/plugins/index.md) are dynamically loaded at pooler startup. These settings control which plugins are loaded. In the future, more
-options will be available to configure plugin behavior.
+[Plugins](../../features/plugins/index.md) are dynamically loaded at PgDog startup. These settings control which plugins are loaded.
 
 Plugins are a TOML list, so for each plugin you want to enable, add a `[[plugins]]` entry to `pgdog.toml`. For example:
 
@@ -24,4 +19,12 @@ name = "alice_router"
 ### **`name`**
 
 Name of the plugin to load. This is used by PgDog to look up the shared library object in [`LD_LIBRARY_PATH`](https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html). For example, if your plugin
-name is `router`, PgDog will look for `librouter.so` on Linux, `librouter.dll` on Windows and `librouter.dylib` on Mac OS.
+name is `router`, PgDog will look for `librouter.so` on Linux, `librouter.dll` on Windows, and `librouter.dylib` on Mac OS.
+
+Additionally, you can pass the relative or absolute path to the shared library itself:
+
+```toml
+name = "/opt/plugins/librouter.so"
+```
+
+Make sure the user running PgDog has read & execute permissions on the library.

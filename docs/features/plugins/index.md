@@ -165,6 +165,12 @@ Unlike C, the Rust language doesn't have a stable ABI. Therefore, additional car
 
 Whatever Rust compiler version is used to build PgDog itself needs to be used to build the plugins. This is checked at runtime and plugins that don't follow this requirement are **not loaded**.
 
+PgDog provides the compiler version used tom build it at startup:
+
+```
+INFO pgdog: 🐕 PgDog vd4e9bc6 (rustc 1.89.0 (29483883e 2025-08-04))
+```
+
 #### `pg_query` version
 
 Since we're passing the AST itself down to the plugins, we need to make sure that the versions of the `pg_query` library used by PgDog and the plugin are the same. This is done automatically if you're using the primitives exported by the `pgdog-plugin` crate:

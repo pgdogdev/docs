@@ -33,10 +33,6 @@ You can connect to the admin database using any PostgreSQL client. It supports c
 
 ## OpenMetrics
 
-!!! note
-    OpenMetrics suppport is currently a work in progress. Some metrics are missing.
-    Progress will be reported in GitHub: [issue #70](https://github.com/pgdogdev/pgdog/issues/70).
-
 [OpenMetrics](https://openmetrics.io/) is a standard for displaying metrics that can be ingested by a multitude of agents, e.g., Datadog, Prometheus, etc.
 
 The endpoint is disabled by default. You can enable it by configuring which port it should run on:

@@ -168,7 +168,7 @@ Whatever Rust compiler version is used to build PgDog itself needs to be used to
 PgDog provides the compiler version used to build it at startup:
 
 ```
-INFO pgdog: 🐕 PgDog vd4e9bc6 (rustc 1.89.0 (29483883e 2025-08-04))
+INFO: 🐕 PgDog vd4e9bc6 (rustc 1.89.0 (29483883e 2025-08-04))
 ```
 
 #### `pg_query` version

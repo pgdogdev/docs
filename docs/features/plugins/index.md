@@ -5,6 +5,15 @@ PgDog comes with a powerful plugin system that allows you to customize the query
 
 ## Getting started
 
+#### Rust compiler
+Our plugins use the newest features of the Rust compiler. Before proceeding, make sure to update yours to the latest version:
+
+```
+rustup update
+```
+
+#### Building a plugin
+
 PgDog plugins are Rust libraries. To create a plugin, first create a project with Cargo:
 
 ```

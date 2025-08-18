@@ -165,7 +165,7 @@ Unlike C, the Rust language doesn't have a stable ABI. Therefore, additional car
 
 Whatever Rust compiler version is used to build PgDog itself needs to be used to build the plugins. This is checked at runtime and plugins that don't follow this requirement are **not loaded**.
 
-PgDog provides the compiler version used tom build it at startup:
+PgDog provides the compiler version used to build it at startup:
 
 ```
 INFO pgdog: 🐕 PgDog vd4e9bc6 (rustc 1.89.0 (29483883e 2025-08-04))

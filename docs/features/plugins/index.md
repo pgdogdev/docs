@@ -102,6 +102,7 @@ The [`Context`](https://docsrs.pgdog.dev/pgdog_plugin/context/struct.Context.htm
 - Number of shards in the database cluster
 - Does the cluster have replicas
 - The Abstract Syntax Tree (AST) of the statement, parsed by `pg_query`
+- Parameter values, if statement is prepared
 
 
 #### Outputs
@@ -110,8 +111,9 @@ The plugin is expected to return a [`Route`](https://docsrs.pgdog.dev/pgdog_plug
 
 - Which shard(s) to send the query to
 - Is the query a read or a write, sending it to a replica or the primary, respectively
+- Should the query be blocked from executing
 
-Both of these are optional. If you don't return either one, the plugin doesn't influence the routing decision at all and can be used for logging queries, or some other purpose.
+All of these are optional. If you don't return either one, the plugin doesn't influence the routing decision at all and can be used for logging queries, or some other purpose.
 
 
 

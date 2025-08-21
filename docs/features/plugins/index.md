@@ -166,7 +166,7 @@ Rust plugins can do anything. There is no virtualization layer or checks on thei
 
 This is intentional. We don't want to limit what you can do inside plugins nor are we there to tell you what you shouldn't be doing. It's your data stack, and you're the owner.
 
-An additional benefit of using Rust is: plugins are very fast! If written correctly, they will have minimal to no latency impact of your database.
+An additional benefit of using Rust is: plugins are very fast! If written correctly, they will have minimal to no latency impact on your database.
 
 ### Rust/C ABI
 

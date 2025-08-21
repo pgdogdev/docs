@@ -30,6 +30,9 @@ host = "10.0.2.25"
 mirror_of = "prod"
 ```
 
+!!! note
+    Mirrored databases are, underneath, regular connection pools and require a user & password configured in `users.toml`. PgDog will use those settings to connect to the mirror database and forward queries.
+
 You can connect to the mirror database like any other. The same connection pool will be used for mirrored queries. Production database connection pool will not be affected, since all replication happens in a background.
 
 Each client connected to the main database has its own queue, so concurrency scales linearly with the number of clients.

@@ -1,0 +1,7 @@
+nav:
+    - 'index.md'
+    - 'clients.md'
+    - 'config.md'
+    - 'pools.md'
+    - 'servers.md'
+    - '...'

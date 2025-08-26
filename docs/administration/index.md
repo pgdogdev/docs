@@ -25,6 +25,7 @@ The admin database name is [configurable](../configuration/pgdog.toml/admin.md).
 | `RESUME` | Resume all pools. Clients are able to check out connections again. |
 | `SHOW PREPARED` | List prepared statements currently in the cache. |
 | `SHOW QUERY_CACHE` | List statements currently in the AST cache used for query routing. |
+| [`MAINTENANCE`](maintenance_mode.md) | Pause all queries to synchronize configuration changes across multiple instances of PgDog. |
 
 ## Shutting down PgDog
 

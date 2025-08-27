@@ -3,17 +3,16 @@
 
 ## Kubernetes
 
-PgDog comes with its own [Helm chart](https://github.com/pgdogdev/helm). You can install it from git:
+PgDog comes with its own [Helm chart](https://github.com/pgdogdev/helm). You can install it directly from our chart repository:
 
 ```bash
-git clone https://github.com/pgdogdev/helm pgdog-helm && \
-cd pgdog-helm &&
-helm install -f values.yaml pgdog ./
+helm repo add pgdogdev https://helm.pgdog.dev
+helm install pgdog pgdogdev/pgdog
 ```
 
 ## Docker
 
-Docker images are built automatically for each commit in GitHub. You can fetch them directly from the [repository](https://github.com/pgdogdev/pgdog/pkgs/container/pgdog):
+Docker images are built automatically for each commit to the `main` branch in [GitHub](https://github.com/pgdogdev/pgdog/pkgs/container/pgdog):
 
 ```bash
 docker run ghcr.io/pgdogdev/pgdog:main
@@ -21,56 +20,55 @@ docker run ghcr.io/pgdogdev/pgdog:main
 
 ## From source
 
-PgDog is easily compiled from source. For production deployments, a `Dockerfile` is provided in the [repository](https://github.com/pgdogdev/pgdog/tree/main/Dockerfile). If you prefer to deploy on bare metal or you're looking to run PgDog locally, you'll need to install a few dependencies.
+PgDog can be easily compiled from source. For production deployments, a `Dockerfile` is provided in [GitHub](https://github.com/pgdogdev/pgdog/tree/main/Dockerfile). If you prefer to deploy on bare metal or you're looking to run PgDog locally, you'll need to install a few dependencies.
 
 ### Dependencies
 
 Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make sure to have a working version of a C/C++ compiler installed.
 
-#### Mac OS
+=== "Mac OS"
+    Install [XCode](https://developer.apple.com/xcode/) from the App Store and CMake & Clang from brew:
 
-Install [XCode](https://developer.apple.com/xcode/) from the App Store and CMake from brew:
+    ```bash
+    brew install cmake llvm
+    ```
 
-```bash
-brew install cmake
-```
+=== "Ubuntu"
 
-#### Ubuntu
+    Install Clang and CMake:
 
-Install Clang and CMake:
+    ```bash
+    sudo apt update && \
+    apt install -y cmake clang curl pkg-config libssl-dev git build-essential
+    ```
 
-```bash
-sudo apt update && \
-apt install -y cmake clang curl pkg-config libssl-dev git build-essential
-```
+=== "Arch"
 
-#### Arch Linux
+    Install Clang and CMake:
 
-Install Clang and CMake:
+    ```bash
+    sudo pacman -Syu base-devel clang cmake git
+    ```
 
-```bash
-sudo pacman -Syu base-devel clang cmake git
-```
+=== "Windows"
 
-#### Windows
+    Install [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/).
+    Make sure to include CMake in the installation.
 
-Install [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/).
-Make sure to include CMake in the installation.
+#### Rust compiler
 
-### Rust compiler
-
-Since PgDog is written in Rust, make sure to install the latest version of the [compiler](https://rust-lang.org).
+PgDog is written in Rust and uses the latest stable features of the language. Make sure to install the newest version of the toolchain from [rust-lang.org](https://rust-lang.org).
 
 ### Compile PgDog
 
-PgDog source code can be downloaded from [GitHub](https://github.com/pgdogdev/pgdog):
+Clone the code from our GitHub repository:
 
 ```bash
 git clone https://github.com/pgdogdev/pgdog && \
 cd pgdog
 ```
 
-PgDog should be compiled in release mode to make sure you get all performance benefits. You can do this with Cargo:
+To make sure you get all performance benefits, PgDog should be compiled in release mode:
 
 ```bash
 cargo build --release
@@ -78,7 +76,7 @@ cargo build --release
 
 ### Launch PgDog
 
-Starting PgDog can be done by running the binary in `target/release` folder or with Cargo:
+You can start PgDog by running the binary directly, located in `target/release/pgdog`, or with Cargo:
 
 ```bash
 cargo run --release
@@ -86,30 +84,29 @@ cargo run --release
 
 ## Configuration
 
-PgDog is [configured](configuration/index.md) via two files:
+PgDog is configured via 2 files:
 
-* [`pgdog.toml`](configuration/index.md) which contains general pooler settings and PostgreSQL server information
-* [`users.toml`](configuration/users.toml/users.md) which contains passwords for users allowed to connect to the pooler
+| Configuration file | Description |
+|-|-|
+| [pgdog.toml](configuration/index.md) | Contains general settings and info about PostgreSQL servers. |
+| [users.toml](configuration/users.toml/users.md) | Contains users and passwords that are allowed to connect to PgDog. |
 
-The passwords are stored in a separate file to simplify deployments in environments where
-secrets can be safely encrypted, like Kubernetes or AWS EC2.
+Users are configured separately to allow them to be encrypted at rest in environments that support it, like in Kubernetes or with the AWS Secrets Manager.
 
-Both files can to be placed in the current working directory (`$PWD`) for PgDog to detect them. Alternatively,
-you can specify their location when starting PgDog, using the `--config` and `--users` arguments:
+Both config files should to be placed in the current working directory (`$PWD`) for PgDog to detect them. Alternatively,
+you can pass their paths at startup as arguments:
 
 ```bash
-pgdog --config /path/to/pgdog.toml --users path/to/users.toml
+pgdog \
+    --config /path/to/pgdog.toml \
+    --users path/to/users.toml
 ```
 
-#### `pgdog.toml`
+#### pgdog.toml
 
-Most PgDog configuration options have sensible defaults. This allows a basic, single database configuration, to be pretty short:
+Most configuration options have sensible defaults. This makes single database configuration pretty short:
 
 ```toml
-[general]
-host = "0.0.0.0"
-port = 6432
-
 [[databases]]
 name = "postgres"
 host = "127.0.0.1"
@@ -117,7 +114,7 @@ host = "127.0.0.1"
 
 #### `users.toml`
 
-This configuration file contains a mapping between databases, users and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file won't be able to connect to PgDog:
+This config file contains a mapping between databases, users and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file won't be able to connect:
 
 ```toml
 [[users]]
@@ -127,8 +124,9 @@ password = "hunter2"
 ```
 
 !!! note
+
     PgDog creates connection pools for each user/database pair. If no users are specified in `users.toml`,
-    connection pools will not be created at pooler startup.
+    all connection pools will be disabled and connections to Postgres will not be created.
 
 ## Next steps
 

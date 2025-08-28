@@ -22,7 +22,7 @@ When sharding hints are not present in a query, either accidentally or on purpos
 
 ### Manual routing
 
-If direct-to-shard queries are desired but the query doesn't have enough information to extract this information automatically, clients can specify which to which shard PgDog should route the query.
+If direct-to-shard queries are desired but the query doesn't have enough information to extract this information automatically, clients can specify to which shard PgDog should route the query.
 
 [**→ Manual routing**](manual-routing.md)
 

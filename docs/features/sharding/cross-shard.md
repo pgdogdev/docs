@@ -43,7 +43,7 @@ to values in `DataRow`[^1] messages based on their position in the `RowDescripti
 
 For example, if the query specifies `ORDER BY id ASC, email DESC`, both `id` and `email` columns will be present in the `RowDescription` message along with their data types and locations in `DataRow`[^1] messages.
 
-The rows are received asynchronously  as the query is executing on the shards. Once the messages are buffered, PgDog will sort them using the extracted column values and return the sorted result to the client.
+The rows are received asynchronously as the query is executing on the shards. Once the messages are buffered, PgDog will sort them using the extracted column values and return the sorted result to the client.
 
 #### Example
 
@@ -117,7 +117,7 @@ GROUP BY email;
 
 ## Supported data types
 
-Processing results in PgDog requires it to parse Postgres data types from the wire protocol. Postgres supports many data types and PgDog, currently, can only handle a some of them. Clients can request results to be encoded in either `text` or `binary` encoding and supporting both requires special handling as well.
+Processing results in PgDog requires it to parse Postgres data types from the wire protocol. Postgres supports many data types and PgDog, currently, can only handle some of them. Clients can request results to be encoded in either `text` or `binary` encoding and supporting both requires special handling as well.
 
 | Data type | Sorting | Aggregation | Text format | Binary format |
 |-|-|-|-|-|

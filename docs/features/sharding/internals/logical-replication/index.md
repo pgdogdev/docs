@@ -1,6 +1,6 @@
 # Logical replication overview
 
-One of PgDog's most interested features is its ability to interpret the logical replication protocol used by Postgres to synchronize replicas. This allows PgDog to reroute data depending on which shard it should go to in a sharded cluster. Since logical replication is streaming data in real time, PgDog can move data between shards invisibly to the client and without database downtime.
+One of PgDog's most interesting features is its ability to interpret the logical replication protocol used by Postgres to synchronize replicas. This allows PgDog to reroute data depending on which shard it should go to in a sharded cluster. Since logical replication is streaming data in real time, PgDog can move data between shards invisibly to the client and without database downtime.
 
 ## Logical replication internals
 

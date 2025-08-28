@@ -1,43 +1,42 @@
 ---
 next_steps:
-  - ["Health checks", "/features/healthchecks/", "Learn how PgDog ensures only healthy databases serve read queries."]
+  - ["Health checks", "/features/healthchecks/", "Learn how PgDog ensures only healthy databases are allowed to serve read queries."]
 ---
 
 # Load balancer overview
 
 PgDog operates at the application layer (OSI Level 7) and is capable of load balancing queries across
-multiple PostgreSQL replicas.
+multiple PostgreSQL replicas. This allows applications to connect to a single endpoint and spread traffic evenly between multiple databases.
 
 ## How it works
 
-When a query is sent to PgDog, it inspects it using a SQL parser. If the query is a read and PgDog configuration contains multiple databases, it will send that query to one of the replicas, spreading the query load evenly between all instances in the cluster.
+When a query is sent to PgDog, it inspects it using a SQL parser. If the query is a read and the configuration contains multiple databases, it will send that query to one of the replicas. This spreads the query load evenly between all database instances in the cluster.
 
-If the configuration contains the primary as well, PgDog will separate writes from reads and send writes to the primary, without requiring any application changes.
+If the config contains a primary, PgDog will split write queries from read queries and send writes to the primary, without requiring any application changes.
 
 <center>
   <img src="/images/replicas.png" width="60%" alt="Load balancer" />
 </center>
 
-### Strategies
+### Algorithms
 
-The PgDog load balancer is configurable and can route queries
-using one of several strategies:
+The load balancer is configurable and can route queries using one of the following strategies:
 
 * Random (default)
 * Least active connections
 * Round robin
 
-Choosing a strategy depends on your query workload and the size of replica databases. Each strategy has its pros and cons. If you're not sure, using the **random** strategy is usually good enough
+Choosing the right strategy depends on your query workload and the size of replica databases. Each strategy has its pros and cons. If you're not sure, using the **random** strategy is usually good enough
 for most deployments.
 
 
 #### Random
 
-Queries are sent to a database based using a random number generator modulus the number of replicas in the pool.
+Queries are routed to a database based on a random number generator modulus the number of replicas in the pool.
 This strategy is the simplest to understand and often effective at splitting traffic evenly across the cluster. It's unbiased
-and assumes nothing about available resources or query performance.
+and assumes nothing about available resources or individual query performance.
 
-This strategy is used by **default**.
+This algorithm is used by **default**.
 
 ##### Configuration
 
@@ -48,11 +47,10 @@ load_balancer_strategy = "random"
 
 #### Least active connections
 
-PgDog keeps track of how many active connections each database has and can route queries to databases
-which are least busy executing requests. This allows to "bin pack" the cluster based on how seemingly active
-(or inactive) the databases are.
+PgDog keeps track of how many connections are active in each database and can route queries to databases
+which are less busy. This allows to "bin pack" the cluster with workload.
 
-This strategy is useful when all databases have identical resources and all queries have roughly the same
+This algorithm is useful when all databases have identical resources and all queries have roughly the same
 cost and runtime.
 
 ##### Configuration
@@ -64,11 +62,11 @@ load_balancer_strategy = "least_active_connections"
 
 #### Round robin
 
-This strategy is often used in HTTP load balancers, like nginx, to route requests to hosts in the
-same order they appear in the configuration. Each database receives exactly one query before the next
+This strategy is often used in HTTP load balancers (e.g., like nginx) to route requests to hosts in the
+same order as they appear in the configuration. Each database receives exactly one query before the next
 one is used.
 
-This strategy makes the same assumptions as [least active connections](#least-active-connections), except it makes no attempt to bin pack the cluster with workload, and distributes queries evenly.
+This algorithm makes the same assumptions as [least active connections](#least-active-connections), except it makes no attempt to bin pack the cluster and distributes queries evenly.
 
 ##### Configuration
 
@@ -79,15 +77,17 @@ load_balancer_strategy = "round_robin"
 
 ## Reads and writes
 
-The load balancer can split reads (`SELECT` queries) from write queries. If PgDog detects that a query is _not_ a `SELECT`, like an `INSERT` or and `UPDATE`, that query will be sent to primary. This allows a PgDog deployment to proxy an entire PostgreSQL cluster without creating separate read and write endpoints.
+The load balancer can split reads (`SELECT` queries) from write queries. If it detects that a query is _not_ a `SELECT`, like an `INSERT` or an `UPDATE`, that query will be sent to primary. This allows a deployment to proxy an entire PostgreSQL cluster without creating separate read and write endpoints.
 
-This strategy is effective most of the time, and PgDog also handles several edge cases.
+This strategy is effective most of the time and PgDog also handles several edge cases.
 
-#### Select for update
+### `SELECT FOR UPDATE`
 
-The most common one is `SELECT [...] FOR UDPATE` which locks rows for exclusive access. Much like the name suggests, the most common use case for this is to update the row, which is a write operation. PgDog will detect this and send the query to the primary instead.
+The most common edge case is `SELECT FOR UPDATE` which locks rows for exclusive access. Much like the name suggests, it's often used to update the selected rows, which is a write operation.
 
-#### CTEs that write
+The load balancer detects this and will send the query to a primary instead of a replica.
+
+### CTEs
 
 Some `SELECT` queries can trigger a write to the database from a CTE, for example:
 
@@ -98,11 +98,11 @@ WITH t AS (
 SELECT * FROM users INNER JOIN t ON t.id = users.id
 ```
 
-PgDog will check all CTEs and if any of them contain queries that could write, it will send the entire query to the primary.
+The load balancer will check all CTEs and, if any of them contain queries that could write, it will route the entire query to a primary.
 
 ### Transactions
 
-All explicit transactions are routed to the primary. An explicit transaction is started by using the `BEGIN` statement, e.g.:
+All multi-statement transactions are routed to the primary. They are started by using the `BEGIN` command, e.g.:
 
 ```postgresql
 BEGIN;
@@ -110,16 +110,21 @@ INSERT INTO users (email, created_at) VALUES ($1, NOW()) RETURNING *;
 COMMIT;
 ```
 
-While more often used to atomically perform writes to multiple tables, transactions can also manually route read queries to the primary as to avoid having to handle replication lag for time-sensitive queries.
+While often used to atomically perform multiple changes, transactions can also be used explicitly route read queries to a primary as to avoid having to handle replication lag.
+
+This is useful for time-sensitive workloads, like background jobs that have been triggered by a database change which hasn't propagated to all the replicas yet.
 
 !!! note
-    This is common with background jobs that get triggered after a row has been inserted by an HTTP controller.
-    The job queue is often configured to read data from a replica, which is a few milliseconds behind the primary and, unless specifically handled, could run into "record not found" errors.
+    This behavior often manifests with "record not found"-style errors, e.g.:
+
+    ```
+    ActiveRecord::RecordNotFound (Couldn't find User with 'id'=9999):
+    ```
 
 
 ## Configuration
 
-The load balancer is enabled automatically when cluster contains more than
+The load balancer is **enabled** automatically when a database cluster contains more than
 one database, for example:
 
 ```toml
@@ -134,9 +139,9 @@ role = "replica"
 host = "10.0.0.2"
 ```
 
-### Reads on the primary
+### Allowing reads on the primary
 
-By default, the primary is used for serving reads and writes. If you want to isolate your workloads and have your replicas serve all read queries, you can configure it like so:
+By default, the primary is used for serving both reads and writes. If you want to isolate these workloads and have your replicas serve all read queries instead, you can configure it, like so:
 
 ```toml
 [general]

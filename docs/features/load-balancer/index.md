@@ -32,7 +32,7 @@ for most deployments.
 
 #### Random
 
-Queries are routed to a database based using a random number generator modulus the number of replicas in the pool.
+Queries are routed to a database based on a random number generator modulus the number of replicas in the pool.
 This strategy is the simplest to understand and often effective at splitting traffic evenly across the cluster. It's unbiased
 and assumes nothing about available resources or individual query performance.
 
@@ -77,13 +77,13 @@ load_balancer_strategy = "round_robin"
 
 ## Reads and writes
 
-The load balancer can split reads (`SELECT` queries) from write queries. If it detects that a query is _not_ a `SELECT`, like an `INSERT` or and `UPDATE`, that query will be sent to primary. This allows a deployment to proxy an entire PostgreSQL cluster without creating separate read and write endpoints.
+The load balancer can split reads (`SELECT` queries) from write queries. If it detects that a query is _not_ a `SELECT`, like an `INSERT` or an `UPDATE`, that query will be sent to primary. This allows a deployment to proxy an entire PostgreSQL cluster without creating separate read and write endpoints.
 
 This strategy is effective most of the time and PgDog also handles several edge cases.
 
 ### `SELECT FOR UPDATE`
 
-The most common edge case is `SELECT FOR UDPATE` which locks rows for exclusive access. Much like the name suggests, it's often used to update the selected rows, which is a write operation.
+The most common edge case is `SELECT FOR UPDATE` which locks rows for exclusive access. Much like the name suggests, it's often used to update the selected rows, which is a write operation.
 
 The load balancer detects this and will send the query to a primary instead of a replica.
 

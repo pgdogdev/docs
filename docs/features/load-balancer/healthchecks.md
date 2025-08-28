@@ -5,7 +5,7 @@ Databases proxied by PgDog's load balancer are regularly checked with health che
 it's removed from the load balancer and prevented from serving additional queries for a configurable period of time.
 
 <center>
-  <img src="/images/healtchecks.png" width="65%" alt="Healtchecks"/>
+  <img src="/images/healthchecks.png" width="65%" alt="Healthchecks"/>
 </center>
 
 ### Primary checks
@@ -16,7 +16,7 @@ While all databases receive health checks, only replicas can be removed from the
 
 In addition to checking entire databases, the load balancer checks that every connection in the pool is healthy on a regular basis. Before giving a connection to a client, it will, from time to time, send the a short query to the server, and if it fails, ban the entire database from serving any more requests.
 
-To reduce the overhead of health checks, these connection-specific checks are done infrequently. This is configurable via the `healtcheck_interval` setting:
+To reduce the overhead of health checks, these connection-specific checks are done infrequently. This is configurable via the `healthcheck_interval` setting:
 
 ```toml
 [general]
@@ -47,7 +47,7 @@ This may seem aggressive at first, but it reduces the error rate dramatically in
 
 #### Failsafe
 
-To avoid health checks taking a the whole database cluster offline, the load balancer has a built-in safety mechanism. If all replicas fail a health check, the bans from all databases in the cluster are removed.
+To avoid health checks taking the whole database cluster offline, the load balancer has a built-in safety mechanism. If all replicas fail a health check, the bans from all databases in the cluster are removed.
 
 This makes sure that intermittent network failures don't impact database operations. Once the bans are removed, load balancing returns to its normal state.
 

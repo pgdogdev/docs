@@ -1,6 +1,6 @@
 # COPY
 
-`COPY` is a special PostgreSQL command that ingests a file directly into a database table. This allows to ingest data faster than by using individual `INSERT` queries.
+`COPY` is a special PostgreSQL command that ingests a file directly into a database table. This allows ingesting data faster than by using individual `INSERT` queries.
 PgDog supports parsing this command, sharding the file automatically, and splitting the data between shards, invisible to the application.
 
 <center style="margin-top: 2rem;">
@@ -18,7 +18,7 @@ PgDog supports data sent via `COPY` formatted using any one of the 3 possible fo
 
 ### Expected syntax
 
-`COPY` commands sent through PgDog should specify table columns explicitly. This allows itg to parse the data stream correctly, knowing which column is the sharding key.
+`COPY` commands sent through PgDog should specify table columns explicitly. This allows it to parse the data stream correctly, knowing which column is the sharding key.
 
 Take the following example:
 

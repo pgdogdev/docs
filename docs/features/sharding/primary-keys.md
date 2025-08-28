@@ -5,7 +5,7 @@ If you're coming from unsharded Postgres, you're probably used to doing somethin
 ```postgresql
 CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
-  email VARCHAR,
+  email VARCHAR
 );
 ```
 

@@ -3,7 +3,7 @@
 PgDog expects that all shards have, roughly, the same tables. A notable exception to this rule is partitioned tables,
 which can have different data tables on different shards. The parent tables should be present on all shards, however.
 
-If a shard has different tables than another, [automatic](query-routing.md) query routing may no work as expected.
+If a shard has different tables than another, [automatic](query-routing.md) query routing may not work as expected.
 
 ## How it works
 

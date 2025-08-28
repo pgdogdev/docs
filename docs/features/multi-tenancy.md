@@ -7,7 +7,7 @@ PgDog is a natural fit for multitenant databases. It allows to separate data usi
 There are two ways to enforce multitenancy rules with PgDog:
 
 1. Physical multitenancy
-2. Virtual multinancy
+2. Virtual multitenancy
 
 **Physical** multitenancy separates data into multiple Postgres databases. In that scenario, it becomes very difficult for data from one tenant to make its way to another, providing a good layer of security and workload isolation between your customers.
 
@@ -101,7 +101,7 @@ Much like Postgres partitions, the start of the range is included in the range w
     regularly with its status. The documentation is written in a way as to reflect
     the desired state of this feature, not how it currently works.
 
-Virtual multinancy is a great option if your customers are small and can share the same compute. To make this work you have several options:
+Virtual multitenancy is a great option if your customers are small and can share the same compute. To make this work you have several options:
 
 1. Place each of your tenants data into their own Postgres schema
 2. Add a column in every table identifying your tenants and make sure your app includes it in every query

@@ -16,4 +16,4 @@ PgDog source code, so the whole community can benefit from your knowledge and ex
 
 ## Project name
 
-This project is dedicated to the bestest dog in the world who's been patiently sitting at my feet the entire time PgDog has been developed.
+This project is dedicated to the best dog in the world who's been patiently sitting at my feet the entire time PgDog has been developed.

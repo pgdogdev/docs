@@ -32,7 +32,7 @@ This documentation provides a detailed overview of all PgDog features, along wit
     </div>
     <div>
         <h4><a href="/administration/">Administration</a></h4>
-        <p>Learn how to operate PgDog in production, like fetching real time statistics from the admin database or updating configuration.</p>
+        <p>Learn how to operate PgDog in production, like fetching real-time statistics from the admin database or updating configuration.</p>
     </div>
     <div>
         <h4><a href="/installation/">Installation</a></h4>

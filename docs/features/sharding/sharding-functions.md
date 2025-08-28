@@ -32,7 +32,7 @@ column = "user_id"
 data_type = "bigint"
 ```
 
-All queries referencing the `user_id` column will be automatically sent the matching shard(s) and data in those tables will be split between all shards evenly.
+All queries referencing the `user_id` column will be automatically sent to the matching shard(s) and data in those tables will be split between all shards evenly.
 
 <!-- For hash-based sharding, to achieve the same inside the database, you can use the `satisfies_hash_partition` function: -->
 

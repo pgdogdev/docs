@@ -14,7 +14,7 @@ While all databases receive health checks, only replicas can be removed from the
 
 ### Individual connections
 
-In addition to checking entire databases, the load balancer checks that every connection in the pool is healthy on a regular basis. Before giving a connection to a client, it will, from time to time, send the a short query to the server, and if it fails, ban the entire database from serving any more requests.
+In addition to checking entire databases, the load balancer checks that every connection in the pool is healthy on a regular basis. Before giving a connection to a client, it will, from time to time, send a short query to the server, and if it fails, ban the entire database from serving any more requests.
 
 To reduce the overhead of health checks, these connection-specific checks are done infrequently. This is configurable via the `healthcheck_interval` setting:
 

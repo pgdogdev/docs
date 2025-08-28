@@ -1,6 +1,6 @@
 # Benchmarks
 
-PgDog does its best to minimize its impact on database performance. Great care is taken to make sure as few operations are possible are performed
+PgDog does its best to minimize its impact on database performance. Great care is taken to make sure as few operations as possible are performed
 when passing data between clients and servers.
 
 All benchmarks listed below were done on my local system (AMD Ryzen 7 5800X). Real world performance is impacted by factors like network speed, query complexity and especially by hardware used for running PgDog and PostgreSQL servers.

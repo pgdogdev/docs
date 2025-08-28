@@ -93,7 +93,7 @@ PgDog is configured via 2 files:
 
 Users are configured separately to allow them to be encrypted at rest in environments that support it, like in Kubernetes or with the AWS Secrets Manager.
 
-Both config files should to be placed in the current working directory (`$PWD`) for PgDog to detect them. Alternatively,
+Both config files should be placed in the current working directory (`$PWD`) for PgDog to detect them. Alternatively,
 you can pass their paths at startup as arguments:
 
 ```bash

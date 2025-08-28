@@ -17,7 +17,7 @@ You can visualize this phenomenon with a bit of Python:
     [1, 2, 0, 1, 2]
     ```
 
-Since most rows will have to moved, resharding a cluster in-place would put a lot of load on an already overextended system.
+Since most rows will have to be moved, resharding a cluster in-place would put a lot of load on an already overextended system.
 
 PgDog's strategy for resharding is to **move data** from an existing cluster to a completely new one, while rehashing the rows in-flight. This process is parallelizable and fast, and since most of the work is done by the new cluster, production databases are not affected.
 
@@ -43,7 +43,7 @@ pgdog data-sync --help
 | `--from-database` | Name of the **source** database cluster. | `prod` |
 | `--from-user` | Name of the user configured in `users.toml` for the **source** database cluster. | `postgres` |
 | `--to-database` | Name of the **destination** database cluster. | `prod-sharded` |
-| `--to-user` | Name of the user configured in `users.tom` for the **destination** database cluster. | `postgres` |
+| `--to-user` | Name of the user configured in `users.toml` for the **destination** database cluster. | `postgres` |
 | `--publication` | Name of the Postgres [publication](https://www.postgresql.org/docs/current/sql-createpublication.html) for tables to be copied and sharded. It should exist on the **source** database. | `all_tables` |
 
 All databases and users must be configured in `pgdog.toml` and `users.toml`.

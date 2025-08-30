@@ -177,6 +177,18 @@ Maximum amount of time a client is allowed to wait for a connection from the poo
 
 Default: **`300`** (5s)
 
+### `idle_timeout`
+
+Close server connections that have been idle, i.e., haven't served a single client transaction, for this amount of time.
+
+Default: **`60_000`** (60s)
+
+### `client_idle_timeout`
+
+Close client connections that have been idle, i.e., haven't sent any queries, for this amount of time.
+
+Default: **`none`** (disabled)
+
 ## Load balancer
 
 ### `load_balancing_strategy`
@@ -198,7 +210,7 @@ Available options:
 - `include_primary`
 - `exclude_primary`
 
-Include primary uses the primary database as well as the replicas to serve read  queries. Exclude primary will send all read queries to replicas, leaving the primary to serve only writes.
+Include primary uses the primary database as well as the replicas to serve read queries. Exclude primary will send all read queries to replicas, leaving the primary to serve only writes.
 
 Default: **`include_primary`**
 

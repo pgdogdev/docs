@@ -72,7 +72,7 @@ The data type of the column. Currently supported options are:
 
 ## Omnisharded tables
 
-Omnisharded tables are tables that have the same data on all shards. They typically are small and contain metadata, e.g., list of countries, cities, etc., and are used in joins. PgDog allows to read from these tables directly and load balances traffic event across all shards.
+Omnisharded tables are tables that have the same data on all shards. They typically are small and contain metadata, e.g., list of countries, cities, etc., and are used in joins. PgDog allows to read from these tables directly and load balances traffic evenly across all shards.
 
 #### Example
 ```toml

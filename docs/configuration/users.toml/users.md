@@ -39,6 +39,10 @@ Overrides [`default_pool_size`](../pgdog.toml/general.md) for this user. No more
 
 Default: **none** (defaults to `default_pool_size` from `pgdog.toml`)
 
+### `min_pool_size`
+
+Overrides [`min_pool_size`](../pgdog.toml/general.md#min_pool_size) for this user. Opens at least this many connections on pooler startup and keeps them open despite [`idle_timeout`](../pgdog.toml/general.md#idle_timeout).
+
 ### `pooler_mode`
 
 Overrides [`pooler_mode`](../pgdog.toml/general.md) for this user. This allows users in [session mode](../../features/session-mode.md) to connect to the
@@ -70,3 +74,15 @@ Sets the `statement_timeout` on all server connections at connection creation. T
 
 !!! note
     Nothing is preventing the user from manually changing this setting at runtime, e.g., by running `SET statement_timeout TO 0`;
+
+### `replication_mode`
+
+Sets the `replication=database` parameter on user connections to Postgres. Allows this user to use replication commands.
+
+Default: **`false`** (disabled)
+
+### `idle_timeout`
+
+Overrides [`idle_timeout`](../pgdog.toml/general.md#idle_timeout) for this user. Server connections that have been idle for this long, without affecting [`min_pool_size`](../pgdog.toml/general.md#min_pool_size), will be closed.
+
+Default: **none** (not set)

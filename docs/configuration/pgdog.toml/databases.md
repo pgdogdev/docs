@@ -79,3 +79,22 @@ Indicates this database is a mirror of another one. All traffic sent to the `mir
 For clusters with multiple databases, `mirror_of` must be identical in all entries. Otherwise, mirroring will be automatically disabled for that database.
 
 Default: **`none`**
+
+!!! note
+    All settings below take priority over values in [`[general]`](general.md) and [`[[users]]`](../users.toml/users.md) config sections.
+
+### `pool_size`
+
+Overrides the [`default_pool_size`](general.md#default_pool_size) setting. All connection pools for this database will open at most this many connections to Postgres.
+
+### `statement_timeout`
+
+Overrides the [`statement_timeout`](general.md#statement_timeout) setting. This sets the `statement_timeout` connection parameter on all connections to Postgres for this database.
+
+### `idle_timeout`
+
+Overrides the [`idle_timeout`](general.md#idle_timeout) setting. Idle server connections exceeding this timeout will be closed automatically.
+
+### `read_only`
+
+Sets the `default_transaction_read_only` connection parameter to `on` on all server connections to this database. Clients can still override it with `SET`.

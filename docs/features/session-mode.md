@@ -29,6 +29,9 @@ only 15 clients will be able to connect and use the database at any given moment
 !!! note
     In session mode, when the connection pool reaches full capacity, a client has to disconnect before another one can connect to PgDog.
 
+    Clients attempting to connect
+    will wait in a queue until a client disconnects. The maximum amount of time a client is allowed to wait is controlled by the [`checkout_timeout`](../configuration/pgdog.toml/general.md#checkout_timeout) setting.
+
 
 ### Benefits of session mode
 
@@ -37,6 +40,6 @@ when a client disconnects, the PostgreSQL server connection remains intact and c
 
 #### Lazy connections
 Until a client issues their first query, PgDog doesn't attach it to a server connection. This allows one set of clients to connect before the previous set disconnects,
-which is common when using zero-downtime deployment strategies like blue/green[^1].
+which is common when using zero-downtime deployment strategies like blue-green[^1].
 
 [^1]: [https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/bluegreen-deployments.html](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/bluegreen-deployments.html)

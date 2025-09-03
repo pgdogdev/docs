@@ -27,7 +27,7 @@ PgDog aims to be the de facto PostgreSQL proxy and pooler. Below is a feature co
 |-|-|-|
 | [Manual routing](../features/sharding/manual-routing.md) | Only using comments (regex), doesn't work with prepared statements | :material-check-circle-outline: |
 | [Automatic routing](../features/sharding/query-routing.md) | No | :material-check-circle-outline: |
-| [Primary key generation](../features/sharding/primary-keys.md) | No | :material-check-circle-outline: |
+| [Primary key generation](../features/sharding/schema_management/primary_keys.md) | No | :material-check-circle-outline: |
 | [Cross-shard queries](../features/sharding/cross-shard.md) | No | Partial support |
 | [COPY](../features/sharding/copy.md) | No | :material-check-circle-outline: |
 | [Postgres-compatible sharding functions](../features/sharding/sharding-functions.md) | No | Same functions as declarative partitioning |

@@ -18,6 +18,14 @@ Docker images are built automatically for each commit to the `main` branch in [G
 docker run ghcr.io/pgdogdev/pgdog:main
 ```
 
+### SemVer
+
+PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run v0.1.3 like so:
+
+```
+docker run ghcr.io/pgdogdev/pgdog:v0.1.3
+```
+
 ## From source
 
 PgDog can be easily compiled from source. For production deployments, a `Dockerfile` is provided in [GitHub](https://github.com/pgdogdev/pgdog/tree/main/Dockerfile). If you prefer to deploy on bare metal or you're looking to run PgDog locally, you'll need to install a few dependencies.

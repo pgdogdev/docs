@@ -3,20 +3,20 @@
 PgDog expects that all shards have, roughly, the same tables. A notable exception to this rule is partitioned tables,
 which can have different data tables on different shards. The parent tables should be present on all shards, however.
 
-If a shard has different tables than another, [automatic](query-routing.md) query routing may not work as expected.
+If a shard has different tables than another, [automatic](../query-routing.md) query routing may not work as expected.
 
 ## How it works
 
 PgDog sends DDL queries to all shards concurrently. A DDL query is a statement that mutates the database schema, for example:
 
 ```postgresql
-CREATE TABLE IF NOT EXISTS "users" (
-  "id" BIGSERIAL PRIMARY KEY,
-  "email" VARCHAR NOT NULL UNIQUE
-)
+CREATE TABLE IF NOT EXISTS users (
+  id BIGSERIAL PRIMARY KEY,
+  email VARCHAR NOT NULL UNIQUE
+);
 ```
 
-This query will be sent to all shards, creating the table on all hosts.
+This query will be sent to all shards, creating the table in all databases.
 
 !!! note
     Currently, PgDog doesn't use
@@ -25,5 +25,10 @@ This query will be sent to all shards, creating the table on all hosts.
 
 ### Migrating a specific shard
 
-If you need to run a migration against a specific shard, use [manual routing](manual-routing.md) and add the shard number
-in a query comment.
+If you need to run a migration against a specific shard, use [manual routing](../manual-routing.md) and add the shard number
+in a query comment, for example:
+
+```postgresql
+/* pgdog_shard: 0 */ CREATE TABLE users_data_0
+PARTITION OF users_data FOR VALUES FROM ('2025-01-01') TO ('2026-01-01');
+```

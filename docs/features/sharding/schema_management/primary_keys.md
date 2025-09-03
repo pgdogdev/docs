@@ -5,7 +5,7 @@ Primary keys are columns with a unique index and a not null constraint. Theoreti
 In sharded databases, primary keys generated on each shard have to be _globally_ unique: no two shards can contain a row with the same value. To make this easy and avoid using external ID generation services, PgDog provides a few pl/PgSQL functions that can do this automatically from inside Postgres.
 
 !!! note
-    Make sure to install and enable the [schema manager](manager.md) before using the following functionality.
+    Make sure to install and enable the [schema manager](manager.md) before using this functionality.
 
 ## How it works
 

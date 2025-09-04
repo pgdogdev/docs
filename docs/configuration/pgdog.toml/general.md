@@ -323,3 +323,17 @@ Default: **`1.0`**
 Enable the query parser in single-shard deployments and record its decisions. Can be used to test compatibility with a future sharded deployment in production. Routing decisions are available in the query cache, visible by running `SHOW QUERY_CACHE` in the [admin](../../administration/index.md) database. See [dry run mode](../../features/sharding/dry-run.md) for more details.
 
 Default: **`false`** (disabled)
+
+## Logging
+
+### `log_connections`
+
+If enabled, log every time a user creates a new connection to PgDog.
+
+Default: **`true`** (enabled)
+
+### `log_disconnections`
+
+If enabled, log every time a user disconnects from PgDog.
+
+Default: **`true`** (enabled)

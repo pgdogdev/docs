@@ -25,6 +25,8 @@ Since PgDog uses TOML, both `5000` and `5_000` are valid numbers. Configuration 
 |------|-------------|
 | [General](pgdog.toml/general.md) | General pooler settings like `host`, `port` and various timeouts. |
 | [Databases](pgdog.toml/databases.md) | PostgreSQL databases proxied by PgDog. |
+| [Mirroring](pgdog.toml/mirroring.md) | Configuration to [mirror](../features/mirroring.md) databases for testing |
+| [Sharded Tables](pgdog.toml/sharded_tables.md) | Configuration for [sharding](../features/sharding/basics.md) databases |
 | [Plugins](pgdog.toml/plugins.md) | Plugins configuration. |
 | [Users](users.toml/users.md) | List of users (with passwords) that are allowed to connect to PgDog. |
 | [Admin](pgdog.toml/admin.md) | Admin database settings like admin password. |

@@ -17,7 +17,7 @@ Mirroring in PgDog is asynchronous and should have minimal impact production dat
 
 ### Configure mirroring
 
-To use mirroring, first configure both the mirror and the production database in [`pgdog.toml`](../configuration/pgdog.toml/general.md). Once both databases are running, add `mirror_of` to all instances of the mirror database:
+To use mirroring, first configure both the mirror and the production database in [`pgdog.toml`](../configuration/pgdog.toml/general.md). Once both databases are running, add a `[[mirroring]]` section:
 
 ```toml
 [[databases]]
@@ -27,7 +27,12 @@ host = "10.0.0.1"
 [[databases]]
 name = "staging_db"
 host = "10.0.2.25"
-mirror_of = "prod"
+
+[[mirroring]]
+source_db = "prod"
+destination_db = "staging_db"
+# queue_length = 256  # Optional: overrides general.mirror_queue
+# exposure = 0.5      # Optional: overrides general.mirror_exposure
 ```
 
 !!! note
@@ -48,6 +53,17 @@ If the mirror database(s) can't keep up with production traffic, queries will ba
 mirror_queue = 500
 ```
 
+Or in the individual `[[mirroring]]` section:
+
+```toml
+[[mirroring]]
+source_db = 'source'
+destination_db = 'dest'
+queue_depth = 500
+```
+
+Note that local `[[mirroring]]` configuration overrides the `general` settings for that mirror only.
+
 If the queue gets full, all subsequent mirrored transactions will be dropped until there is space in the queue again.
 
 !!! note
@@ -63,6 +79,17 @@ This is configurable using a percentage, relative to the amount of transactions 
 [general]
 mirror_exposure = 0.5 # 50%
 ```
+
+Or in the specific mirroring section:
+
+```toml
+[[mirroring]]
+source_db = 'source'
+destination_db = 'dest'
+exposure = 0.5
+```
+
+Local config in `[[mirroring]]` overwrites the `[general]` value for that mirror.
 
 Acceptable values are between **0.0** (0%) and **1.0** (100%).
 

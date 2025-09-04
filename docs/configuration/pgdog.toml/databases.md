@@ -72,14 +72,6 @@ The shard number for this database. Only required if your database contains more
 
 Default: **`0`**
 
-### `mirror_of`
-
-Indicates this database is a mirror of another one. All traffic sent to the `mirror_of` database will also be replayed against this database, subject to [`mirror_exposure`](general.md#mirror_exposure) setting.
-
-For clusters with multiple databases, `mirror_of` must be identical in all entries. Otherwise, mirroring will be automatically disabled for that database.
-
-Default: **`none`**
-
 !!! note
     All settings below take priority over values in [`[general]`](general.md) and [`[[users]]`](../users.toml/users.md) config sections.
 

@@ -86,3 +86,15 @@ Default: **`false`** (disabled)
 Overrides [`idle_timeout`](../pgdog.toml/general.md#idle_timeout) for this user. Server connections that have been idle for this long, without affecting [`min_pool_size`](../pgdog.toml/general.md#min_pool_size), will be closed.
 
 Default: **none** (not set)
+
+### `two_phase_commit`
+
+Overrides [`two_phase_commit`](../pgdog.toml/general.md#two_phase_commit) for this user.
+
+Default: **none** (not set)
+
+### `two_phase_commit_auto`
+
+Overrides [`two_phase_commit_auto`](../pgdog.toml/general.md#two_phase_commit_auto) for this user.
+
+Default: **none** (not set)

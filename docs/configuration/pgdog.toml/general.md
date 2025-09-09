@@ -324,6 +324,18 @@ Enable the query parser in single-shard deployments and record its decisions. Ca
 
 Default: **`false`** (disabled)
 
+### `two_phase_commit`
+
+Enable [two-phase commit](../../features/sharding/2pc.md) for write, cross-shard transactions.
+
+Default: **`false`** (disabled)
+
+### `two_phase_commit_auto`
+
+Enable automatic conversion of single-statement write transactions to use [two-phase commit](../../features/sharding/2pc.md). Automatically enabled if `two_phase_commit` is used.
+
+Default: **`true`** (enabled)
+
 ## Logging
 
 ### `log_connections`

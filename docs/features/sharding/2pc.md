@@ -7,6 +7,10 @@ Two-phase commit takes advantage of [prepared transactions](https://www.postgres
 
 This feature is also known as **2pc** or **2-phase** transactions.
 
+<center style="margin-top: 2rem;">
+    <img src="/images/2pc.png" width="98%" alt="Cross-shard queries" />
+</center>
+
 ## How it works
 
 When two-phase commit is enabled, PgDog keeps track of all write transactions in its built-in transaction manager.

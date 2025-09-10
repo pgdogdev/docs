@@ -19,7 +19,7 @@ tables = [
 ]
 ```
 
-## Query router
+## Query routing
 
 Omnisharded tables are treated differently by the query router. Write queries are sent to all shards concurrently, while read queries are distributed evenly between shards using round robin.
 
@@ -27,6 +27,8 @@ If the query contains a sharding key, it will be used instead, and omnisharded t
 
 ### Consistency
 
-Writing data to omnisharded tables is not currently atomic. While we work on adding support for two-phase commit, make sure writes to omni tables can be repeated in case of failure. This can be done with unique indexes and `ON CONFLICT ... DO UPDATE` queries.
+Writing data to omnisharded tables is atomic if you enabled [two-phase commit](2pc.md).
 
-Reads from omni tables are routed to individual shards. If you update data in those tables at the same time, `SELECT` queries to these tables may return different results for a brief period of time.
+If you can't or choose not to use 2pc, make sure writes to omnisharded tables can be repeated in case of failure. This can be achieved by using unique indexes and `INSERT ... ON CONFLICT ... DO UPDATE` queries.
+
+Since reads from omnisharded tables are routed to individual shards, while two-phase commit takes place, queries to these tables may return different results for a brief period of time.

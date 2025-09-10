@@ -15,7 +15,7 @@ While this works for simple queries, others that involve sorting or aggregation 
 
 ## Sorting
 
-If the client requests results to be ordered by one or more columns, PgDog can interpret this request and perform the sorting once it receives all data messages from all servers. For queries that span multiple shards, this feature allows to retrieve results in the correct order. For example:
+If the client requests results to be ordered by one or more columns, PgDog can interpret this request and perform the sorting once it receives all data messages from all servers. For queries that span multiple shards, this feature allows you to retrieve results in the correct order. For example:
 
 ```postgresql
 SELECT * FROM users WHERE admin IS true
@@ -71,13 +71,12 @@ DDL statements, i.e., queries that modify the database schema, like `CREATE TABL
 
 This assumes that all shards in the cluster have an identical schema. This is typically desired to make management of sharded databases simpler, but in scenarios where this is not possible, DDL queries can always be routed to specific shards using [manual routing](manual-routing.md).
 
-!!! note
-    PgDog doesn't use two-phase commit so make sure your DDL
-    statements are idempotent and can be retried in case of an error.
+If [two-phase commit](2pc.md) is enabled, DDL statements have a high chance to be atomic. Alternatively, they can generally be written to be idempotent and safe to retry in case of error.
 
 ### Two-phase commit
 
-Currently, PgDog doesn't use two-phase commit to synchronize changes across all shards. Support for this feature is currently being built, and will require database operators to enable [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html).
+PgDog supports Postgres' [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html) and [two-phase commit](2pc.md). If enabled, cross-shard writes have a high chance to be atomic and eventually consistent.
+
 
 ## Aggregates
 

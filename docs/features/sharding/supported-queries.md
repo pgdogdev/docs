@@ -5,8 +5,8 @@
 Postgres has 3 kinds of queries, each handled a little bit differently in a sharded context:
 
 1. CRUD statements (`INSERT`, `UPDATE`, `SELECT`, `DELETE`, `COPY`) are parsed for sharding keys and routed to one or more shards
-5. DDL statements (e.g., `CREATE TABLE`, `BEGIN`, `ROLLBACK`, etc.) are sent to all shards in parallel
-6. `SET` statements are intercepted and client state is updated to keep track of session variables
+2. DDL statements (e.g., `CREATE TABLE`, `BEGIN`, `ROLLBACK`, etc.) are sent to all shards in parallel
+3. `SET` statements are intercepted and client state is updated to keep track of session variables
 
 ## CRUD
 
@@ -20,14 +20,14 @@ Postgres has 3 kinds of queries, each handled a little bit differently in a shar
 #### Examples
 
 ```postgresql
--- Sharding key equals to a single value
+-- Sharding key equals a single value
 SELECT * FROM users WHERE user_id = $1
 
 -- Sharding keys IN tuple
 SELECT * FROM users WHERE id IN ($1, $2, $3)
 ```
 
-Queries that don't match this pattern presently will be routed to all shards. We are continuously adding support for more complex patterns.
+Queries that don't match this pattern will currently be routed to all shards. We are continuously adding support for more complex patterns.
 
 #### `SELECT` queries that write
 
@@ -72,4 +72,4 @@ Currently, PgDog only supports `INSERT` statements with one tuple in the `VALUES
 
 ## DDL
 
-DDL statements are sent to all shards in parallel. Currently, PgDog doesn't use 2-phase commit so consider using idempotent schema changes to guarantee consistency across shards.
+DDL statements (e.g., `CREATE TABLE`) are sent to all shards in parallel. If [two-phase commit](2pc.md) is enabled, DDL statements have a high chance to be atomic.

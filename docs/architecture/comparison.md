@@ -31,4 +31,4 @@ PgDog aims to be the de facto PostgreSQL proxy and pooler. Below is a feature co
 | [Cross-shard queries](../features/sharding/cross-shard.md) | No | Partial support |
 | [COPY](../features/sharding/copy.md) | No | :material-check-circle-outline: |
 | [Postgres-compatible sharding functions](../features/sharding/sharding-functions.md) | No | Same functions as declarative partitioning |
-| Two-Phase Commit  | No | Work in progress |
+| Two-Phase Commit  | No | :material-check-circle-outline: |

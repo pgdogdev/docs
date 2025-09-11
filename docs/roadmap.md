@@ -100,7 +100,7 @@ Manage [table schema(s)](features/sharding/schema_management/index.md) and ensur
 | Schema validator | :material-calendar-check: | Check that all shards have identical tables, indexes, etc. |
 
 
-### Orchestration
+## Orchestration
 
 Features around production deployments.
 

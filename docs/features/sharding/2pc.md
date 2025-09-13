@@ -3,7 +3,7 @@
 !!! note
      This feature is new and experimental. Please [report](https://github.com/pgdogdev/pgdog/issues) any issues you may run into.
 
-Two-phase commit takes advantage of [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html) in Postgres to provide eventually consistent cross-shard writes. When enabled, transactions spanning multiple shards have a very high chance to be atomic.
+Two-phase commit takes advantage of [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html) in Postgres to provide eventually consistent cross-shard writes. When enabled, transactions spanning multiple shards have a very high chance of being atomic.
 
 This feature is also known as **2pc** or **2-phase** transactions.
 
@@ -15,7 +15,7 @@ This feature is also known as **2pc** or **2-phase** transactions.
 
 When two-phase commit is enabled, PgDog keeps track of all write transactions in its built-in transaction manager.
 
-Upon receiving a `COMMIT` command, it automatically rewrites it to use `PREPARE TRANSACTION` and `COMMIT PREPARED` statements. Once the 2-phase exchange is complete, PgDog lets the client know the transaction is committed. This happens under the hood and unbeknownst to the application.
+Upon receiving a `COMMIT` command, it automatically rewrites it to use `PREPARE TRANSACTION` and `COMMIT PREPARED` statements. Once the 2-phase exchange is complete, PgDog lets the client know the transaction is committed. This happens under the hood, unbeknownst to the application.
 
 ### Configuration
 
@@ -85,11 +85,13 @@ This feature allows for easier migrations to sharded databases, without requirin
 
 ### Configuration
 
-While it's often desirable to ensure cross-shard writes are atomic, rewriting single-statement transactions to use 4 statements has some performance overhead. If your writes are idempotent and can be safely retried, or your application doesn't have consistency requirements, you can disable automatic 2pc:
+While it's often desirable to ensure cross-shard writes are atomic, rewriting single-statement transactions to use 4 statements has some performance overhead. For this reason, this feature is **disabled** by default.
+
+If your writes are idempotent and can be safely retried, or your application doesn't have consistency requirements, you don't need to use this. Otherwise, you can enable it in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
 
 ```toml
 [general]
-two_phase_commit_auto = false
+two_phase_commit_auto = true
 ```
 
 ## Reads

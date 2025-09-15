@@ -76,3 +76,25 @@ healthcheck_timeout = 5_000 # 5 seconds in ms
 ```
 
 The default value is `5_000` (5 seconds).
+
+### Load balancer health check
+
+If you're deploying an additional TCP load balancer in front of PgDog, it often comes with its own health checks. The following protocols are supported:
+
+- TCP
+- HTTP
+
+#### TCP health check
+
+TCP health check involves connecting to the traffic port (as configured by the [`port`](../../configuration/pgdog.toml/general.md#port) setting) to ensure it can accept incoming connections. This is the most common type of health check and there is no additional configuration required to make it work.
+
+#### HTTP health check
+
+If your load balancer supports HTTP health checks, you can enable an HTTP endpoint in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#healthcheck_endpoint):
+
+```toml
+[general]
+healthcheck_endpoint = 8080
+```
+
+This will launch an HTTP server on the configured port which will respond with `HTTP 200` if the PgDog instance is healthy, or with `HTTP 502` if not. The health check looks at all connection pools and validates that at least one of them is available to serve queries.

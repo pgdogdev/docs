@@ -1,43 +1,58 @@
 ---
 next_steps:
-  - ["Health checks", "/features/healthchecks/", "Learn how PgDog ensures only healthy databases are allowed to serve read queries."]
+  - ["Health checks", "/features/healthchecks/", "Ensure replica databases are up and running. Block offline databases from serving queries."]
 icon: material/lan
 ---
 
 # Load balancer overview
 
-PgDog operates at the application layer (OSI Level 7) and is capable of load balancing queries across
-multiple PostgreSQL replicas. This allows applications to connect to a single endpoint and spread traffic evenly between multiple databases.
+PgDog understands the PostgreSQL wire protocol and uses its SQL parser to understand queries. This allows it to split read queries from write queries and distribute traffic evenly between databases.
+
+Applications can connect to a single PgDog [endpoint](#single-endpoint), without having to manually manage multiple connection pools.
 
 ## How it works
 
-When a query is sent to PgDog, it inspects it using a SQL parser. If the query is a read and the configuration contains multiple databases, it will send that query to one of the replicas. This spreads the query load evenly between all database instances in the cluster.
-
-If the config contains a primary, PgDog will split write queries from read queries and send writes to the primary, without requiring any application changes.
+When a query is received by PgDog, it will inspect it using the native Postgres SQL parser. If the query is a `SELECT` and the [configuration](../../configuration/pgdog.toml/databases.md) contains both primary and replica databases, PgDog will send it to one of the replicas. For all other queries, PgDog will send them to the primary.
 
 <center>
-  <img src="/images/replicas.png" width="60%" alt="Load balancer" />
+  <img src="/images/replicas.png" width="95%" alt="Load balancer" />
 </center>
 
-### Algorithms
+Applications don't have to manually route queries between databases or maintain several connection pools internally.
 
-The load balancer is configurable and can route queries using one of the following strategies:
+!!! note "SQL compatibility"
+    PgDog's query parser is powered by the `pg_query` library, which extracts the Postgres native SQL parser directly from its source code. This makes it **100% compatible** with the PostgreSQL query language and allows PgDog to understand all valid Postgres queries.
 
-* Random (default)
+## Load distribution
+
+The load balancer is configurable and can distribute read queries between replicas using one of the following strategies:
+
+* Round robin (default)
+* Random
 * Least active connections
-* Round robin
 
-Choosing the right strategy depends on your query workload and the size of replica databases. Each strategy has its pros and cons. If you're not sure, using the **random** strategy is usually good enough
-for most deployments.
+Choosing the best strategy depends on your query workload and the size of the databases. Each one has its pros and cons. If you're not sure, using the **round robin** strategy usually works well for most deployments.
 
+### Round robin
 
-#### Random
+Round robin is often used in HTTP load balancers (e.g., nginx) to evenly distribute requests to hosts, in the same order as they appear in the configuration. Each database receives exactly one query before the next one is used.
 
-Queries are routed to a database based on a random number generator modulus the number of replicas in the pool.
-This strategy is the simplest to understand and often effective at splitting traffic evenly across the cluster. It's unbiased
-and assumes nothing about available resources or individual query performance.
+This algorithm makes no assumptions about the capacity of each database host or the cost of each query. It works best when all queries have similar runtime cost and replica databases have identical hardware.
 
-This algorithm is used by **default**.
+##### Configuration
+
+Round robin is used **by default**, so no config changes are required. You can still set it explicitly in [pgdog.toml](../../configuration/pgdog.toml/general.md), like so:
+
+```toml
+[general]
+load_balancer_strategy = "round_robin"
+```
+
+### Random
+
+The random strategy sends queries to a database based on the output of a random number generator modulus the number of replicas in the configuration. This strategy assumes no knowledge about the runtime cost of queries or the size of database hardware.
+
+This algorithm is often effective when queries have unpredictable runtime. By randomly distributing them between databases, it reduces hot spots in the replica cluster.
 
 ##### Configuration
 
@@ -46,13 +61,11 @@ This algorithm is used by **default**.
 load_balancer_strategy = "random"
 ```
 
-#### Least active connections
+### Least active connections
 
-PgDog keeps track of how many connections are active in each database and can route queries to databases
-which are less busy. This allows to "bin pack" the cluster with workload.
+Least active connections sends queries to replica databases that appear to be least busy serving other queries. This uses the [`sv_idle`](../../administration/pools.md) connection pool metric and assumes that pools with a high number of idle connections have more available resources.
 
-This algorithm is useful when all databases have identical resources and all queries have roughly the same
-cost and runtime.
+This algorithm is useful when you want to "bin pack" the replica cluster. It assumes that queries have different runtime performance and attempts to distribute load more intelligently.
 
 ##### Configuration
 
@@ -61,34 +74,20 @@ cost and runtime.
 load_balancer_strategy = "least_active_connections"
 ```
 
-#### Round robin
 
-This strategy is often used in HTTP load balancers (e.g., like nginx) to route requests to hosts in the
-same order as they appear in the configuration. Each database receives exactly one query before the next
-one is used.
+## Single endpoint
 
-This algorithm makes the same assumptions as [least active connections](#least-active-connections), except it makes no attempt to bin pack the cluster and distributes queries evenly.
+The load balancer can split reads (`SELECT` queries) from write queries. If it detects that a query is _not_ a `SELECT`, like an `INSERT` or an `UPDATE`, that query will be sent to the primary database. This allows PgDog to proxy an entire PostgreSQL cluster without requiring separate read and write endpoints.
 
-##### Configuration
+This strategy is effective most of the time and the load balancer can handle several edge cases.
 
-```toml
-[general]
-load_balancer_strategy = "round_robin"
-```
-
-## Reads and writes
-
-The load balancer can split reads (`SELECT` queries) from write queries. If it detects that a query is _not_ a `SELECT`, like an `INSERT` or an `UPDATE`, that query will be sent to primary. This allows a deployment to proxy an entire PostgreSQL cluster without creating separate read and write endpoints.
-
-This strategy is effective most of the time and PgDog also handles several edge cases.
-
-### `SELECT FOR UPDATE`
+### SELECT FOR UPDATE
 
 The most common edge case is `SELECT FOR UPDATE` which locks rows for exclusive access. Much like the name suggests, it's often used to update the selected rows, which is a write operation.
 
-The load balancer detects this and will send the query to a primary instead of a replica.
+The load balancer detects this and will send this query to the primary database instead of a replica.
 
-### CTEs
+### Write CTEs
 
 Some `SELECT` queries can trigger a write to the database from a CTE, for example:
 
@@ -99,11 +98,11 @@ WITH t AS (
 SELECT * FROM users INNER JOIN t ON t.id = users.id
 ```
 
-The load balancer will check all CTEs and, if any of them contain queries that could write, it will route the entire query to a primary.
+The load balancer recursively checks all of them and, if any CTE contains a query that could trigger a write, it will send the whole statement to the primary database.
 
 ### Transactions
 
-All multi-statement transactions are routed to the primary. They are started by using the `BEGIN` command, e.g.:
+All manual transactions are sent to the primary database by default. Transactions are started by sending the `BEGIN` command, for example:
 
 ```postgresql
 BEGIN;
@@ -111,22 +110,58 @@ INSERT INTO users (email, created_at) VALUES ($1, NOW()) RETURNING *;
 COMMIT;
 ```
 
-While often used to atomically perform multiple changes, transactions can also be used explicitly route read queries to a primary as to avoid having to handle replication lag.
+PgDog processes queries immediately upon receiving them, and since transactions can contain multiple statements, it isn't possible to determine whether the whole transaction writes to the database. Therefore, it is more reliable to send it to the primary database.
 
-This is useful for time-sensitive workloads, like background jobs that have been triggered by a database change which hasn't propagated to all the replicas yet.
+!!! note "Replica lag"
+    While transactions are used to atomically change multiple tables, they can also be used to manually route `SELECT` queries to the primary database. For example:
 
-!!! note
-    This behavior often manifests with "record not found"-style errors, e.g.:
+    ```postgresql
+    BEGIN;
+    SELECT * FROM users WHERE id = $1;
+    COMMIT;
+    ```
+
+
+    This is useful when the data in the table(s) has been recently updated and you want to avoid errors caused by replication lag. This often manifests with "record not-found"-style errors, for example:
 
     ```
     ActiveRecord::RecordNotFound (Couldn't find User with 'id'=9999):
     ```
 
+    While sending read queries to the primary adds load, it is often necessary in real-time systems not equipped to handle replication delays.
 
-## Configuration
 
-The load balancer is **enabled** automatically when a database cluster contains more than
-one database, for example:
+#### Read-only transactions
+
+The PostgreSQL query language allows you to declare a transaction as read-only. This prevents it from writing data to the database. PgDog takes advantage of this property and will send such transactions to a replica database.
+
+Read-only transactions can be started with the `BEGIN READ ONLY` command, for example:
+
+```postgresql
+BEGIN READ ONLY;
+SELECT * FROM users WHERE id = $1;
+COMMIT;
+```
+
+Read-only transactions are useful when queries depend on each other's results and need a consistent view of the database. Some Postgres database drivers allow this option to be set in the code, for example:
+
+=== "Golang/pgx"
+    ```golang
+    tx, err := conn.BeginTx(ctx, pgx.TxOptions{
+        AccessMode: pgx.ReadOnly,
+    })
+    ```
+=== "Node/Sequelize"
+    ```javascript
+    const tx = await sequelize.transaction({
+      readOnly: true,
+    });
+    ```
+
+
+## Using the load balancer
+
+The load balancer is **enabled by default** when more than one database with the same `name` property is configured in [pgdog.toml](../../configuration/pgdog.toml/databases.md), for example:
 
 ```toml
 [[databases]]
@@ -140,21 +175,24 @@ role = "replica"
 host = "10.0.0.2"
 ```
 
-### Allowing reads on the primary
+### Primary reads
 
-By default, the primary is used for serving both reads and writes. If you want to isolate these workloads and have your replicas serve all read queries instead, you can configure it, like so:
+By default, if replica databases are configured, the primary is treated as one of them when serving read queries. This is done to maximize the use of existing hardware and prevents overloading a replica when it is first added to the database cluster.
+
+This behavior is configurable in [pgdog.toml](../../configuration/pgdog.toml/general.md#read_write_split). You can isolate your primary from read queries and allow it to only serve writes:
 
 ```toml
 [general]
 read_write_split = "exclude_primary"
 ```
 
-## Read more
+
+## Learn more
 
 {{ next_steps_links(next_steps) }}
 
-## Demo
+### Tutorial
 
 <center>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/ZaCy_FPjfFI?si=QVETqaOiKbLtucl1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <iframe width="100%" height="500" src="https://www.youtube.com/embed/ZaCy_FPjfFI?si=QVETqaOiKbLtucl1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </center>

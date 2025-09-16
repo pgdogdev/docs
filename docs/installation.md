@@ -30,14 +30,14 @@ docker run ghcr.io/pgdogdev/pgdog:v0.1.3
 
 ## From source
 
-PgDog can be easily compiled from source. For production deployments, a `Dockerfile` is provided in [GitHub](https://github.com/pgdogdev/pgdog/tree/main/Dockerfile). If you prefer to deploy on bare metal or you're looking to run PgDog locally, you'll need to install a few dependencies.
+PgDog can be easily compiled from source. For production deployments, a `Dockerfile` is provided in [GitHub](https://github.com/pgdogdev/pgdog/tree/main/Dockerfile). If you prefer to deploy on bare-metal or you're looking to run PgDog locally, you'll need to install a few dependencies.
 
 ### Dependencies
 
 Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make sure to have a working version of a C/C++ compiler installed.
 
-=== "Mac OS"
-    Install [XCode](https://developer.apple.com/xcode/) from the App Store and CMake & Clang from brew:
+=== "macOS"
+    Install [Xcode](https://developer.apple.com/xcode/) from the App Store and CMake & Clang from Homebrew:
 
     ```bash
     brew install cmake llvm
@@ -49,7 +49,7 @@ Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make s
 
     ```bash
     sudo apt update && \
-    apt install -y cmake clang curl pkg-config libssl-dev git build-essential
+    sudo apt install -y cmake clang curl pkg-config libssl-dev git build-essential
     ```
 
 === "Arch"
@@ -94,11 +94,11 @@ cargo run --release
 
 ## Configuration
 
-PgDog is configured via 2 files:
+PgDog is configured via two files:
 
 | Configuration file | Description |
 |-|-|
-| [pgdog.toml](configuration/index.md) | Contains general settings and info about PostgreSQL servers. |
+| [pgdog.toml](configuration/index.md) | Contains general settings and information about PostgreSQL servers. |
 | [users.toml](configuration/users.toml/users.md) | Contains users and passwords that are allowed to connect to PgDog. |
 
 Users are configured separately to allow them to be encrypted at rest in environments that support it, like in Kubernetes or with the AWS Secrets Manager.
@@ -109,12 +109,12 @@ you can pass their paths at startup as arguments:
 ```bash
 pgdog \
     --config /path/to/pgdog.toml \
-    --users path/to/users.toml
+    --users /path/to/users.toml
 ```
 
-#### pgdog.toml
+#### [pgdog.toml](configuration/pgdog.toml/general.md)
 
-Most configuration options have sensible defaults. This makes single database configuration pretty short:
+Most configuration options have sensible defaults. This makes single-database configuration pretty short:
 
 ```toml
 [[databases]]
@@ -122,9 +122,9 @@ name = "postgres"
 host = "127.0.0.1"
 ```
 
-#### `users.toml`
+#### [users.toml](configuration/users.toml/users.md)
 
-This config file contains a mapping between databases, users and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file won't be able to connect:
+This config file contains a mapping between databases, users, and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file won't be able to connect:
 
 ```toml
 [[users]]
@@ -133,10 +133,9 @@ database = "postgres"
 password = "hunter2"
 ```
 
-!!! note
+!!! note "Configuring users"
 
-    PgDog creates connection pools for each user/database pair. If no users are specified in `users.toml`,
-    all connection pools will be disabled and connections to Postgres will not be created.
+    PgDog creates connection pools for each user/database pair. If no users are configured in `users.toml`, all connection pools will be disabled and PgDog won't connect to the database(s).
 
 ## Next steps
 
@@ -147,7 +146,7 @@ password = "hunter2"
     </div>
     <div>
         <h4><a href="/administration/">Administration</a></h4>
-        <p>Learn how to operate PgDog in production, like fetching real time statistics from the admin database or updating configuration.</p>
+        <p>Learn how to operate PgDog in production, like fetching real-time statistics from the admin database or updating configuration.</p>
     </div>
     <div>
         <h4><a href="/architecture/">Architecture</a></h4>

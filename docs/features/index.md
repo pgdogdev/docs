@@ -1,25 +1,22 @@
+---
+icon: material/list-box-outline
+---
+# Features
 
-# Features overview
-
-PgDog contains multiple foundational and unique features which make it a great choice
+PgDog provides foundational and unique features which make it a great choice
 for modern PostgreSQL deployments.
 
-Most features are configurable and can be toggled on/off and tuned to fit your environment. Experimental features are marked
-as such, and users are advised to test them before deploying to production.
-
-Foundational features like load balancing, health checks, and query routing have been battle-tested and work well in production.
+All features are configurable to fit your environment and can be toggled on/off. Most features are stable and used in production and at-scale. Some are experimental and users are advised to test them before deploying to production.
 
 ## Summary
 
-Short summary of currently implemented features below.
-
 | Feature | Description |
 |---------|-------------|
-| [Load balancer](load-balancer/index.md) | Distribute `SELECT` queries evenly between replicas. Separate reads from writes, allowing applications to connect to a single endpoint. |
-| [Health checks](load-balancer/healthchecks.md) | Check databases are up and running. Broken databases are blocked from serving queries. |
-| [Transaction mode](transaction-mode.md) | Multiplex PostgreSQL server connections between thousands of clients. |
-| [Hot reload](../configuration/index.md) | Update configuration at runtime without restarting the proxy. |
-| [Sharding](sharding/index.md) | Automatic query routing and data migration between nodes to scale PostgreSQL horizontally. Schema management, distributed transactions. |
+| [Load balancer](load-balancer/index.md) | Evenly distribute read queries between replicas and send write queries to the primary, allowing applications to connect to a single endpoint. |
+| [Health checks](load-balancer/healthchecks.md) | Ensure databases are up and can serve queries. Offline databases are blocked from serving queries. |
+| [Transaction mode](transaction-mode.md) | Multiplex few PostgreSQL server connections between thousands of clients. |
+| [Hot reload](../configuration/index.md) | Update configuration at runtime without restarting PgDog. |
+| [Sharding](sharding/index.md) | Query routing, data migration and schema management to scale PostgreSQL horizontally. |
 | [Prepared statements](prepared-statements.md) | Support for Postgres named prepared statements in transaction mode. |
 | [Plugins](plugins/index.md) | Pluggable libraries to add functionality to PgDog at runtime, without recompiling code. |
 | [Authentication](authentication.md) | Support for various PostgreSQL user authentication mechanisms, like SCRAM. |
@@ -29,6 +26,8 @@ Short summary of currently implemented features below.
 | [Pub/Sub](pub_sub.md) | Support for `LISTEN`/`NOTIFY` in transaction mode. |
 | [Encryption](tls.md) | TLS encryption for client and server connections. |
 
-### OS support
+#### Operating system support
 
 PgDog doesn't use any OS-specific features and should run on all systems supported by the Rust compiler, e.g. Linux (x86 and ARM64), Mac OS, and Windows.
+
+We recommend you run PgDog on Linux. A [Docker image](https://github.com/pgdogdev/pgdog/pkgs/container/pgdog) is available in our repository.

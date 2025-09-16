@@ -20,6 +20,10 @@ As shards store more data and grow, they can be split again, scaling PostgreSQL 
 
 PgDog operates on the application layer of the stack: it speaks PostgreSQL and understands not only the queries sent by applications but also the logical replication protocol used by the server. This allows it to automatically route queries while moving data between machines to create more capacity.
 
+<center>
+  <img src="/images/intro.png" width="95%" alt="How PgDog works" />
+</center>
+
 While PgDog focuses a lot on sharding PostgreSQL, it is also a load balancer and transaction pooler that can be used with simpler PostgreSQL deployments.
 
 This documentation provides a detailed overview of all PgDog features, along with reference material for production operations.

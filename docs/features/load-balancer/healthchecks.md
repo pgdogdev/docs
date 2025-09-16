@@ -3,75 +3,102 @@ icon: material/lan-check
 ---
 # Health checks
 
-Databases proxied by PgDog's load balancer are regularly checked with health checks. A health check is a simple query, e.g.,
-`SELECT 1`, that ensures the database is reachable and able to handle requests. If a replica database fails a health check,
-it's removed from the load balancer and prevented from serving additional queries for a configurable period of time.
+All databases load balanced by PgDog are regularly checked with health checks. A health check is a small query that ensures the database is reachable and able to handle requests.
+
+If a replica database fails a health check, it's temporarily removed from the load balancer, preventing it from serving queries for a configurable period of time.
 
 <center>
-  <img src="/images/healthchecks.png" width="65%" alt="Healthchecks"/>
+  <img src="/images/healthchecks.png" width="95%" alt="Healthchecks"/>
 </center>
 
-### Primary checks
+## How it works
 
-While all databases receive health checks, only replicas can be removed from the load balancer. If the primary fails a health check, it will continue to serve writes. This is because the cluster doesn't have an alternative place to route these requests and attempting the primary again has a higher chance of success than blocking queries outright.
+PgDog performs two kinds of health checks to ensure applications don't accidentally use a broken database to run a query:
 
-### Individual connections
+| Health check | Description |
+|-|-|
+| Connection health check | Checks each connection in the pool before giving it to a client. This ensures all Postgres server connections are healthy. |
+| Database health check | Checks idle databases to make sure they are still online and can serve queries. |
 
-In addition to checking entire databases, the load balancer checks that every connection in the pool is healthy on a regular basis. Before giving a connection to a client, it will, from time to time, send a short query to the server, and if it fails, ban the entire database from serving any more requests.
+If a connection or database fails a health check, it is **temporarily removed** from the load balancer and cannot serve any more queries. This prevents applications from continuously hitting a broken database until it's restarted by an administrator.
 
-To reduce the overhead of health checks, these connection-specific checks are done infrequently. This is configurable via the `healthcheck_interval` setting:
+!!! note "99.99% uptime"
+    This strategy is very effective at reducing error rates in busy applications. If you are operating a large number of databases, hardware failures are relatively common and an effective load balancer is required to maintain 99.99% database uptime.
+
+### Connection health check
+
+A connection health check is occasionally performed when a client requests a connection from the connection pool. This happens when the client starts executing a transaction or sends an individual query.
+
+The health check itself is an empty query (i.e., `;`) and is usually executed quite quickly by the Postgres server.
+
+!!! note "Bypassing the Postgres parser"
+    The empty query `;` has no commands, so Postgres doesn't use its parser to understand it. This only checks that the server on the other end of a connection is alive and responds to requests, which makes this especially quick.
+
+If the health check query finishes successfully, the connection is marked healthy and given to the client to run the transaction. If not, the entire connection pool is banned from serving any additional queries and an error is returned to the client.
+
+While the health check is cheap, running it on every single transaction is unnecessary and would cause undesirable latency. For this reason, the connection health check is performed once per configurable interval, controlled by the `healthcheck_interval` setting:
 
 ```toml
 [general]
 healthcheck_interval = 30_000 # Run a health check every 30 seconds
 ```
 
-The default value for this setting is `30_000` (30 seconds).
+The **default** value is **30 seconds** (`30_000` milliseconds).
 
-### Configuring health checks
+### Database health check
 
-Health checks are **enabled** by default.
+If your databases are relatively idle, connection health checks don't provide enough information about their state. This happens if your traffic has periods of inactivity, or serves only batch workloads.
 
-If you want, you can effectively disable them by setting both `healthcheck_interval` and `idle_healthcheck_interval` settings to a very high value, for example:
-
-```toml
-[general]
-healthcheck_interval = 31557600000 # 1 year
-idle_healthcheck_interval = 31557600000
-```
-
-
-### Database bans
-
-A single health check failure will prevent the entire database from serving traffic. In our documentation (and the code), we refer to this as a "ban".
-
-This may seem aggressive at first, but it reduces the error rate dramatically in heavily used production deployments. PostgreSQL is very reliable, so even a single failure often indicates an issue with the hardware or network connectivity.
-
-
-#### Failsafe
-
-To avoid health checks taking the whole database cluster offline, the load balancer has a built-in safety mechanism. If all replicas fail a health check, the bans from all databases in the cluster are removed.
-
-This makes sure that intermittent network failures don't impact database operations. Once the bans are removed, load balancing returns to its normal state.
-
-#### Ban expiration
-
-Database bans eventually expire and are removed automatically. Once this happens, the banned databases are allowed to serve traffic again. This is done to maintain a healthy level of traffic across all databases and to allow for intermittent issues, like network connectivity, to resolve themselves without manual intervention.
-
-This behavior can be controlled with the `ban_timeout` setting:
+The load balancer runs health check queries independently and asynchronously in the background. The frequency of background health checks is controlled by the `idle_healthcheck_interval` setting:
 
 ```toml
 [general]
-ban_timeout = 300_000 # Expire bans automatically after 5 minutes
+idle_healthcheck_interval = 30_000 # Run a health check every 30 seconds
 ```
 
-The default value for this setting is `300_000` (5 minutes).
+The **default** value for this setting is **30 seconds** (`30_000` milliseconds).
 
-#### Health check timeout
+#### Delaying health checks
 
-By default, the load balancer gives the database **5 seconds** to answer a health check. If it doesn't receive a reply within that time frame, the database will be banned and removed from the load balancer.
+When PgDog is first started, it's possible that the database or the network is not yet ready to handle requests. To make sure there are no false positives caused by a slow start, database health checks are started after a configurable delay, controlled by the `idle_healthcheck_delay` setting:
 
- This is configurable with `healthcheck_timeout` setting:
+```toml
+[general]
+idle_healthcheck_delay = 5_000 # 5 seconds
+```
+
+The **default** value for this setting is **5 seconds** (`5_000` milliseconds).
+
+
+### Primary database exception
+
+While all databases receive health checks, only replicas can be removed from the load balancer. If the primary fails a health check, it will continue to serve writes. This is done because the database cluster doesn't have an alternative database to send write requests to and attempting to connect to the primary again has a higher chance of success than blocking queries outright.
+
+## Restoring traffic
+
+Databases are automatically put back into the load balancer after a period of time. This ensures that intermittent failures, like temporary network problems, don't require manual intervention by an administrator to restore service.
+
+The amount of time the database is banned from serving traffic is controlled with the `ban_timeout` setting:
+
+```toml
+ban_timeout = 300_000 # 5 minutes
+```
+
+The **default** value is **5 minutes** (`300_000` milliseconds).
+
+If the database is still broken once the ban expires, it will fail a health check and will be removed from the load balancer again.
+
+### False positives
+
+It's possible for widespread network outages to cause false positives and block all databases from serving traffic. To avoid the situation where entire database clusters are taken offline by health checks, the load balancer has a built-in safety mechanism.
+
+If all replicas are banned due to health check failure, the ban list is cleared immediately and all databases are placed back into active service.
+
+## Timeouts
+
+By default, the load balancer gives the database a limited amount of time to answer a health check. If it doesn't receive a reply, the database will be marked unhealthy and removed from the load balancer.
+
+This behavior is configurable with the `healthcheck_timeout` setting:
 
 ```toml
 [global]
@@ -80,24 +107,35 @@ healthcheck_timeout = 5_000 # 5 seconds in ms
 
 The default value is `5_000` (5 seconds).
 
-### Load balancer health check
+The health check timeout detects more subtle failure cases, like a slow network or an overloaded database. Due to the nature of the health check query itself, only a truly broken database wouldn't be able to respond to it quickly, which makes this method reliable at detecting and removing broken hardware.
 
-If you're deploying an additional TCP load balancer in front of PgDog, it often comes with its own health checks. The following protocols are supported:
+## Load balancer health check
 
-- TCP
-- HTTP
+If you're running multiple instances of PgDog, like in a Kubernetes cluster for example, it's common practice to deploy a TCP load balancer in front of them to distribute traffic evenly between the containers.
 
-#### TCP health check
+TCP load balancers use their own health checks to make sure the containers they are proxying are up and running. PgDog supports two kinds of load balancer health checks:
 
-TCP health check involves connecting to the traffic port (as configured by the [`port`](../../configuration/pgdog.toml/general.md#port) setting) to ensure it can accept incoming connections. This is the most common type of health check and there is no additional configuration required to make it work.
+| Load balancer check | Description |
+|-|-|
+| TCP health check | The load balancer attempts to create a connection by sending the `SYN` packet to the traffic port. |
+| HTTP health check | The load balancer sends an `HTTP/1.1 GET` request to a configurable port and expects `HTTP/1.1 200 OK` as a response. |
 
-#### HTTP health check
+Since PgDog itself is a TCP application, no additional configuration is required to handle TCP health checks. HTTP health checks require running an additional endpoint.
 
-If your load balancer supports HTTP health checks, you can enable an HTTP endpoint in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#healthcheck_endpoint):
+### HTTP endpoint
+
+If your load balancer supports sending HTTP health checks to a configurable port (like AWS NLBs, for example), you can configure PgDog to run an HTTP server to respond to them:
 
 ```toml
 [general]
 healthcheck_endpoint = 8080
 ```
 
-This will launch an HTTP server on the configured port which will respond with `HTTP 200` if the PgDog instance is healthy, or with `HTTP 502` if not. The health check looks at all connection pools and validates that at least one of them is available to serve queries.
+This is configurable on startup only and will spin up an HTTP server on `http://0.0.0.0:8080` (or whatever port you set).
+
+This health check looks at all configured connection pools, and if **at least one** is online, responds with `HTTP/1.1 200 OK`. If _all_ connection pools are down because of failed health checks, PgDog will respond with `HTTP/1.1 502 Bad Gateway`.
+
+!!! note "Handling a lot of requests"
+    The HTTP health check uses existing internal state to answer requests and doesn't send queries to the connection pools. This makes it very quick and inexpensive, which ensures that massively distributed load balancers (like the AWS NLB) don't cause an unexpected influx of requests to the database.
+
+To make configuration easier, the health check endpoint doesn't support HTTPS, so make sure to configure your load balancer to use plain HTTP only.

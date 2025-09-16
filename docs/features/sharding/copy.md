@@ -1,3 +1,6 @@
+---
+icon: material/upload
+---
 # COPY
 
 `COPY` is a special PostgreSQL command that ingests a file directly into a database table. This allows ingesting data faster than by using individual `INSERT` queries.

@@ -1,3 +1,6 @@
+---
+icon: material/database-search
+---
 # Prepared statements
 
 Prepared statements are SQL queries that are sent to the server in advance. They are parsed by the server, avoiding that cost at execution time.

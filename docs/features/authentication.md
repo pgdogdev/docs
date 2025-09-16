@@ -1,3 +1,6 @@
+---
+icon: material/login
+---
 # Authentication
 
 PostgreSQL servers support many authentication mechanisms. PgDog supports a subset of those, with the aim to support all of them over time. Since PostgreSQL 14, `scram-sha-256` is widely used to encrypt passwords and PgDog supports this algorithm for both client and server connections.

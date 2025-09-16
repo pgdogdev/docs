@@ -1,3 +1,6 @@
+---
+icon: material/power-plug
+---
 # Plugins overview
 
 PgDog comes with a powerful plugin system that allows you to customize the query routing behavior. Plugins are written in Rust, compiled into shared libraries, and loaded at runtime.

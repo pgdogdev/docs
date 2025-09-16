@@ -1,4 +1,5 @@
-# PgDog features
+
+# Features overview
 
 PgDog contains multiple foundational and unique features which make it a great choice
 for modern PostgreSQL deployments.

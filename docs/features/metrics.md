@@ -1,3 +1,6 @@
+---
+icon: material/chart-line
+---
 # Metrics
 
 PgDog exposes real time metrics and statistics about clients, servers, connection pools, and more. They are available via two mediums:

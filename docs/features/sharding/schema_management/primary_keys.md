@@ -1,3 +1,6 @@
+---
+icon: material/key-variant
+---
 # Primary keys
 
 Primary keys are columns with a unique index and a not null constraint. Theoretically, any data type can be used as the primary key, but the common ones are `BIGINT` (specified as `BIGSERIAL` for automatic generation) and `UUID`.

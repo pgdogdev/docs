@@ -1,3 +1,6 @@
+---
+icon: material/information
+---
 # About this project
 
 ## Contributions

@@ -1,3 +1,6 @@
+---
+icon: material/list-status
+---
 # Migrating to PgDog
 
 PgDog attempts to make the migration from other connection poolers as smooth as possible. That being said, some changes to your infrastructure may be required to benefit from all our features.

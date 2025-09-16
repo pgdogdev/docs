@@ -1,3 +1,6 @@
+---
+icon: material/routes
+---
 # Manual routing
 
 In case the sharding key is not configured or can't be extracted from the query,

@@ -1,3 +1,6 @@
+---
+icon: material/function
+---
 # Sharding functions
 
 The sharding function inside PgDog transforms column values in SQL queries to specific shard numbers. They are in turn used for routing queries to one or more databases in the [configuration](../../configuration/index.md).
@@ -96,4 +99,3 @@ PostgreSQL has dozens of data types. PgDog supports a subset of those for shardi
 | `BIGINT` | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline: |
 | `VARCHAR` / `TEXT` | :material-check-circle-outline: | :material-check-circle-outline: | No |
 | `UUID` | :material-check-circle-outline: | :material-check-circle-outline: | No |
-

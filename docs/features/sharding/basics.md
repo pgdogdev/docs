@@ -1,3 +1,6 @@
+---
+icon: material/database
+---
 # Sharding basics
 
 Sharding databases is splitting a PostgreSQL database, with all its tables and indices, between multiple machines. Each machine will run its own PostgreSQL server and is a complete and independent database.

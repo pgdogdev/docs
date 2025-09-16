@@ -1,3 +1,6 @@
+---
+icon: material/knob
+---
 # Schema manager
 
 PgDog provides several tools for sharded schema management. Currently, most of the functionality is implemented in Postgres with pl/PgSQL functions. To take advantage of it, you need to install these functions into your sharded database.

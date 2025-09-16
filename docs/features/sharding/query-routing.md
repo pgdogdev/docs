@@ -1,4 +1,7 @@
-# Query routing
+---
+icon: material/call-split
+---
+# Automatic routing
 
 PgDog's query router is using the PostgreSQL parser to understand queries. Queries that contain a sharding key are routed automatically to the right shard. Queries that don't are sent to all shards and results are assembled by PgDog. The sharding scheme is opaque to clients: they don't know they are talking to a sharded database.
 

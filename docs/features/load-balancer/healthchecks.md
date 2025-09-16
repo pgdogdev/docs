@@ -1,3 +1,6 @@
+---
+icon: material/lan-check
+---
 # Health checks
 
 Databases proxied by PgDog's load balancer are regularly checked with health checks. A health check is a simple query, e.g.,

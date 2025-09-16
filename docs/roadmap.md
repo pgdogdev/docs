@@ -1,3 +1,6 @@
+---
+icon: material/chart-gantt
+---
 # Roadmap
 
 PgDog is being actively developed. Along with performance improvements and bug fixes, new features are constantly being added. The goal for PgDog is to manage most aspects of at-scale Postgres production operations, and we're just getting started.

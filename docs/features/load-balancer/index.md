@@ -1,6 +1,7 @@
 ---
 next_steps:
   - ["Health checks", "/features/healthchecks/", "Learn how PgDog ensures only healthy databases are allowed to serve read queries."]
+icon: material/lan
 ---
 
 # Load balancer overview

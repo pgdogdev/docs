@@ -1,3 +1,6 @@
+---
+icon: material/database-lock
+---
 # Multitenancy
 
 PgDog is a natural fit for multitenant databases. It allows to separate data using a key, like `tenant_id`, and automatically route queries with that key to the right database or schema.

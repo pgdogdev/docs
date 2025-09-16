@@ -1,3 +1,6 @@
+---
+icon: material/check-bold
+---
 # Supported queries
 
 [Automatic routing](query-routing.md) in PgDog works by parsing queries and extracting the sharding key. SQL is a complex language and we are aiming to support as many queries as possible. As the development moves forward, this page will be updated with latest features.

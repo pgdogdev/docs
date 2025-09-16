@@ -1,3 +1,6 @@
+---
+icon: material/lock
+---
 # TLS encryption
 
 PgDog supports TLS for both client and server connections. TLS encryption protects your connections from eavesdropping, especially if used across the public Internet, and is often required to pass security audits.

@@ -1,3 +1,6 @@
+---
+icon: material/check-all
+---
 # Two-phase commit
 
 !!! note

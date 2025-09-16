@@ -1,3 +1,6 @@
+---
+icon: material/content-copy
+---
 # Omnisharded tables
 
 Omnisharded tables are tables that contain the same data on all shards. This is useful for storing relatively static metadata used in joins or data that doesn't fit the sharding schema of the database, e.g., list of countries, global settings, list of blocked IPs, etc.

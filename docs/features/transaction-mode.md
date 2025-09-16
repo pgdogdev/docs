@@ -1,3 +1,6 @@
+---
+icon: material/speedometer
+---
 # Transaction mode
 
 Transaction mode allows PgDog to share just a few of PostgreSQL server connections with thousands of clients. This is required for at-scale production deployments where the number of clients is much higher than the number of available connections to the database.

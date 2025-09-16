@@ -1,3 +1,6 @@
+---
+icon: material/set-split
+---
 # Sharding overview
 
 Sharding PostgreSQL splits the database and all its tables and indices between multiple machines. Each machine runs its own PostgreSQL server, while PgDog takes care of routing queries and moving data between servers.

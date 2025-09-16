@@ -1,3 +1,6 @@
+---
+icon: material/ab-testing
+---
 # Dry run mode
 
 In dry run mode, PgDog will parse every single query and record the routing decision in the [admin database](../../administration/index.md). If you're experimenting with sharding, this allows you to test the compatibility of your application without resharding data in production.

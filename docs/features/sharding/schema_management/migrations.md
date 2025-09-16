@@ -1,3 +1,6 @@
+---
+icon: material/arrow-u-left-bottom
+---
 # Schema migrations
 
 PgDog expects that all shards have, roughly, the same tables. A notable exception to this rule is partitioned tables,
@@ -19,9 +22,8 @@ CREATE TABLE IF NOT EXISTS users (
 This query will be sent to all shards, creating the table in all databases.
 
 !!! note
-    Currently, PgDog doesn't use
-    2-phase commit, so to make sure migrations can be retried safely,
-    use idempotent statements, like `IF NOT EXISTS`.
+    If [two-phase commit](../2pc.md) is enabled, you can use transactions to guarantee
+    that the table is created on all shards atomically. If an error occurs on one or more of the databases, the whole transaction will be rolled back. This ensures the schema is consistent on all shards.
 
 ### Migrating a specific shard
 

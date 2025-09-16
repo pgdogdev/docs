@@ -1,3 +1,6 @@
+---
+icon: material/speedometer-slow
+---
 # Session mode
 
 In session mode, PgDog allocates one PostgreSQL server connection per client. This ensures that all PostgreSQL features work as expected, including persistent session variables, settings, and

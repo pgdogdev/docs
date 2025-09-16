@@ -1,3 +1,6 @@
+---
+icon: material/database
+---
 # Schema management overview
 
 Schemas in sharded databases require additional tooling and maintenance to work correctly. Most aspects of this are handled by PgDog automatically and documented below.

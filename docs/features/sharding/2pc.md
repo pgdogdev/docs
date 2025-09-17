@@ -100,3 +100,8 @@ two_phase_commit_auto = true
 ## Reads
 
 Two-phase commit is used for writes only. Read transactions are finished using normal `COMMIT` statements. Just like cross-shard writes, reads are eventually consistent and cross-shard transactions may see partial updates while direct-to-shard or cross-shard transactions are being executed.
+
+## Read more
+
+- [Omnisharded tables](omnishards.md)
+- [Cross-shard queries](cross-shard.md)

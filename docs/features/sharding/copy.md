@@ -3,56 +3,40 @@ icon: material/upload
 ---
 # COPY command
 
-`COPY` is a special PostgreSQL command that ingests a file directly into a database table. This allows ingesting data faster than by using individual `INSERT` queries.
-PgDog supports parsing this command, sharding the file automatically, and splitting the data between shards, invisible to the application.
+`COPY` is a special PostgreSQL command that ingests a file directly into a specified database table. This allows for writing data faster than by using individual `INSERT` queries.
 
-<center style="margin-top: 2rem;">
+PgDog supports parsing the `COPY` command, splitting the input data stream automatically, and sending the rows to each shard in parallel.
+
+<center style="margin-top: 1rem;">
     <img src="/images/wire-protocol-copy.png" width="90%" alt="Cross-shard queries" />
 </center>
 
 
 ## How it works
 
-PgDog supports data sent via `COPY` formatted using any one of the 3 possible formats:
+PgDog supports sharding data sent via `COPY`, using any one of the following formats:
 
-- CSV (comma-separated values)
-- Text (PostgreSQL version of CSV, with `\t` as the delimiter)
-- Binary (not frequently used)
+| Format | Description | Example |
+|-|-|-|
+| CSV | Comma-separated values, an industry standard for sending data between systems. | `hello,world,1,2,3` |
+| Text | PostgreSQL version of CSV, with `<tab>` (`\t`) as the delimiter. | `hello\tworld\t1\t2\t3` |
+| Binary | PostgreSQL-specific format that encodes data using the format used to store it on disk. | |
 
-### Expected syntax
-
-`COPY` commands sent through PgDog should specify table columns explicitly. This allows it to parse the data stream correctly, knowing which column is the sharding key.
-
-Take the following example:
-
-
-=== "Table"
-    ```postgresql
-    CREATE TABLE "users" (
-      id BIGINT PRIMARY KEY,
-      email VARCHAR NOT NULL UNIQUE
-    )
-    ```
-=== "Data"
-    ```csv
-    id,email
-    1,admin@pgdog.dev
-    2,alice@pgdog.dev
-    3,bob@pgdog.dev
-    ```
-
-To ingest this data into the table, the following query should be used:
+Each row is extracted from the data stream, inspected for the sharding key, and sent to a data node. The sharding key should be specified in the [configuration](../../configuration/pgdog.toml/sharded_tables.md) and provided in the command statement, for example:
 
 ```postgresql
-COPY "users" ("id", "email") FROM STDIN CSV HEADER;
+COPY users (id, email) FROM STDIN;
 ```
 
-This query specifies the column order, the file format, and that the file contains a header which should be ignored. If you're using psql, replace the `COPY` with the special `\copy` command.
-
-!!! note
-    While it's technically feasible to use the CSV header to determine the column order, it's possible to supply files
-    without headers, and that would require PgDog to fetch the schema definition from the database, making this a more complex, multi-step process.
+The columns should be specified in the statement, in the same order as they appear in the input data. If the data has headers (like some CSV files would, for example), they are sent to all shards. The query router doesn't use them to identify rows.
 
 ## Performance
 
-By adding _N_ nodes to a sharded cluster, the performance of `COPY` increases _N_ times. Data sent through `COPY` is ingested into shards in parallel. This makes the performance of `COPY` as fast as data nodes can write data and the network can send/receive messages. The cost of parsing and sharding CSV data in PgDog is negligibly small.
+By using _N_ nodes in a sharded database cluster, the performance of `COPY` increases by a factor of _N_. Data sent through `COPY` is ingested into the data nodes in parallel. This makes the performance of `COPY` as fast as the shards can write data to disk, and the network can send & receive messages.
+
+The cost of parsing and sharding the CSV stream in PgDog is negligibly small.
+
+## Read more
+
+- [Two-phase commit](2pc.md)
+- [Omnisharded tables](omnishards.md)

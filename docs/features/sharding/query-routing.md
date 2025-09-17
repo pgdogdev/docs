@@ -38,7 +38,7 @@ The `SELECT` query can express complex filtering logic and not all of it is curr
 | Filter | Example |
 |-|-|
 | Column equals to a value | `payments.user_id = $1` |
-| Column matched against a list | `payments.user_id IN ($1, $2, $3)`
+| Column matches against a list | `payments.user_id IN ($1, $2, $3)`
 
 All other variations will be ignored and the query will be sent to [all shards](cross-shard.md).
 
@@ -74,8 +74,6 @@ INSERT INTO payments -- Missing column names.
 VALUES ($1, $2), ($3, $4) -- More than one tuple.
 ```
 
-
-
 ## `UPDATE` and `DELETE`
 
 Both `UPDATE` and `DELETE` queries work identically to [`SELECT`](#select) queries. The query router looks inside the `WHERE` clause for sharding keys, and routes the query to the corresponding shard.
@@ -104,10 +102,10 @@ and save the variable inside the client state. When that client executes a trans
 While it's best to choose a sharding column present in all tables, it is sometimes not desirable or possible to do so. For example, it's redundant to store a foreign key in a table that has a transitive relationship to another table:
 
 <center>
-  <img src="/images/fk.png" width="100%" alt="How PgDog works" />
+  <img src="/images/fk.png" width="95%" alt="How PgDog works" />
 </center>
 
-In this example, the `order_items` table has a foreign key to `orders`, which in turn refers to `users`. This makes `order_items` related to `users` as well, but it doesn't need a foreign key to that table.
+In this example, the `order_items` table has a foreign key to `orders`, which in turn refers to `users`. This makes `order_items` related to `users` as well, but it doesn't need a foreign key to that table. However, this also means that table doesn't have a sharding key.
 
 To make querying the `order_items` table in a sharded database possible, the following workarounds are available:
 

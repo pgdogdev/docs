@@ -114,7 +114,7 @@ Instead of creating one user per shard, which would cause duplicate entries, PgD
 
 ### Atomicity
 
-DDL statements should be atomic across all shards. This is to protect against a single shard failure to create a table or index, which could result in an inconsistent schema. PgDog can use [two-phase commit](2pc.md) to ensure this is the case, however that means that all DLL statements must be executed inside a transaction, for example:
+DDL statements should be atomic across all shards. This is to protect against a single shard failure to create a table or index, which could result in an inconsistent schema. PgDog can use [two-phase commit](2pc.md) to ensure this is the case, however that means that all DDL statements must be executed inside a transaction, for example:
 
 ```postgresql
 BEGIN;
@@ -147,7 +147,7 @@ The following protocol messages are especially relevant:
 | `RowDescription` | This message has the column names and data types returned by the query. |
 | `CommandComplete` | Indicates that the query has finished returning results. PgDog uses it to start sorting and aggregation. |
 
-The procotol has two formats for encoding tuples: text and binary. Text format is equivalent of calling the `to_string()` method on native types, while binary encoding sends them in network-byte order. For example:
+The protocol has two formats for encoding tuples: text and binary. Text format is equivalent to calling the `to_string()` method on native types, while binary encoding sends them in network-byte order. For example:
 
 === "Data"
     ```postgresql
@@ -157,7 +157,7 @@ The procotol has two formats for encoding tuples: text and binary. Text format i
     | Data type | Text | Binary |
     |-|-|-|
     | `BIGINT` | `"1"` | `00 00 00 00 00 00 00 01` |
-    | `INTEGER` | `"2"` | `00 00 00 00 00 00 00 10` |
+    | `INTEGER` | `"2"` | `00 00 00 02` |
     | `VARCHAR` | `"three"` | `three` |
 
 Since PgDog needs to process rows before sending them to the client, we implemented parsing both formats for most data types, as documented below.

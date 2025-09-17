@@ -11,9 +11,9 @@ If a client can't or doesn't specify a sharding key in the query, PgDog will sen
 
 ## How it works
 
-PgDog understands the Postgres protocol. It can connect to multiple database servers, send the query to all of them, and collect `DataRow`[^1] messages as they returned by each connection.
+PgDog understands the Postgres protocol. It can connect to multiple database servers, send the query to all of them, and collect `DataRow`[^1] messages as they are returned by each connection.
 
-Once all servers finish executing the request, PgDog processes the result, performs any requested sorting, aggregation or row dismambiguation, and sends the complete result back to the client, as if all rows came from one database server.
+Once all servers finish executing the request, PgDog processes the result, performs any requested sorting, aggregation or row disambiguation, and sends the complete result back to the client, as if all rows came from one database server.
 
 ## SELECT
 
@@ -25,15 +25,15 @@ The SQL language allows for powerful data filtration and manipulation. While we 
 |-|-|-|
 | Simple `SELECT` | :material-check: | None. |
 | `ORDER BY` | :material-check: | Target columns must be part of the tuples returned by the query. |
-| `GROUP BY` | :material-check: | 〃 |
 | `DISTINCT` / `DISTINCT BY`| :material-check: | 〃 |
+| `GROUP BY` | :material-wrench: | Limited to cumulative functions only and columns returned by the query. |
 | CTEs | :material-wrench: | CTE must refer to data located on the same shard. |
 | Window functions | :material-close: | Not currently supported. |
 | Subqueries | :material-wrench: | Subqueries must refer to data located on the same shard. They cannot be used to return the value of a sharding key. |
 
 ### Sorting with `ORDER BY`
 
-If the query contains an `ORDER BY` clause, PgDog can sort the rows once it receives all data messages from all servers. For cross-shard queries, this allows to retrieve rows in the specified order.
+If the query contains an `ORDER BY` clause, PgDog can sort the rows once it receives all data messages from all servers. For cross-shard queries, this allows us to retrieve rows in the specified order.
 
 Two forms of syntax for the `ORDER BY` clause are supported:
 
@@ -58,16 +58,16 @@ SELECT * FROM users ORDER BY 1 DESC;
 
 ### Aggregates with `GROUP BY`
 
-Aggregates are transformative functions: instead of returning rows as-is, they return calculated summaries, like a sum or a count. Many aggregates are commulative: the aggregate can be calculated from partial results returned by each shard.
+Aggregates are transformative functions: instead of returning rows as-is, they return calculated summaries, like a sum or a count. Many aggregates are cumulative: the aggregate can be calculated from partial results returned by each shard.
 
-Support for all aggregate functions is a work-in-progress, as documented below:
+Support for all aggregate functions is a work in progress, as documented below:
 
 | Aggregate function | Supported | Notes |
 |-|-|-|
 | `COUNT` / `COUNT(*)` | :material-check: | Supported for most [data types](#supported-data-types). |
 | `MAX` / `MIN` | :material-check: | 〃 |
 | `SUM` | :material-check: | 〃 |
-| `AVG` | :material-close: | Requires the query to be rewritten to return `AVG` and `COUNT`. |
+| `AVG` | :material-close: | Requires the query to be rewritten to return both `AVG` and `COUNT`. |
 | `percentile_disc` / `percentile_cont` | :material-close: | Very expensive to calculate on large results. |
 | `*_agg` | :material-close: | Not currently supported. |
 | `json_*` | :material-close: | 〃 |
@@ -80,7 +80,7 @@ Aggregate functions can be combined with cross-shard sorting, for example:
 ```postgresql
 SELECT COUNT(*), is_admin
 FROM users
-GROUP BY 2,
+GROUP BY 2
 ORDER BY 1 DESC
 ```
 
@@ -173,7 +173,7 @@ GROUP BY email;
 ```
 
 !!! note
-    In the future, PgDog will be automatically rewriting queries to ensure
+    In the future, PgDog will automatically rewrite queries to ensure
     aggregates can be calculated transparently to the client. See our [roadmap](../../roadmap.md) for
     more details.
 

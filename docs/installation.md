@@ -22,10 +22,10 @@ docker run ghcr.io/pgdogdev/pgdog:main
 
 ### SemVer
 
-PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run v0.1.3 like so:
+PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run v0.1.6 like so:
 
 ```
-docker run ghcr.io/pgdogdev/pgdog:v0.1.3
+docker run ghcr.io/pgdogdev/pgdog:v0.1.6
 ```
 
 ## From source

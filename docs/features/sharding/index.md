@@ -1,49 +1,46 @@
 ---
 icon: material/set-split
 ---
-# Sharding overview
 
-Sharding PostgreSQL splits the database and all its tables and indices between multiple machines. Each machine runs its own PostgreSQL server, while PgDog takes care of routing queries and moving data between servers.
+# Sharding Postgres
 
-### Sharding basics
+Sharding splits a PostgreSQL database and all its tables and indices between multiple machines. Each machine runs its own, independent PostgreSQL server, while PgDog takes care of routing queries and moving data between hosts.
 
-If you're not familiar with sharding fundamentals, take a look at the [sharding basics](basics.md). Even if you're a seasoned database expert, it's good to have a refresher to confirm your understanding matches with PgDog's implementation.
+## Intro to sharding
+
+If you're not familiar with database sharding fundamentals, take a look at the [sharding basics](basics.md). Even if you're a seasoned database expert, it's good to have a refresher to confirm your understanding matches with our implementation.
 
 [**→ Sharding basics**](basics.md)
 
-### Routing queries
+## Routing queries
 
-PgDog is first and foremost a query router. It extracts sharding hints directly from SQL queries using a SQL parser. Read more about it in [query routing](query-routing.md).
+PgDog is a query router. It can extract sharding hints directly from the SQL using the PostgreSQL parser and send queries to one or more shards.
 
-[**→ Query routing**](query-routing.md)
+| Query router feature | Description |
+|-|-|
+| [**Direct-to-shard queries**](query-routing.md) | Automatic sharding key detection which sends the query to one shard only. |
+| [**Cross-shard queries**](cross-shard.md) | Queries that don't have a sharding key are sent to all shards with results collected and transformed, as if they came from one database. |
+| [**Manual routing**](manual-routing.md) | Provide the sharding key in a query comment, or separately with a `SET` PostgreSQL command. |
+| [**Sharded COPY**](copy.md) | Data sent via `COPY` commands is automatically split between all shards, using the configured [sharding function](sharding-functions.md). |
 
-### Cross-shard queries
+## Managing data
 
-When sharding hints are not present in a query, either accidentally or on purpose, PgDog falls back to sending those queries to all shards. This is called a cross-shard query and results are assembled by PgDog, invisible to the client.
+PgDog implements the logical replication protocol used by Postgres to move data between nodes.
 
-[**→ Cross-shard queries**](cross-shard.md)
+### Data consistency
 
-### Manual routing
+To make sure data is atomically written in cross-shard transactions, PgDog supports PostgreSQL's prepared transactions and two-phase commit.
 
-If direct-to-shard queries are desired but the query doesn't have enough information to extract this information automatically, clients can specify to which shard PgDog should route the query.
+[**→ Two-phase commit**](2pc.md)
 
-[**→ Manual routing**](manual-routing.md)
+### Resharding
 
-### Sharding COPY
+Resharding takes a database cluster with _N_ shards (where _N_ can be 1, for unsharded databases), and turns it into a cluster with _M_ databases. It uses logical replication to do this without downtime or impacting production operations.
 
-`COPY` commands transfer large amounts of data into PostgreSQL from a file. PgDog can shard this data automatically without clients having to do so manually.
+[**→ Resharding**](resharding/index.md)
 
-[**→ Sharding COPY**](copy.md)
+### Schema management
 
-### Sharding existing databases
+PgDog makes sure that database schema is identical on all shards. It also has support for in-database primary key generation.
 
-PgDog's most impressive feature is its ability to shard existing databases. The migration process uses logical replication and can be done without taking databases offline for maintenance.
-
-[**→ Sharding existing databases**](resharding/index.md)
-
-
-
-## Learn more
-
-- [Multi-shard queries](cross-shard.md)
-- [Manual routing](manual-routing.md)
+[**→ Schema management**](schema_management/index.md)

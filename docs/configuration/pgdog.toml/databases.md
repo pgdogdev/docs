@@ -81,7 +81,7 @@ Overrides the [`default_pool_size`](general.md#default_pool_size) setting. All c
 
 ### `statement_timeout`
 
-Overrides the [`statement_timeout`](general.md#statement_timeout) setting. This sets the `statement_timeout` connection parameter on all connections to Postgres for this database.
+This setting configures the `statement_timeout` connection parameter on all connections to Postgres for this database.
 
 ### `idle_timeout`
 

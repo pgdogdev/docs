@@ -4,13 +4,9 @@ icon: material/mirror-rectangle
 # Mirroring
 
 
-!!! note
-    This feature is still experimental. Please [report](https://github.com/pgdogdev/pgdog/issues) any issues you encounter.
-
 Database mirroring replicates traffic, byte for byte, from one database to another. This allows to test how databases respond to real, production traffic.
 
 ## How it works
-
 
 Mirroring in PgDog is asynchronous and should have minimal impact production databases: transactions are sent to a background task, which in turn forwards them to one or more mirror databases. If any statement fails, the error is ignored and the next one is executed.
 

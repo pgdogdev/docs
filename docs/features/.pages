@@ -1,8 +1,10 @@
 nav:
   - 'index.md'
   - 'load-balancer'
-  - 'transaction-mode.md'
   - 'sharding'
   - 'plugins'
+  - 'transaction-mode.md'
   - '...'
+  - 'mirroring.md'
+  - 'multi-tenancy.md'
 icon: material/format-list-bulleted-type

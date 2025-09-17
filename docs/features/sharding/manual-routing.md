@@ -1,7 +1,7 @@
 ---
 icon: material/routes
 ---
-# Manual routing
+# Manual query routing
 
 In case the sharding key is not configured or can't be extracted from the query,
 PgDog supports explicit sharding directions, provided by the client in a query comment or a `SET` statement.

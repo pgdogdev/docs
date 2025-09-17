@@ -140,7 +140,7 @@ column = "id"
 data_type = "bigint"
 ```
 
-This will match queries referring to the `users.id` column only. Together with the `user_id` entry, all tables that contain the sharding key will be supported by the query router for direct-to-shard queries.
+The latter will match queries referring to the `users.id` column only. Together with the `user_id` entry, all tables that contain the sharding key will be supported by the query router for direct-to-shard queries.
 
 ## Read more
 

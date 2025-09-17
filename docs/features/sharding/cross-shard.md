@@ -3,123 +3,166 @@ icon: material/multicast
 ---
 # Cross-shard queries
 
-If a client can't or chooses not to provide a sharding key, PgDog can route the query to all shards and combine the results automatically. To the client, this looks like the query executed against a single database.
+If a client can't or doesn't specify a sharding key in the query, PgDog will send that query to all shards in parallel, and combine the results automatically. To the client, this looks like the query was executed by a single database.
 
 <center style="margin-top: 2rem;">
-    <img src="/images/cross-shard.png" width="65%" alt="Cross-shard queries" />
+    <img src="/images/cross-shard.png" width="95%" alt="Cross-shard queries" />
 </center>
 
 ## How it works
 
-Since PgDog speaks the Postgres protocol, it can connect to multiple database servers and collect `DataRow`[^1] messages as they are being sent by each server. Once all servers finish
-executing the query, PgDog processes the result and sends it to the client as if all messages came from one server.
+PgDog understands the Postgres protocol and query language. It can connect to multiple database servers, send the query to all of them, and collect [`DataRow`](#under-the-hood) messages, as they are returned by each connection.
 
-While this works for simple queries, others that involve sorting or aggregation are more complex and require special handling.
+Once all servers finish executing the request, PgDog processes the result, performs any requested sorting, aggregation or row disambiguation, and sends the complete result back to the client, as if all rows came from one database server.
 
-## Sorting
+Just like with [direct-to-shard](query-routing.md) queries, each SQL command is handled differently, as documented below.
 
-If the client requests results to be ordered by one or more columns, PgDog can interpret this request and perform the sorting once it receives all data messages from all servers. For queries that span multiple shards, this feature allows you to retrieve results in the correct order. For example:
+## SELECT
 
-```postgresql
-SELECT * FROM users WHERE admin IS true
-ORDER BY id DESC;
-```
+Cross-shard read queries are executed by all shards concurrently, which makes PgDog an efficient scatter/gather engine, with data nodes powered by PostgreSQL.
 
-This query doesn't specify a sharding key, so PgDog will send it to all shards in parallel. Once all shards receive the query, they will filter data from their respective `users` table and send the results ordered by the `id` column.
+The SQL language allows for powerful data filtration and manipulation. While we aim to support most operations, currently, support for most cross-shard operations is limited, as documented below.
 
-PgDog will receive rows from all shards at the same time. However, Postgres is not aware of other shards in the system so the overall sorting order will be wrong. PgDog will collect all rows and sort them by the `id` column before sending the results over to the client.
+| Operation | Supported | Limitations |
+|-|-|-|
+| Simple `SELECT` | :material-check: | None. |
+| `ORDER BY` | :material-check: | Target columns must be part of the tuples returned by the query. |
+| `DISTINCT` / `DISTINCT BY`| :material-check: | 〃 |
+| `GROUP BY` | :material-wrench: | Limited to cumulative functions only and columns returned by the query. `HAVING` clause not handled yet. |
+| CTEs | :material-wrench: | CTE must refer to data located on the same shard. |
+| Window functions | :material-close: | Not currently supported. |
+| Subqueries | :material-wrench: | Subqueries must refer to data located on the same shard. They cannot be used to return the value of a sharding key. |
 
-### Under the hood
+### Sorting with `ORDER BY`
 
-The SQL syntax provides many ways to specify ordering. Currently, PgDog supports 2 formats:
+If the query contains an `ORDER BY` clause, PgDog can sort the rows once it receives all data messages from all servers. For cross-shard queries, this allows us to retrieve rows in the specified order.
 
-* Order by column name(s)
-* Order by column position
+Two forms of syntax for the `ORDER BY` clause are supported:
 
-!!! note
-    Ordering using a function, e.g. `ORDER BY random()` is not currently supported.
+| Syntax | Notes |
+|-|-|
+| `ORDER BY column_name` | The column must be present in the result set and named accordingly. |
+| `ORDER BY <column position>` | The column is referred to by its position in the result, for example: `ORDER BY 1 DESC`. |
 
-#### Order by column name
-
-PgDog can extract the column names from the `ORDER BY` clause and match them
-to values in `DataRow`[^1] messages based on their position in the `RowDescription`[^1] message.
-
-For example, if the query specifies `ORDER BY id ASC, email DESC`, both `id` and `email` columns will be present in the `RowDescription` message along with their data types and locations in `DataRow`[^1] messages.
-
-The rows are received asynchronously as the query is executing on the shards. Once the messages are buffered, PgDog will sort them using the extracted column values and return the sorted result to the client.
+Sorting by multiple columns is supported, including opposing sorting directions, e.g.: `ORDER BY 1 ASC, created_at DESC`.
 
 #### Example
 
 ```postgresql
-SELECT * FROM users ORDER BY id, created_at
+SELECT * FROM users ORDER BY id DESC;
 ```
 
-#### Order by column index
+Since the `id` column is part of the result, PgDog can buffer and sort rows after it receives them from all shards. While referring to columns by name works well, it's sometimes easier to use column positions, for example:
 
-If the client specifies only column positions used for sorting, e.g., `ORDER BY 1 ASC, 4 DESC`, the mechanism for extracting data from rows is the same, except this time we don't need to look up columns by name: we have their position in the `RowDescription`[^1] message.
+```postgresql
+SELECT * FROM users ORDER BY 1 DESC;
+```
 
-The rest of the process is identical to ordering by [column name](#order-by-column-name) and results are returned in the correct order to the client.
+The latter pattern ensures that the only rows used for sorting are the ones included in the result returned by Postgres.
+
+### Aggregates with `GROUP BY`
+
+Aggregates are transformative functions: instead of returning rows as-is, they return calculated summaries, like a sum or a count. Many aggregates are cumulative: the aggregate can be calculated from partial results returned by each shard.
+
+Support for all aggregate functions is a work in progress, as documented below:
+
+| Aggregate function | Supported | Notes |
+|-|-|-|
+| `COUNT` / `COUNT(*)` | :material-check: | Supported for most [data types](#supported-data-types). |
+| `MAX` / `MIN` | :material-check: | 〃 |
+| `SUM` | :material-check: | 〃 |
+| `AVG` | :material-close: | Requires the query to be rewritten to return both `AVG` and `COUNT`. |
+| `percentile_disc` / `percentile_cont` | :material-close: | Very expensive to calculate on large results. |
+| `*_agg` | :material-close: | Not currently supported. |
+| `json_*` | :material-close: | 〃 |
+| Statistics, like `stddev`, `variance`, etc. | :material-close: | 〃 |
 
 #### Example
 
-```postgresql
-SELECT * FROM "users" ORDER BY 1, 3
-```
-
-[^1]: [PostgreSQL message formats](https://www.postgresql.org/docs/12/protocol-message-formats.html)
-
-## DDL
-
-DDL statements, i.e., queries that modify the database schema, like `CREATE TABLE`, are sent to all shards simultaneously. This allows clients to modify all shard schemas at the same time and requires no special changes to systems used for schema management and migrations.
-
-This assumes that all shards in the cluster have an identical schema. This is typically desired to make management of sharded databases simpler, but in scenarios where this is not possible, DDL queries can always be routed to specific shards using [manual routing](manual-routing.md).
-
-If [two-phase commit](2pc.md) is enabled, DDL statements have a high chance to be atomic. Alternatively, they can generally be written to be idempotent and safe to retry in case of error.
-
-### Two-phase commit
-
-PgDog supports Postgres' [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html) and [two-phase commit](2pc.md). If enabled, cross-shard writes have a high chance to be atomic and eventually consistent.
-
-
-## Aggregates
-
-PgDog has limited support for aggregate functions. Currently, the following functions are supported:
-
-* `min()`
-* `max()`
-* `count()` / `count(*)`
-* `sum()`
-
-Aggregates have to be executed over [supported](#supported-data-types) data types.
-
-### Limitations
-
-Not all aggregates can be calculated in a cross-shard query. For example, `avg()` requires both the sum and the count of all values, which a query result won't have. In this case, the query needs to be rewritten to include both values.
-
-Additionally, if using `GROUP BY`, the grouping column must be included in the result set. For example, the following aggregate currently won't work:
+Aggregate functions can be combined with cross-shard sorting, for example:
 
 ```postgresql
-SELECT COUNT(*) FROM users
-GROUP BY email;
+SELECT COUNT(*), is_admin
+FROM users
+GROUP BY 2
+ORDER BY 1 DESC
 ```
 
-PgDog works at the network layer and can only see the data sent and received by Postgres. To perform this aggregate,
-we need to see the value for the `email` field. To make it work, the query should be rewritten to include the `email` column:
+#### `HAVING` clause
 
+The `HAVING` clause is not currently supported.
+
+## INSERT
+
+If the `INSERT` statement specifies the sharding key, it's [routed directly](query-routing.md#insert) to one of the shards. Otherwise, it becomes a cross-shard statement.
+
+Cross-shard `INSERT` statements are handled in two distinct ways, depending on what they do. For `INSERT` statements into unsharded (also called [omnisharded](omnishards.md)) tables, the statement is sent to all shards concurrently. This ensures the data is identical on all shards, as desired.
+
+If the `INSERT` is creating a row in a sharded table, but the primary key is [database-generated](schema_management/primary_keys.md) _and_ used for sharding that table, the statement is sent to only one of the shards, using the round robin algorithm.
+
+For example:
 
 ```postgresql
-SELECT COUNT(*), email FROM users
-GROUP BY email;
+INSERT INTO users (id, email) VALUES (DEFAULT, 'test@acme.com') RETURNING *;
 ```
 
-!!! note
-    In the future, PgDog will be automatically rewriting queries to ensure
-    aggregates can be calculated transparently to the client. See our [roadmap](../../roadmap.md) for
-    more details.
+Instead of creating one user per shard, which would cause duplicate entries, PgDog will let the database generate a _globally_ unique primary key and place it on one of the shards only. This ensures even data distribution across the entire database cluster.
 
-## Supported data types
+## CREATE, ALTER, DROP
 
-Processing results in PgDog requires it to parse Postgres data types from the wire protocol. Postgres supports many data types and PgDog, currently, can only handle some of them. Clients can request results to be encoded in either `text` or `binary` encoding and supporting both requires special handling as well.
+`CREATE`, `ALTER` and `DROP`, also known as **D**ata **D**efinition **L**anguage (DDL), are by design, cross-shard statements. When a client sends over a DDL command, PgDog will send it to all shards in parallel, ensuring the table, index, view and sequence definitions are identical across the database cluster.
+
+### Atomicity
+
+DDL statements should be atomic across all shards. This is to protect against a single shard failure to create a table or index, which could result in an inconsistent schema. PgDog can use [two-phase commit](2pc.md) to ensure this is the case, however that means that all DDL statements must be executed inside a transaction, for example:
+
+```postgresql
+BEGIN;
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+COMMIT;
+```
+
+### Idempotency
+
+Some statements, like `CREATE INDEX CONCURRENTLY`, cannot run inside transactions. To make sure these are safely executed, you have two options: use [manual routing](manual-routing.md) and execute it on each shard individually, or write idempotent schema migrations, for example:
+
+```postgresql
+DROP INDEX IF EXISTS user_id_idx;
+CREATE INDEX CONCURRENTLY user_id_idx USING btree(user_id);
+```
+
+## Under the hood
+
+PgDog implements the PostgreSQL wire protocol, which is well documented and stable. The messages sent by Postgres clients and servers contain all the necessary information about data types, column names and executed statements, which PgDog can use to present multi-database results as a single stream of data.
+
+The following protocol messages are especially relevant:
+
+| Message | Description |
+|-|-|
+| `DataRow` | Each `DataRow` message contains one tuple, for each row returned by the query. |
+| `RowDescription` | This message has the column names and data types returned by the query. |
+| `CommandComplete` | Indicates that the query has finished returning results. PgDog uses it to start sorting and aggregation. |
+
+The protocol has two formats for encoding tuples: text and binary. Text format is equivalent to calling the `to_string()` method on native types, while binary encoding sends them in network-byte order. For example:
+
+=== "Data"
+    ```postgresql
+    SELECT 1::bigint, 2::integer, 'three'::VARCHAR;
+    ```
+=== "Encoding"
+    | Data type | Text | Binary |
+    |-|-|-|
+    | `BIGINT` | `"1"` | `00 00 00 00 00 00 00 01` |
+    | `INTEGER` | `"2"` | `00 00 00 02` |
+    | `VARCHAR` | `"three"` | `three` |
+
+Since PgDog needs to process rows before sending them to the client, we implemented parsing both formats for most data types, as documented below.
+
+### Supported data types
 
 | Data type | Sorting | Aggregation | Text format | Binary format |
 |-|-|-|-|-|
@@ -128,7 +171,7 @@ Processing results in PgDog requires it to parse Postgres data types from the wi
 | `SMALLINT` | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  | :material-check-circle-outline:  |
 | `VARCHAR` | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  | :material-check-circle-outline:  |
 | `TEXT` | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  |
-| `NUMERIC` | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline:  | No |
+| `NUMERIC` | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline: |
 | `REAL` | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  |
 | `DOUBLE PRECISION` | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  |
 | `INTERVAL` | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  | No  |
@@ -137,16 +180,16 @@ Processing results in PgDog requires it to parse Postgres data types from the wi
 | `UUID` | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  | :material-check-circle-outline: |
 | `VECTOR` | Only by L2 | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  |
 
-!!! note
+!!! note "pgvector data types"
     `VECTOR` type doesn't have a fixed OID in Postgres because it comes from an extension (`pgvector`). We infer it from the `<->` operator used in the `ORDER BY` clause.
 
 ## Disable cross-shard queries
 
-Cross-shard queries can be disabled with a configuration setting:
+If you don't want PgDog to route cross-shard queries, e.g., because you're building a [multitenant](../multi-tenancy.md) system with no cross-tenant dependencies, cross-shard queries can be disabled with a configuration setting:
 
 ```toml
 [general]
 cross_shard_disabled = true
 ```
 
-If enabled and a query doesn't have a sharding key, PgDog will return an error instead. This is useful in [multitenant](../../features/multi-tenancy.md) deployments where you want to explicitly block access to data between customers.
+If this setting is set, and a query doesn't have a sharding key, instead of executing the query, PgDog will return an error to the client and abort the transaction.

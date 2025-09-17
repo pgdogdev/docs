@@ -50,7 +50,6 @@ If the query has multiple sharding key filters, all of them will be extracted an
 
 For example, when filtering by a list of values, e.g., `WHERE user_id IN ($1, $2, $3)`, if all of them map to a single shard, the query will be sent to that shard only. If they map to two or more shards, it will be sent to all corresponding shards [concurrently](cross-shard.md).
 
-
 ## `INSERT`
 
 Insert queries are routed using the values in the `VALUES` clause, for example:
@@ -116,6 +115,32 @@ To make querying the `order_items` table in a sharded database possible, the fol
 | Use joins | For `SELECT` queries only, refer to the table as part of a join to a table that has the sharding key column. All other queries would need to use [manual routing](manual-routing.md).|
 
 Adding the sharding key column is often best, because it makes writing queries a lot easier. The sharding key is usually a compact data type, like a `BIGINT` or a `UUID`, so it doesn't take up much space, and can be backfilled relatively quickly. If backfilling, make sure to do so in small batches, so as to reduce impact on database performance.
+
+### Sharding configuration
+
+If most or all of your tables have the sharding key and the column name is the same, you can add it to [pgdog.toml](../../configuration/pgdog.toml/sharded_tables.md) without specifying a table name, for example:
+
+```toml
+[[sharded_tables]]
+database = "prod"
+column = "user_id"
+data_type = "bigint"
+```
+
+This will match all queries referring to all tables with the `user_id` column and route them to a shard accordingly.
+
+For the table storing the actual data referred to by the foreign keys, you can make another
+entry in the config, this time with the table name explicitly stated:
+
+```toml
+[[sharded_tables]]
+database = "prod"
+name = "users"
+column = "id"
+data_type = "bigint"
+```
+
+This will match queries referring to the `users.id` column only. Together with the `user_id` entry, all tables that contain the sharding key will be supported by the query router for direct-to-shard queries.
 
 ## Read more
 

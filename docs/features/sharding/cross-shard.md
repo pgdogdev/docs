@@ -193,3 +193,8 @@ cross_shard_disabled = true
 ```
 
 If this setting is set, and a query doesn't have a sharding key, instead of executing the query, PgDog will return an error to the client and abort the transaction.
+
+## Read more
+
+- [Sharding functions](sharding-functions.md)
+- [COPY command](copy.md)

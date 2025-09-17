@@ -118,3 +118,8 @@ PostgreSQL has dozens of data types. PgDog supports a subset of those for shardi
 | `BIGINT` / `INTEGER` / `SMALLINT` | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline: |
 | `VARCHAR` / `TEXT` | :material-check-circle-outline: | :material-check-circle-outline: | No |
 | `UUID` | :material-check-circle-outline: | :material-check-circle-outline: | No |
+
+## Read more
+
+- [COPY command](copy.md)
+- [Two-phase commit](2pc.md)

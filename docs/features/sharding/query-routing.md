@@ -50,7 +50,7 @@ If the query has multiple sharding key filters, all of them will be extracted an
 
 For example, when filtering by a list of values, e.g., `WHERE user_id IN ($1, $2, $3)`, if all of them map to a single shard, the query will be sent to that shard only. If they map to two or more shards, it will be sent to all corresponding shards [concurrently](cross-shard.md).
 
-## `INSERT`
+## INSERT
 
 Insert queries are routed using the values in the `VALUES` clause, for example:
 
@@ -73,7 +73,7 @@ INSERT INTO payments -- Missing column names.
 VALUES ($1, $2), ($3, $4) -- More than one tuple.
 ```
 
-## `UPDATE` and `DELETE`
+## UPDATE and DELETE
 
 Both `UPDATE` and `DELETE` queries work identically to [`SELECT`](#select) queries. The query router looks inside the `WHERE` clause for sharding keys, and routes the query to the corresponding shard.
 

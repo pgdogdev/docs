@@ -3,31 +3,91 @@ icon: material/multicast
 ---
 # Cross-shard queries
 
-If a client can't or chooses not to provide a sharding key, PgDog can route the query to all shards and combine the results automatically. To the client, this looks like the query executed against a single database.
+If a client can't or doesn't specify a sharding key in the query, PgDog will send that query to all shards in parallel, and combine the results automatically. To the client, this looks like the query was executed by a single database.
 
 <center style="margin-top: 2rem;">
-    <img src="/images/cross-shard.png" width="65%" alt="Cross-shard queries" />
+    <img src="/images/cross-shard.png" width="95%" alt="Cross-shard queries" />
 </center>
 
 ## How it works
 
-Since PgDog speaks the Postgres protocol, it can connect to multiple database servers and collect `DataRow`[^1] messages as they are being sent by each server. Once all servers finish
-executing the query, PgDog processes the result and sends it to the client as if all messages came from one server.
+PgDog understands the Postgres protocol. It can connect to multiple database servers, send the query to all of them, and collect `DataRow`[^1] messages as they returned by each connection.
 
-While this works for simple queries, others that involve sorting or aggregation are more complex and require special handling.
+Once all servers finish executing the request, PgDog processes the result, performs any requested sorting, aggregation or row dismambiguation, and sends the complete result back to the client, as if all rows came from one database server.
 
-## Sorting
+## SELECT
 
-If the client requests results to be ordered by one or more columns, PgDog can interpret this request and perform the sorting once it receives all data messages from all servers. For queries that span multiple shards, this feature allows you to retrieve results in the correct order. For example:
+Cross-shard read queries are executed by all shards concurrently, which makes PgDog an efficient scatter/gather engine, with data nodes powered by PostgreSQL.
+
+The SQL language allows for powerful data filtration and manipulation. While we aim to support most operations, currently, support for most cross-shard operations is limited, as documented below.
+
+| Operation | Supported | Limitations |
+|-|-|-|
+| Simple `SELECT` | :material-check: | None. |
+| `ORDER BY` | :material-check: | Target columns must be part of the tuples returned by the query. |
+| `GROUP BY` | :material-check: | 〃 |
+| `DISTINCT` / `DISTINCT BY`| :material-check: | 〃 |
+| CTEs | :material-wrench: | CTE must refer to data located on the same shard. |
+| Window functions | :material-close: | Not currently supported. |
+| Subqueries | :material-wrench: | Subqueries must refer to data located on the same shard. They cannot be used to return the value of a sharding key. |
+
+### Sorting with `ORDER BY`
+
+If the query contains an `ORDER BY` clause, PgDog can sort the rows once it receives all data messages from all servers. For cross-shard queries, this allows to retrieve rows in the specified order.
+
+Two forms of syntax for the `ORDER BY` clause are supported:
+
+| Syntax | Notes |
+|-|-|
+| `ORDER BY column_name` | The column must be present in the result set and named accordingly. |
+| `ORDER BY <column position>` | The column is referred to by its position in the result, for example: `ORDER BY 1 DESC`. |
+
+Sorting by multiple columns is supported, including opposing sorting directions, e.g.: `ORDER BY 1 ASC, created_at DESC`.
+
+#### Example
 
 ```postgresql
-SELECT * FROM users WHERE admin IS true
-ORDER BY id DESC;
+SELECT * FROM users ORDER BY id DESC;
 ```
 
-This query doesn't specify a sharding key, so PgDog will send it to all shards in parallel. Once all shards receive the query, they will filter data from their respective `users` table and send the results ordered by the `id` column.
+Since the `id` column is part of the result, PgDog can buffer and sort rows after it receives them from all shards. While referring to columns by name works well, it's sometimes easier to use column positions, for example:
 
-PgDog will receive rows from all shards at the same time. However, Postgres is not aware of other shards in the system so the overall sorting order will be wrong. PgDog will collect all rows and sort them by the `id` column before sending the results over to the client.
+```postgresql
+SELECT * FROM users ORDER BY 1 DESC;
+```
+
+### Aggregates with `GROUP BY`
+
+Aggregates are transformative functions: instead of returning rows as-is, they return calculated summaries, like a sum or a count. Many aggregates are commulative: the aggregate can be calculated from partial results returned by each shard.
+
+Support for all aggregate functions is a work-in-progress, as documented below:
+
+| Aggregate function | Supported | Notes |
+|-|-|-|
+| `COUNT` / `COUNT(*)` | :material-check: | Supported for most [data types](#supported-data-types). |
+| `MAX` / `MIN` | :material-check: | 〃 |
+| `SUM` | :material-check: | 〃 |
+| `AVG` | :material-close: | Requires the query to be rewritten to return `AVG` and `COUNT`. |
+| `percentile_disc` / `percentile_cont` | :material-close: | Very expensive to calculate on large results. |
+| `*_agg` | :material-close: | Not currently supported. |
+| `json_*` | :material-close: | 〃 |
+| Statistics, like `stddev`, `variance`, etc. | :material-close: | 〃 |
+
+#### Example
+
+Aggregate functions can be combined with cross-shard sorting, for example:
+
+```postgresql
+SELECT COUNT(*), is_admin
+FROM users
+GROUP BY 2,
+ORDER BY 1 DESC
+```
+
+#### `HAVING` clause
+
+The `HAVING` clause is applied to the aggregate results by each shard, and whatever results are returned will match the clause. No additional processing by PgDog is necessary.
+
 
 ### Under the hood
 

@@ -1,3 +1,7 @@
+---
+icon: material/account-key
+---
+
 # Users configuration
 
 This configuration controls which users are allowed to connect to PgDog. This is a TOML list so for each user, add a `[[users]]` section to `users.toml`. For example:
@@ -13,7 +17,6 @@ name = "bob"
 database = "prod"
 password = "opensesame"
 ```
-
 
 ### `name`
 
@@ -52,7 +55,7 @@ Default: **none** (defaults to `pooler_mode` from `pgdog.toml`)
 
 ### `server_user`
 
-Which user to connect with when creating backend connections from PgDog to PostgreSQL. By default, the user configured in `name` is used. This setting allows to override this configuration and use a different user.
+Which user to connect with when creating backend connections from PgDog to PostgreSQL. By default, the user configured in `name` is used. This setting allows you to override this configuration and use a different user.
 
 !!! note
     Values specified in `pgdog.toml` take priority over this configuration.
@@ -61,7 +64,7 @@ Default: **none** (defaults to `name`)
 
 ### `server_password`
 
-Which password to connect with when creating backend connections from PgDog to PostgreSQL. By default, the password configured in `password` is used. This setting allows to override this configuration and use a different password, decoupling server passwords from user passwords given to clients.
+Which password to connect with when creating backend connections from PgDog to PostgreSQL. By default, the password configured in `password` is used. This setting allows you to override this configuration and use a different password, decoupling server passwords from user passwords given to clients.
 
 Default: **none** (defaults to `password`)
 
@@ -70,7 +73,7 @@ Default: **none** (defaults to `password`)
 
 ### `statement_timeout`
 
-Sets the `statement_timeout` on all server connections at connection creation. This allows to set a reasonable default for each user without modifying `postgresql.conf` or using `ALTER USER`.
+Sets the `statement_timeout` on all server connections at connection creation. This allows you to set a reasonable default for each user without modifying `postgresql.conf` or using `ALTER USER`.
 
 !!! note
     Nothing is preventing the user from manually changing this setting at runtime, e.g., by running `SET statement_timeout TO 0`;

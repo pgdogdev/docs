@@ -1,3 +1,7 @@
+---
+icon: material/power-plug
+---
+
 # Plugin settings
 
 [Plugins](../../features/plugins/index.md) are dynamically loaded at PgDog startup. These settings control which plugins are loaded.

@@ -1,3 +1,7 @@
+---
+icon: material/mirror-rectangle
+---
+
 # Mirroring
 
 [Mirroring](../../features/mirroring.md) settings configure traffic mirroring between two databases. When enabled, query traffic is copied from the source database to the destination database, in real time.
@@ -22,7 +26,7 @@ Default: **none** (required)
 ### `destination_db`
 
 Name of the destination database to mirror traffic to. This should be a `name` configured
-in the [`databases` ](./databases.md) section of `pgdog.toml`.
+in the [`databases`](./databases.md) section of `pgdog.toml`.
 
 Default: **none** (required)
 

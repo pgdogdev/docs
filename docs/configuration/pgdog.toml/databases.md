@@ -1,6 +1,11 @@
+---
+icon: material/database-settings
+---
 # Database settings
 
-Database settings configure which databases PgDog is proxying. This is a TOML list of hosts, ports, and other settings like database roles (primary or replica). For each database host, add a `[[databases]]` entry to `pgdog.toml`. For example:
+Database settings configure which databases PgDog is managing. This is a TOML list of hosts, ports, and other settings like database roles (primary or replica).
+
+For each database instance, add a `[[databases]]` entry to `pgdog.toml`. For example:
 
 ```toml
 [[databases]]
@@ -19,8 +24,8 @@ shard = 0
 
 ### `name`
 
-Name of your database. Clients that connect to PgDog will need to use this name to refer to the database. For multiple entries part of
-the same cluster, use the same `name`.
+Name of your database. Clients that connect to PgDog will need to use this name to refer to the database. For multiple entries that are part of
+the same cluster, use the same value.
 
 Default: **none** (required)
 

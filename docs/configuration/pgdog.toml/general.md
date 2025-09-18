@@ -1,3 +1,6 @@
+---
+icon: material/filter-cog
+---
 
 # General settings
 
@@ -5,7 +8,7 @@ General settings are relevant to the operations of the pooler itself, or apply t
 
 ### `host`
 
-The IP address of the local network interface PgDog will bind to listen for connections.
+The IP address of the local network interface PgDog will bind to to listen for connections.
 
 !!! note
     This setting cannot be changed at runtime.
@@ -14,7 +17,7 @@ Default: **`0.0.0.0`** (all interfaces)
 
 ### `port`
 
-The TCP port PgDog will bind to listen for connections.
+The TCP port PgDog will bind to to listen for connections.
 
 Default: **`6432`**
 
@@ -24,7 +27,7 @@ Default: **`6432`**
 ### `workers`
 
 Number of Tokio threads to spawn at pooler startup. In multi-core systems, the recommended setting is two (2) per
-virtual CPU. The value `0` means to spawn no threads and use the current thread runtime (single-threaded). The latter option is better on IO-bound systems where multi-threading is not necessary and could even hamper performance.
+virtual CPU. The value `0` means to spawn no threads and use the current thread runtime (single-threaded). This option is better on IO-bound systems where multi-threading is not necessary and could even hamper performance.
 
 Default: **`0`** (current thread runtime)
 
@@ -112,7 +115,7 @@ Default: **`30_000`** (30s)
 
 #### Note on `min_pool_size`
 
-[Healthchecks](../../features/load-balancer/healthchecks.md) try to use existing idle connections to validate the database is up and running. If there are no idle connections available, PgDog will create an ephemeral connection to perform the healthcheck. If you want to avoid this, make sure to have `min_pool_size` to be at least `1`.
+[Healthchecks](../../features/load-balancer/healthchecks.md) try to use existing idle connections to validate the database is up and running. If there are no idle connections available, PgDog will create an ephemeral connection to perform the healthcheck. If you want to avoid this, make sure to set `min_pool_size` to at least `1`.
 
 ### `idle_healthcheck_delay`
 
@@ -148,7 +151,7 @@ Default: **`60_000`** (60s)
 
 ### `query_timeout`
 
-Maximum amount of time to wait for Postgres query to finish executing. Use only in unreliable network conditions or when Postgres runs on unreliable hardware.
+Maximum amount of time to wait for a Postgres query to finish executing. Use only in unreliable network conditions or when Postgres runs on unreliable hardware.
 
 Default: **disabled**
 
@@ -283,13 +286,13 @@ Enables support for prepared statements. Available options are:
 - `full`
 
 Full enables support for rewriting prepared statements sent over the simple protocol. Extended handles prepared statements sent normally
-using the extended protocol. `full` attempts to rewrite prepared statements sent over using the simple protocol.
+using the extended protocol. `full` attempts to rewrite prepared statements sent using the simple protocol.
 
 Default: **`extended`**
 
 ### `prepared_statements_limit`
 
-Number of prepared statements that will be allowed for each server connection. If this limit is reached, least used statement is closed
+Number of prepared statements that will be allowed for each server connection. If this limit is reached, the least used statement is closed
 and replaced with the newest one. Additionally, any unused statements in the [global cache](../../features/prepared-statements.md) above this
 limit will be removed.
 

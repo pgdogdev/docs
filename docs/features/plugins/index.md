@@ -48,7 +48,7 @@ When writing plugins, it's helpful to import most commonly used macros, function
 use pgdog_plugin::prelude::*;
 ```
 
-PgDog plugins have a list of required methods they need to expose. They are called by PgDog at plugin startup and validate that it
+PgDog plugins have a list of required methods they need to expose. They are called by PgDog at plugin startup to validate that it
 was correctly written.
 
 You don't need to implement them yourself. Add the following to your plugin's `src/lib.rs` file:
@@ -57,10 +57,10 @@ You don't need to implement them yourself. Add the following to your plugin's `s
 macros::plugin!();
 ```
 
-These ensure the following requirements are followed:
+This ensures the following requirements are followed:
 
 1. The plugin is compiled with the same version of the Rust compiler as PgDog itself
-2. They are using the same version of `pg_query`
+2. It is using the same version of `pg_query`
 
 See [Safety](#safety) section for more info.
 
@@ -69,7 +69,7 @@ See [Safety](#safety) section for more info.
 
 ### `init`
 
-This function is executed once at startup, when PgDog loads the plugin. It allows to initialize any
+This function is executed once at startup, when PgDog loads the plugin. It allows you to initialize any
 kind of internal plugin state. Execution of this function is synchronized, so it's safe to include any thread-unsafe
 functions or initialize synchronization primitives, like mutexes.
 
@@ -103,9 +103,9 @@ fn route(context: Context) -> Route {
 The [`Context`](https://docsrs.pgdog.dev/pgdog_plugin/context/struct.Context.html) struct provides the following information:
 
 - Number of shards in the database cluster
-- Does the cluster have replicas
+- Does the cluster have replicas?
 - The Abstract Syntax Tree (AST) of the statement, parsed by `pg_query`
-- Parameter values, if statement is prepared
+- Parameter values, if the statement is prepared
 
 
 #### Outputs
@@ -116,7 +116,7 @@ The plugin is expected to return a [`Route`](https://docsrs.pgdog.dev/pgdog_plug
 - Is the query a read or a write, sending it to a replica or the primary, respectively
 - Should the query be blocked from executing
 
-All of these are optional. If you don't return either one, the plugin doesn't influence the routing decision at all and can be used for logging queries, or some other purpose.
+All of these are optional. If you don't return any of these, the plugin doesn't influence the routing decision at all and can be used for logging queries, or some other purpose.
 
 
 
@@ -143,7 +143,7 @@ Plugins need to be compiled and placed into a folder on your machine where PgDog
 3. Pass the absolute (or relative) path to the plugin in [`pgdog.toml`](../../configuration/pgdog.toml/plugins.md)
 
 !!! note
-    Make sure to compile plugins in release mode for good performance: `cargo build --release`. The plugin's shared library will be in `target/release` folder of your Cargo project, e.g., `target/release/libmy_plugin.so`.
+    Make sure to compile plugins in release mode for good performance: `cargo build --release`. The plugin's shared library will be in the `target/release/` folder of your Cargo project, e.g., `target/release/libmy_plugin.so`.
 
 You then need to specify which plugins you'd like PgDog to load at runtime:
 
@@ -152,7 +152,7 @@ You then need to specify which plugins you'd like PgDog to load at runtime:
 name = "my_plugin"
 ```
 
-This can be the name of the library (without the `lib` prefix or the `.so`/`.dylib` extension) or relative/absolute path to the shared library, for example:
+This can be the name of the library (without the `lib` prefix or the `.so`/`.dylib` extension) or a relative/absolute path to the shared library, for example:
 
 ```toml
 [[plugins]]

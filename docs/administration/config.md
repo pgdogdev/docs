@@ -19,12 +19,12 @@ The following configuration parameters are available and their current values:
 | `connect_attempt_delay` [:material-link:](../configuration/pgdog.toml/general.md#connect_attempt_delay) | `0ms` |
 | `connect_attempts` [:material-link:](../configuration/pgdog.toml/general.md#connect_attempts) | `1` |
 | `connect_timeout` [:material-link:](../configuration/pgdog.toml/general.md#connect_timeout) | `1s` |
-| `cross_shard_disabled` [:material-link:](../configuration/pgdog.toml/general.md#cross_shard_disabled) | `false` |
+| `cross_shard_disabled` | `false` |
 | `default_pool_size` [:material-link:](../configuration/pgdog.toml/general.md#default_pool_size) | `10` |
-| `dns_ttl` [:material-link:](../configuration/pgdog.toml/general.md#dns_ttl) | `default` |
+| `dns_ttl` | `default` |
 | `dry_run` [:material-link:](../configuration/pgdog.toml/general.md#dry_run) | `false` |
 | `healthcheck_interval` [:material-link:](../configuration/pgdog.toml/general.md#healthcheck_interval) | `30s` |
-| `healthcheck_timeout` [:material-link:](../configuration/pgdog.toml/general.md#healthcheck_timeout) | `5s` |
+| `healthcheck_timeout` | `5s` |
 | `host` [:material-link:](../configuration/pgdog.toml/general.md#host) | `0.0.0.0` |
 | `idle_healthcheck_delay` [:material-link:](../configuration/pgdog.toml/general.md#idle_healthcheck_delay) | `5s` |
 | `idle_healthcheck_interval` [:material-link:](../configuration/pgdog.toml/general.md#idle_healthcheck_interval) | `30s` |
@@ -43,11 +43,11 @@ The following configuration parameters are available and their current values:
 | `prepared_statements` [:material-link:](../configuration/pgdog.toml/general.md#prepared_statements) | `extended` |
 | `prepared_statements_limit` [:material-link:](../configuration/pgdog.toml/general.md#prepared_statements_limit) | `500` |
 | `pub_sub_channel_size` [:material-link:](../configuration/pgdog.toml/general.md#pub_sub_channel_size) | `4098` |
-| `query_cache_limit` [:material-link:](../configuration/pgdog.toml/general.md#query_cache_limit) | `500` |
-| `query_log` [:material-link:](../configuration/pgdog.toml/general.md#query_log) | `default` |
+| `query_cache_limit` | `500` |
+| `query_log` | `default` |
 | `query_timeout` [:material-link:](../configuration/pgdog.toml/general.md#query_timeout) | `1s` |
 | `read_write_split` [:material-link:](../configuration/pgdog.toml/general.md#read_write_split) | `include_primary` |
-| `read_write_strategy` [:material-link:](../configuration/pgdog.toml/general.md#read_write_strategy) | `aggressive` |
+| `read_write_strategy` | `aggressive` |
 | `rollback_timeout` [:material-link:](../configuration/pgdog.toml/general.md#rollback_timeout) | `1s` |
 | `shutdown_timeout` [:material-link:](../configuration/pgdog.toml/general.md#shutdown_timeout) | `1m` |
 | `tls_certificate` [:material-link:](../configuration/pgdog.toml/general.md#tls_certificate) | `default` |
@@ -57,9 +57,9 @@ The following configuration parameters are available and their current values:
 | `two_phase_commit` [:material-link:](../configuration/pgdog.toml/general.md#two_phase_commit) | `false` |
 | `two_phase_commit_auto` [:material-link:](../configuration/pgdog.toml/general.md#two_phase_commit_auto) | `default` |
 | `workers` [:material-link:](../configuration/pgdog.toml/general.md#workers) | `2` |
-| `tcp_congestion_control` [:material-link:](../configuration/pgdog.toml/general.md#tcp_congestion_control) | `default` |
-| `tcp_interval` [:material-link:](../configuration/pgdog.toml/general.md#tcp_interval) | `default` |
-| `tcp_keepalive` [:material-link:](../configuration/pgdog.toml/general.md#tcp_keepalive) | `true` |
-| `tcp_retries` [:material-link:](../configuration/pgdog.toml/general.md#tcp_retries) | `default` |
-| `tcp_time` [:material-link:](../configuration/pgdog.toml/general.md#tcp_time) | `default` |
-| `tcp_user_timeout` [:material-link:](../configuration/pgdog.toml/general.md#tcp_user_timeout) | `default` |
+| `tcp_congestion_control` | `default` |
+| `tcp_interval` | `default` |
+| `tcp_keepalive` | `true` |
+| `tcp_retries` | `default` |
+| `tcp_time` | `default` |
+| `tcp_user_timeout` | `default` |

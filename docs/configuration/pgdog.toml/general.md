@@ -248,16 +248,17 @@ Default: **none**
 
 ### `auth_type`
 
-What kind of authentication mechanism to use for client connections.
+What kind of [authentication](../../features/authentication.md) mechanism to use for client connections.
 
 Currently supported:
 
 - `scram` (SCRAM-SHA-256)
 - `md5` (MD5)
+- `trust`
 
 Default: **`scram`**
 
-`md5` is very quick but not secure, while `scram` authentication is slow but has better security features. If security isn't a concern but latency for connection creation is, consider using `md5`.
+`md5` is very quick but not secure, while `scram` authentication is slow but has better security features. If security isn't a concern but latency for connection creation is, consider using `md5`. To disable auth and allow passwordless connections, use `trust`.
 
 ### `passthrough_auth`
 

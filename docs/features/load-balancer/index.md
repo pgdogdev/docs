@@ -122,13 +122,13 @@ PgDog processes queries immediately upon receiving them, and since transactions 
     ```
 
 
-    This is useful when the data in the table(s) has been recently updated and you want to avoid errors caused by replication lag. This often manifests with "record not-found"-style errors, for example:
+    This is useful when the data in the table(s) has been recently updated and you want to avoid errors caused by replication lag. This often manifests as "record not-found"-style errors, for example:
 
     ```
     ActiveRecord::RecordNotFound (Couldn't find User with 'id'=9999):
     ```
 
-    While sending read queries to the primary adds load, it is often necessary in real-time systems not equipped to handle replication delays.
+    While sending read queries to the primary adds load, it is often necessary in real-time systems that are not equipped to handle replication delays.
 
 
 #### Read-only transactions
@@ -175,7 +175,7 @@ role = "replica"
 host = "10.0.0.2"
 ```
 
-### Primary reads
+## Primary reads
 
 By default, if replica databases are configured, the primary is treated as one of them when serving read queries. This is done to maximize the use of existing hardware and prevents overloading a replica when it is first added to the database cluster.
 
@@ -186,6 +186,16 @@ This behavior is configurable in [pgdog.toml](../../configuration/pgdog.toml/gen
 read_write_split = "exclude_primary"
 ```
 
+### Manual routing
+
+!!! note "New feature"
+    This feature was added in commit version [`c49339f`](https://github.com/pgdogdev/pgdog/commit/c49339f70db8be63b76ebb3aa0f31433c4266f21). If using this feature, make sure to run the latest version of PgDog.
+
+If your query is replica-lag sensitive (e.g., you are reading data that you just wrote), you can route it to the primary manually. The query router supports doing this with a query comment:
+
+```postgresql
+/* pgdog_role: primary */ SELECT * FROM users WHERE id = $1
+```
 
 ## Learn more
 

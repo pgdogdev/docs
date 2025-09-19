@@ -1,4 +1,8 @@
-# Hash resharding
+---
+icon: material/database-export-outline
+---
+
+# Move data
 
 If you're using the `HASH` sharding function, adding a new node to the cluster will change the modulo number by 1. The number returned by the hash function is uniformly distributed across the entire integer range, which makes it considerably larger than the modulo. Therefore, changing it will more often than not result in most rows remapped to different shard numbers.
 
@@ -23,16 +27,16 @@ PgDog's strategy for resharding is to **move data** from an existing cluster to 
 
 ## Data sync
 
-Moving data online is a 2 step process:
+Moving data online is a 2-step process:
 
 1. Copy data from tables using Postgres `COPY`
-2. Stream real time changes using logical replication
+2. Stream real-time changes using logical replication
 
 To make sure no rows are lost in the process, PgDog follows a similar strategy used by Postgres in logical replication subscriptions, with some improvements.
 
 ### Copying tables
 
-Copying table data from source database cluster is done using Postgres `COPY` and logical replication slots. This is implemented in the `data-sync` command:
+Copying table data from the source database cluster is done using Postgres `COPY` and logical replication slots. This is implemented in the `data-sync` command:
 
 ```bash
 pgdog data-sync --help
@@ -50,5 +54,5 @@ All databases and users must be configured in `pgdog.toml` and `users.toml`.
 
 ### Real time changes
 
-After data sync is complete, changes for all tables in the publication will be streamed in real time. Keep this connection
+After data sync is complete, changes for all tables in the publication will be streamed in real-time. Keep this connection
 open until you are ready to cut traffic over to the new database cluster.

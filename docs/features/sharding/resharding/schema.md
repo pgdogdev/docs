@@ -46,13 +46,14 @@ Before starting the resharding process for your database, double-check that you 
 
 Since PgDog is using logical replication to move and reshard data, a [publication](https://www.postgresql.org/docs/current/sql-createpublication.html) for the relevant tables needs to be created on the source database.
 
-The simplest way to do this is to run the following command on the **source database**:
+The simplest way to do this is to run the following command:
 
-```postgresql
-CREATE PUBLICATION pgdog FOR ALL TABLES;
-```
+=== "Source database"
+    ```postgresql
+    CREATE PUBLICATION pgdog FOR ALL TABLES;
+    ```
 
-This will make sure _all_ tables in your database will be resharded into the destination database cluster.
+This will make sure _all_ tables in your database will be copied and resharded into the destination database cluster.
 
 !!! note "Multiple schemas"
     If you're using schemas other than `public`, create them on the destination database before running the schema sync.

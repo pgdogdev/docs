@@ -45,7 +45,7 @@ Round robin is used **by default**, so no config changes are required. You can s
 
 ```toml
 [general]
-load_balancer_strategy = "round_robin"
+load_balancing_strategy = "round_robin"
 ```
 
 ### Random
@@ -58,7 +58,7 @@ This algorithm is often effective when queries have unpredictable runtime. By ra
 
 ```toml
 [general]
-load_balancer_strategy = "random"
+load_balancing_strategy = "random"
 ```
 
 ### Least active connections
@@ -71,7 +71,7 @@ This algorithm is useful when you want to "bin pack" the replica cluster. It ass
 
 ```toml
 [general]
-load_balancer_strategy = "least_active_connections"
+load_balancing_strategy = "least_active_connections"
 ```
 
 

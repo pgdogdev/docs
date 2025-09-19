@@ -24,7 +24,7 @@ The resharding process is composed of four independent operations:
 3. #### [Move data](hash.md)
 4. #### [Cutover traffic](cutover.md)
 
-All of the individual steps are automated by PgDog, while their orchestration is currently the responsibility of the user.
+Steps two and three are automated by PgDog, while their orchestration is currently the responsibility of the user.
 
 ## Terminology
 

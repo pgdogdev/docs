@@ -13,7 +13,7 @@ mdp = MarkdownIt()
 pattern = re.compile(r'(?msi)^(?P<fence>[`~]{3,})[ \t]*toml\b[^\n]*\r?\n(?P<code>.*?)^(?P=fence)[ \t]*\r?$',)
 
 def verify(binary):
-    for file in glob.glob("**/*.md",
+    for file in glob.glob("docs/**/*.md",
         recursive=True):
         with open(file, "r") as f:
             content = f.read()

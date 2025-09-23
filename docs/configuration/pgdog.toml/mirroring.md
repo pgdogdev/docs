@@ -12,7 +12,7 @@ For example:
 [[mirroring]]
 source_db = "source"
 destination_db = "dest"
-queue_depth = 500
+queue_length = 500
 exposure = 0.1
 ```
 

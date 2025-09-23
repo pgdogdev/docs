@@ -63,6 +63,10 @@ PgDog will expect clients connecting as `pgdog` to provide the password `hunter2
 You can override the user and/or password PgDog uses to connect to Postgres by specifying `server_user` and `server_password` in the same configuration:
 
 ```toml
+[[users]]
+name = "pgdog"
+password = "hunter2"
+database = "pgdog"
 server_user = "bob"
 server_password = "opensesame"
 ```

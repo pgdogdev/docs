@@ -81,6 +81,7 @@ Databases are automatically put back into the load balancer after a period of ti
 The amount of time the database is banned from serving traffic is controlled with the `ban_timeout` setting:
 
 ```toml
+[general]
 ban_timeout = 300_000 # 5 minutes
 ```
 
@@ -101,7 +102,7 @@ By default, the load balancer gives the database a limited amount of time to ans
 This behavior is configurable with the `healthcheck_timeout` setting:
 
 ```toml
-[global]
+[general]
 healthcheck_timeout = 5_000 # 5 seconds in ms
 ```
 

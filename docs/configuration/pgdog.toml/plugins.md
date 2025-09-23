@@ -28,6 +28,7 @@ name is `router`, PgDog will look for `librouter.so` on Linux, `librouter.dll` o
 Additionally, you can pass the relative or absolute path to the shared library itself:
 
 ```toml
+[[plugins]]
 name = "/opt/plugins/librouter.so"
 ```
 

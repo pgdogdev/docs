@@ -37,6 +37,7 @@ Most settings can be reloaded without restarting PgDog. This allows you to tweak
 To make things simpler, all units of time are in milliseconds. For example, if you want to set the pool checkout timeout to 5 seconds, convert it to 5000ms instead:
 
 ```toml
+[general]
 checkout_timeout = 5_000
 ```
 

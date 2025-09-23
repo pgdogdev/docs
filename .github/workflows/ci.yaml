@@ -1,35 +1,36 @@
 name: CI
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 jobs:
-  verify-tomls:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install
-        working-directory: ci/bun
-
-      - name: Collect snippets
-        run: bun run ci/bun/scripts/collectSnippets.ts
-
-      - name: Verify snippets
-        run: bash ci/bash/verify_snippets.bash
-
-      - name: Upload log artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: verification-log
-          path: verification-log.json
+    verify-tomls:
+        runs-on: blacksmith-4vcpu-ubuntu-2404
+        timeout-minutes: 30
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Checkout another public repo
+              uses: actions/checkout@v4
+              with:
+                  repository: pgdogdev/pgdog
+                  ref: main
+                  path: pgdog-source
+            - uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+                  override: true
+            - name: Install CMake 3.31
+              run: |
+                  sudo apt update && sudo apt install mold -y
+                  sudo apt remove cmake
+                  sudo pip3 install cmake==3.31.6
+                  cmake --version
+            - name: Build
+              run: cargo build
+              working-directory: pgdog-source
+            - name: Install test dependencies
+              run: sudo pip3 install -r tests/requirements.txt
+            - name: Run tests
+              run: python3 tests/test_code_blocks.py pgdog-source/target/debug/pgdog

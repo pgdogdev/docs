@@ -15,7 +15,7 @@ The following configuration will match queries referring to this exact table and
 ```toml
 [[sharded_tables]]
 database = "prod"
-table = "users"
+name = "users"
 column = "id"
 data_type = "bigint"
 ```

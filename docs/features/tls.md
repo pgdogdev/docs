@@ -47,6 +47,7 @@ The default value for most PostgreSQL connection drivers is typically `prefer`, 
 By default, PgDog will attempt to use TLS when connecting to PostgreSQL. This is configurable via a setting:
 
 ```toml
+[general]
 tls_verify = "prefer"
 ```
 
@@ -62,6 +63,7 @@ This setting accepts almost identical values to the `sslmode` parameter used by 
 If you use `verify_ca` or `verify_full` and your certificate is not signed by a well known CA, you can configure PgDog to validate it using your own certificate chain:
 
 ```toml
+[general]
 tls_server_ca_certificate = "/path/to/ca/certificate.pem"
 ```
 

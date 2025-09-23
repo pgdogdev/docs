@@ -87,7 +87,7 @@ Support for sorting rows in [cross-shard](features/sharding/cross-shard.md) quer
 
 | Feature | Status | Notes |
 |-|-|-|
-| [Data sync](features/sharding/resharding/hash.md#data-sync) | :material-wrench: | Sync table data with logical replication. Not benchmarked yet. |
+| [Data sync](features/sharding/resharding/hash.md) | :material-wrench: | Sync table data with logical replication. Not benchmarked yet. |
 | [Schema sync](features/sharding/resharding/schema.md) | :material-wrench: | Sync table, index and constraint definitions. Not benchmarked yet. |
 | Online rebalancing | :material-calendar-check: | Not automated yet, requires manual orchestration. |
 

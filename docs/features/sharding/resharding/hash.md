@@ -4,6 +4,59 @@ icon: material/database-export-outline
 
 # Move data
 
+Moving data from the source to the desination database is done using logical replication. This is an online operation, and doesn't require a maintenance window or pausing query traffic.
+
+The underlying mechanism is very similar to Postgres [subscriptions](https://www.postgresql.org/docs/current/sql-createsubscription.html), with some improvements, and happens in two steps:
+
+1. Copy data in the [publication](schema.md#publication) to the destination database
+2. Stream row changes in real-time
+
+Once the replication stream syncrhonizes the two database clusters, the data on the destination cluster will be identical, within a few milliseconds, to the source cluster.
+
+## CLI
+
+PgDog has a command line interface you can call by running it directly:
+
+```bash
+pgdog data-sync \
+    --from-database <name> \
+    --from-user <name> \
+    --to-database <name> \
+    --to-user <name> \
+    --publication <publication>
+```
+
+Required (*) and optional parameters for this command are as follows:
+
+| Option | Description |
+|-|-|
+| `--from-database`* | Name of the source database cluster. |
+| `--from-user` * | Name of the user configured in `users.toml` for the source database cluster. |
+| `--to-database`* | Name of the destination database cluster. |
+| `--to-user`* | Name of the user configured in `users.toml` for the destination database cluster. |
+| `--publication`* | Name of the Postgres [publication](schema.md#publication) for tables to be copied and sharded. It should exist on the **source** database. |
+
+## How it works
+
+The first thing PgDog will do when data sync is started is create a replication slot on each primary database in the source cluster. This will prevent Postgres from removing the WAL, while we copy data for each table to the destination.
+
+Next, each table will be copied, in parallel, to the destination database, using [sharded COPY](../copy.md). Once that's done, table changes are synchronized, in real-time, with logical replication from the replication slot created earlier.
+
+The whole process happens entirely online, and doesn't require database reboots or pausing writes to the source database.
+
+### Replication slot
+
+<center>
+    <img src="/images/resharding-slot-2.png" width="90%" alt="Cross-shard queries" />
+</center>
+
+### Copying data
+
+
+<center>
+    <img src="/images/resharding-16x.png" width="75%" alt="Cross-shard queries" />
+</center>
+
 If you're using the `HASH` sharding function, adding a new node to the cluster will change the modulo number by 1. The number returned by the hash function is uniformly distributed across the entire integer range, which makes it considerably larger than the modulo. Therefore, changing it will more often than not result in most rows remapped to different shard numbers.
 
 You can visualize this phenomenon with a bit of Python:

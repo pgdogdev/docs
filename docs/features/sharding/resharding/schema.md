@@ -8,7 +8,7 @@ PgDog can copy tables, indices and other entities from your production database 
 1. [Create tables](#tables-and-primary-keys), primary key indices, and sequences
 2. Create [secondary indices](#secondary-indices)
 
-The first step needs to be performed first, before [copying data](hash.md). The second step is performed once the data sync is almost complete.
+The create tables step needs to be performed first, before [copying data](hash.md). The second step is performed once the data sync is almost complete.
 
 ## CLI
 
@@ -74,7 +74,7 @@ PgDog will use that user to connect to the source and destination databases, so 
 
 ### `pg_dump` version
 
-PgDog is using `pg_dump` under the hood to export schema definitions. Postgres requires the version of `pg_dump` and the server to be identical. Our [Docker image](../../../installation.md) comes with `pg_dump` for PostgreSQL 16, but your database server may run a different version.
+PgDog is using `pg_dump` under the hood to export schema definitions. Postgres requires the version of `pg_dump` and the Postgres server to be identical. Our [Docker image](../../../installation.md) comes with `pg_dump` for PostgreSQL 16, but your database server may run a different version.
 
 Before proceeding, make sure to install the correct version of `pg_dump` for your source database. If you have multiple versions of `pg_dump` installed on the same host, you can specify the path to the right one in `pgdog.toml`:
 

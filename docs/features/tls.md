@@ -35,7 +35,7 @@ PostgreSQL supports 4 modes for establishing encrypted connections, documented b
 
 | Mode | Description |
 |-|-|
-| `disable` | TLS connections are disabled. Client will connect using plain TCP. |
+| `disabled` | TLS connections are disabled. Client will connect using plain TCP. |
 | `prefer` | If PgDog/PostgreSQL support encryption, it will be used. If not, connections will be made using plain TCP. Any certificate will be accepted. This is often used with self-signed certificates. |
 | `verify-ca` | Encryption will be used and if not supported, the connection attempt will be aborted. Additionally, the client will verify the validity of the certificate against a trusted anchor, e.g., local certificate store. |
 | `verify-full` | In addition to verifying the certificate, the client will ensure the hostname provided matches the hostname on the certificate. |

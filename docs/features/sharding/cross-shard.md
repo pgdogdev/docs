@@ -132,7 +132,7 @@ Some statements, like `CREATE INDEX CONCURRENTLY`, cannot run inside transaction
 
 ```postgresql
 DROP INDEX IF EXISTS user_id_idx;
-CREATE INDEX CONCURRENTLY user_id_idx USING btree(user_id);
+CREATE INDEX CONCURRENTLY user_id_idx ON users USING btree(user_id);
 ```
 
 ## Under the hood

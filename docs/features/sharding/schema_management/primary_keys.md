@@ -25,7 +25,11 @@ CREATE TABLE users (
 If you run this command through PgDog, this table will be created on all shards. Underneath, Postgres expands `BIGSERIAL` to the following code:
 
 ```postgresql
-BIGINT NOT NULL DEFAULT nextval('users_id_seq'::regclass)
+CREATE TABLE users (
+    id BIGINT UNIQUE NOT NULL DEFAULT nextval('users_id_seq'::regclass),
+    email VARCHAR NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 ```
 
 The `users_id_seq` is a sequence, automatically created by Postgres, that will be used to generate unique values for inserted rows that don't provide one for the `id` column.

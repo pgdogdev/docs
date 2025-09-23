@@ -24,10 +24,10 @@ Postgres has 3 kinds of queries, each handled a little bit differently in a shar
 
 ```postgresql
 -- Sharding key equals a single value
-SELECT * FROM users WHERE user_id = $1
+SELECT * FROM users WHERE user_id = $1;
 
 -- Sharding keys IN tuple
-SELECT * FROM users WHERE id IN ($1, $2, $3)
+SELECT * FROM users WHERE id IN ($1, $2, $3);
 ```
 
 Queries that don't match this pattern will currently be routed to all shards. We are continuously adding support for more complex patterns.

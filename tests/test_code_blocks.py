@@ -5,12 +5,20 @@ import re
 import subprocess
 from markdown_it import MarkdownIt
 import sys
+import pglast
 
 from regex import sub
 from regex.regex import Regex, RegexFlag
 mdp = MarkdownIt()
 
-pattern = re.compile(r'(?msi)^(?P<fence>[`~]{3,})[ \t]*toml\b[^\n]*\r?\n(?P<code>.*?)^(?P=fence)[ \t]*\r?$',)
+pattern = re.compile(
+    r'(?msi)^(?P<fence>[`~]{3,})[^\n]*\r?\n(?P<code>.*?)^(?P=fence)[ \t]*\r?$'
+)
+
+replication = [
+    "CREATE_REPLICATION_SLOT",
+    "START_REPLICATION",
+]
 
 def verify(binary):
     for file in glob.glob("docs/**/*.md",
@@ -27,6 +35,17 @@ def verify(binary):
                         pass
                     else:
                         check_file(binary, "pgdog", token.content)
+                elif token.type == "fence" and token.info == "postgresql":
+                    try:
+                        pglast.parser.parse_sql(token.content)
+                    except Exception as e:
+                        found = False
+                        for cmd in replication:
+                            if cmd in token.content:
+                                found = True
+                        if not found:
+                            print(token.content)
+                            raise e
 
 def check_file(binary, kind, content):
     tmp = f"/tmp/pgdog_config_test.toml"

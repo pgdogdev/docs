@@ -87,7 +87,10 @@ ban_timeout = 300_000 # 5 minutes
 
 The **default** value is **5 minutes** (`300_000` milliseconds).
 
-If the database is still broken once the ban expires, it will fail a health check and will be removed from the load balancer again.
+!!! note
+    A database will not be placed back into the load balancer until it passes a health check again.
+
+    Make sure that `idle_healthcheck_timeout` is set to a lower setting than `ban_timeout`, so health checks have time to run before you expect the database to resume serving traffic.
 
 ### False positives
 

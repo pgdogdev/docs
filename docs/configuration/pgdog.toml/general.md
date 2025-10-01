@@ -148,7 +148,6 @@ queries as possible.
 
 Default: **`60_000`** (60s)
 
-
 ### `query_timeout`
 
 Maximum amount of time to wait for a Postgres query to finish executing. Use only in unreliable network conditions or when Postgres runs on unreliable hardware.
@@ -191,6 +190,12 @@ Default: **`60_000`** (60s)
 Close client connections that have been idle, i.e., haven't sent any queries, for this amount of time.
 
 Default: **`none`** (disabled)
+
+### `client_login_timeout`
+
+Maximum amount of time new clients have to complete authentication. Clients that don't will be disconnected.
+
+Default: **`60_000`** (60s)
 
 ## Load balancer
 

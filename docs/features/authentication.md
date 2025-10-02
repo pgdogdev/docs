@@ -20,11 +20,6 @@ PgDog implements a subset of authentication methods supported by Postgres. We're
 | `plain` | Only for [passthrough](#passthrough-authentication) | :material-check-circle-outline: |
 | `trust` | :material-check-circle-outline: | :material-check-circle-outline: |
 
-!!! note
-    Currently, PgDog uses `md5` authentication with clients that connect over TLS.
-    This is due to a potential bug in our SCRAM implementation. See [issue #48](https://github.com/pgdogdev/pgdog/issues/48)
-    for updates on this.
-
 ### Client authentication
 
 By default, client connections will use `scram-sha-256` for password encryption during the authentication handshake. This method is secure and recommended in production. PgDog does support using others, and you can change it with configuration:

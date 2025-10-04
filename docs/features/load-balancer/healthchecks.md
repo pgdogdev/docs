@@ -132,7 +132,7 @@ If your load balancer supports sending HTTP health checks to a configurable port
 
 ```toml
 [general]
-healthcheck_endpoint = 8080
+healthcheck_port = 8080
 ```
 
 This is configurable on startup only and will spin up an HTTP server on `http://0.0.0.0:8080` (or whatever port you set).

@@ -26,7 +26,7 @@ By default, client connections will use `scram-sha-256` for password encryption 
 
 ```toml
 [general]
-auth_method = "scram"
+auth_type = "scram"
 ```
 
 Available options currently are:

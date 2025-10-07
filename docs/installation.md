@@ -49,7 +49,7 @@ Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make s
 
     ```bash
     sudo apt update && \
-    sudo apt install -y cmake clang curl pkg-config libssl-dev git build-essential
+    sudo apt install -y cmake clang curl pkg-config libssl-dev git build-essential mold
     ```
 
 === "Arch"
@@ -57,7 +57,7 @@ Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make s
     Install Clang and CMake:
 
     ```bash
-    sudo pacman -Syu base-devel clang cmake git
+    sudo pacman -Syu base-devel clang cmake git mold
     ```
 
 === "Windows"

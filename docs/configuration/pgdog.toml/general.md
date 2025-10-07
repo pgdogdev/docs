@@ -222,6 +222,12 @@ Include primary uses the primary database as well as the replicas to serve read 
 
 Default: **`include_primary`**
 
+### `healthcheck_port`
+
+Enable load balancer [HTTP health checks](../../features/load-balancer/healthchecks.md#load-balancer-health-check) with the HTTP server running on this port.
+
+Default: **none** (disabled)
+
 ## Service discovery
 
 ### `broadcast_address`
@@ -244,7 +250,7 @@ Default: **`6433`**
 
 The port used for the OpenMetrics HTTP endpoint.
 
-Default: **unset** (disabled)
+Default: **none** (disabled)
 
 ### `openmetrics_namespace`
 

@@ -84,7 +84,7 @@ Default: **`0`**
 
 Overrides the [`default_pool_size`](general.md#default_pool_size) setting. All connection pools for this database will open at most this many connections to Postgres.
 
-!!! note
+!!! note "Recommendation"
     We strongly recommend keeping this value well below the supported connections of the backend database(s) to allow connections for maintenance in high load scenarios.
 
 ### `statement_timeout`

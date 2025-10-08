@@ -148,6 +148,12 @@ queries as possible.
 
 Default: **`60_000`** (60s)
 
+### `shutdown_termination_timeout`
+
+How long to wait for active connections to be forcibly terminated after `shutdown_timeout` expires. If set, PgDog will send `CANCEL` requests to PostgreSQL for any remaining active queries before tearing down connection pools. This prevents long-running queries from lingering after shutdown begins.
+
+Default: **disabled**
+
 ### `query_timeout`
 
 Maximum amount of time to wait for a Postgres query to finish executing. Use only in unreliable network conditions or when Postgres runs on unreliable hardware.

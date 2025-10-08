@@ -38,7 +38,7 @@ Default: **`0`** (current thread runtime)
 
 Default maximum number of server connections per database pool. The pooler will not open more than this many PostgreSQL database connections when serving clients.
 
-!!! note
+!!! note "Recommendation"
     We strongly recommend keeping this value well below the supported connections of the backend database(s) to allow connections for maintenance in high load scenarios.
 
 Default: **`10`**

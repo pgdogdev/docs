@@ -6,3 +6,7 @@ table {
 .md-header {
     --md-primary-fg-color: rgb(7, 81, 207);
 }
+
+.screenshot {
+    border-radius: 8px;
+}

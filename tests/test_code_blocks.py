@@ -7,8 +7,6 @@ from markdown_it import MarkdownIt
 import sys
 import pglast
 
-from regex import sub
-from regex.regex import Regex, RegexFlag
 mdp = MarkdownIt()
 
 pattern = re.compile(

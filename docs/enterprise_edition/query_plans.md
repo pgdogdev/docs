@@ -20,7 +20,7 @@ The query plans are accessible by connecting to the admin database and running t
 
 === "Command"
     ```
-    SHOW QUERY_PLANS
+    SHOW QUERY_PLANS;
     ```
 === "Output"
     ```

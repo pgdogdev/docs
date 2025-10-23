@@ -81,3 +81,14 @@ prepared_statements = "full"
 
 Statements prepared using this method can be executed normally with `Bind` and `Execute` messages. Result data types can be inspected with `Describe`, just
 like a regular prepared statement.
+
+## Unnamed statements
+
+By default, unnamed (or anonymous) prepared statements are not cached and are sent to Postgres as-is. This works fine for most client drivers because they send the entire query in a single request. However, some drivers, like `go/pq` do not.
+
+To make those drivers work, consider caching and rewriting unnamed prepared statements, like so:
+
+```toml
+[general]
+prepared_statements = "extended_anonymous"
+```

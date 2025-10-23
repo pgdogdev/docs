@@ -303,10 +303,11 @@ Enables support for prepared statements. Available options are:
 
 - `disabled`
 - `extended`
+- `extended_anonymous`
 - `full`
 
 Full enables support for rewriting prepared statements sent over the simple protocol. Extended handles prepared statements sent normally
-using the extended protocol. `full` attempts to rewrite prepared statements sent using the simple protocol.
+using the extended protocol. `full` attempts to rewrite prepared statements sent using the simple protocol. `extended_anonymous` caches and rewrites unnamed prepared statements, which is useful for some legacy client drivers.
 
 Default: **`extended`**
 

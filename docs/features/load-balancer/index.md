@@ -186,6 +186,15 @@ This behavior is configurable in [pgdog.toml](../../configuration/pgdog.toml/gen
 read_write_split = "exclude_primary"
 ```
 
+#### Failover for reads
+
+In case one of your replicas fails, you can configure the primary to serve read queries temporarily while you (or your cloud vendor) bring the replica back up. This is configurable, like so:
+
+```toml
+[general]
+read_write_split = "include_primary_if_replica_banned"
+```
+
 ### Manual routing
 
 !!! note "New feature"

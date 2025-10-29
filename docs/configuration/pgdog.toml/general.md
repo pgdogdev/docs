@@ -226,8 +226,11 @@ Available options:
 
 - `include_primary`
 - `exclude_primary`
+- `include_primary_if_replica_banned`
 
 Include primary uses the primary database as well as the replicas to serve read queries. Exclude primary will send all read queries to replicas, leaving the primary to serve only writes.
+
+Include primary if replica banned strategy will only send reads to the primary if one or more replicas have been banned. This is useful in case you want to use the primary as a failover for reads.
 
 Default: **`include_primary`**
 

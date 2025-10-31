@@ -77,6 +77,12 @@ Default: **none**
 !!! note
     This setting cannot be changed at runtime.
 
+### `tls_client_required`
+
+Reject clients that connect without TLS. Consider setting this to `true` when using the `enabled_plain` mode of [passthrough_auth](#passthrough_auth).
+
+Default: **`false`** (disabled)
+
 ### `tls_verify`
 
 How to handle TLS connections to Postgres servers. By default, PgDog will attempt to establish TLS and will accept _any_ server certificate.

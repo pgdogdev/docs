@@ -79,7 +79,7 @@ Default: **none**
 
 ### `tls_client_required`
 
-Reject clients that connect without TLS. Consider setting this to `true` when using the `enabled_plain` mode of [passthrough_auth](#passthrough_auth).
+Reject clients that connect without TLS. Consider setting this to `true` when using the `enabled_plain` mode of [`passthrough_auth`](#passthrough_auth).
 
 Default: **`false`** (disabled)
 
@@ -234,9 +234,9 @@ Available options:
 - `exclude_primary`
 - `include_primary_if_replica_banned`
 
-Include primary uses the primary database as well as the replicas to serve read queries. Exclude primary will send all read queries to replicas, leaving the primary to serve only writes.
+`include_primary` uses the primary database as well as the replicas to serve read queries. `exclude_primary` will send all read queries to replicas, leaving the primary to serve only writes.
 
-Include primary if replica banned strategy will only send reads to the primary if one or more replicas have been banned. This is useful in case you want to use the primary as a failover for reads.
+`include_primary_if_replica_banned` strategy will only send reads to the primary if one or more replicas have been banned. This is useful in case you want to use the primary as a failover for reads.
 
 Default: **`include_primary`**
 
@@ -315,8 +315,8 @@ Enables support for prepared statements. Available options are:
 - `extended_anonymous`
 - `full`
 
-Full enables support for rewriting prepared statements sent over the simple protocol. Extended handles prepared statements sent normally
-using the extended protocol. `full` attempts to rewrite prepared statements sent using the simple protocol. `extended_anonymous` caches and rewrites unnamed prepared statements, which is useful for some legacy client drivers.
+`full` enables support for rewriting prepared statements sent over the simple protocol. `extended` handles prepared statements sent normally
+using the extended protocol. `extended_anonymous` caches and rewrites unnamed prepared statements, which is useful for some legacy client drivers.
 
 Default: **`extended`**
 
@@ -383,3 +383,11 @@ Default: **`true`** (enabled)
 If enabled, log every time a user disconnects from PgDog.
 
 Default: **`true`** (enabled)
+
+## Statistics
+
+### `stats_period`
+
+How often to calculate averages shown in `SHOW STATS` [admin](../../administration/index.md) command and the [Prometheus](../../features/metrics.md) metrics.
+
+Default: **`15_000`** (15s)

@@ -8,7 +8,7 @@ PgDog speaks the Postgres protocol which, underneath, uses TCP. Optimal TCP sett
 
 ```toml
 [tcp]
-keepalives = true
+keepalive = true
 time = 60_000
 interval = 60_000
 retries = 3

@@ -119,6 +119,67 @@ PostgreSQL has dozens of data types. PgDog supports a subset of those for shardi
 | `VARCHAR` / `TEXT` | :material-check-circle-outline: | :material-check-circle-outline: | No |
 | `UUID` | :material-check-circle-outline: | :material-check-circle-outline: | No |
 
+## Schema-based sharding
+
+In addition to splitting the tables themselves, PgDog can shard Postgres databases by placing different schemas on different shards. This is useful for multi-tenant applications that have stricter separation between their users' data.
+
+When enabled, PgDog will route queries that fully qualify tables based on their respective schema names.
+
+### Schema-to-shard mapping
+
+Schemas are mapped to their shards in [pgdog.toml], for example:
+
+```toml
+[[sharded_schemas]]
+database = "prod"
+name = "customer_a"
+shard = 0
+
+[[sharded_schemas]]
+database = "prod"
+name = "customer_b"
+shard = 1
+```
+
+Queries that include the schema name in the tables they are referring to can be routed to the right shard. For example:
+
+```postgresql
+SELECT * FROM customer_a.users WHERE email = $1;
+```
+
+Since the `users` table is fully qualified as `customer_a.users`, the query will be routed to shard zero.
+
+### DDL
+
+Unlike other sharding functions, schema-based sharding will also route DDL (e.g., `CREATE TABLE`, `CREATE INDEX`, etc.) queries to their respective shard, as long as the entity name is fully qualified.
+
+For example:
+
+```postgresql
+CREATE TABLE customer_b.users (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR NOT NULL
+);
+
+CREATE UNIQUE INDEX ON customer_b.users USING btree(email);
+```
+
+Both of these DDL statements will be sent to shard one, because they explicitly refer to tables in schema `customer_b`, which is mapped to shard one.
+
+### Default routing
+
+If a schema isn't mapped to a shard number, PgDog will fallback to using other configured sharding functions. If none are set, the query will be sent to all shards.
+
+To avoid this behavior and send all other queries to a particular shard, you can add a default schema mapping:
+
+```toml
+[[sharded_schemas]]
+database = "prod"
+shard = 0
+```
+
+This will send all queries that don't specify a schema or use a schema without a mapping to shard zero.
+
 ## Read more
 
 - [COPY command](copy.md)

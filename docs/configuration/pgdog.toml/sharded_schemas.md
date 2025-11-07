@@ -4,7 +4,7 @@ icon: material/set-split
 
 # Sharded schemas
 
-Schema-based sharding places data from tables in different Postgres schemas on their own shards.
+[Schema-based sharding](../../features/sharding/sharding-functions.md#schema-based-sharding) places data from tables in different Postgres schemas on their own shards.
 
 ## Example
 

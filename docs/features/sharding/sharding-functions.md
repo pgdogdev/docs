@@ -127,7 +127,7 @@ When enabled, PgDog will route queries that fully qualify tables based on their 
 
 ### Schema-to-shard mapping
 
-Schemas are mapped to their shards in [pgdog.toml], for example:
+Schemas are mapped to their shards in [pgdog.toml](../../configuration/pgdog.toml/sharded_schemas.md), for example:
 
 ```toml
 [[sharded_schemas]]

@@ -8,7 +8,7 @@ General settings are relevant to the operations of the pooler itself, or apply t
 
 ### `host`
 
-The IP address of the local network interface PgDog will bind to to listen for connections.
+The IP address of the local network interface PgDog will bind to listen for connections.
 
 !!! note
     This setting cannot be changed at runtime.
@@ -17,7 +17,7 @@ Default: **`0.0.0.0`** (all interfaces)
 
 ### `port`
 
-The TCP port PgDog will bind to to listen for connections.
+The TCP port PgDog will bind to listen for connections.
 
 Default: **`6432`**
 
@@ -29,7 +29,7 @@ Default: **`6432`**
 Number of Tokio threads to spawn at pooler startup. In multi-core systems, the recommended setting is two (2) per
 virtual CPU. The value `0` means to spawn no threads and use the current thread runtime (single-threaded). This option is better on IO-bound systems where multi-threading is not necessary and could even hamper performance.
 
-Default: **`0`** (current thread runtime)
+Default: **`2`**
 
 !!! note
     This setting cannot be changed at runtime.
@@ -369,6 +369,12 @@ Default: **`false`** (disabled)
 Enable automatic conversion of single-statement write transactions to use [two-phase commit](../../features/sharding/2pc.md).
 
 Default: **`true`** (enabled)
+
+### `query_cache_limit`
+
+Limit on the number of statements saved in the statement cache used to accelerate query parsing. The saved statements are visible by running the `SHOW QUERY_CACHE` in the [admin database](../../administration/index.md).
+
+Default: **`50_000`**
 
 ## Logging
 

@@ -7,6 +7,7 @@ PgDog can copy tables, indexes and other entities from your production database 
 
 1. [Create tables](#tables-and-primary-keys), primary key indexes, and sequences
 2. Create [secondary indexes](#secondary-indexes)
+3. Move [sequence](#sequences) values
 
 The create tables step needs to be performed first, before [copying data](hash.md). The second step is performed once the data sync is almost complete.
 
@@ -31,6 +32,7 @@ Required (*) and optional parameters for this command are as follows:
 | `--dry-run` | Print the SQL statements that will be executed on the destination database and exit. |
 | `--ignore-errors` | Execute SQL statements and ignore any errors. |
 | `--data-sync-complete` | Run the second step to create secondary indexes and sequences. |
+| `--cutover` | Run the cutover step to move sequence values. |
 
 ## Tables and primary keys
 
@@ -42,7 +44,7 @@ A primary key constraint is **required** on all tables for logical replication t
 
 Before starting the resharding process for your database, double-check that you have primary keys on all your tables.
 
-## Publication
+### Publication
 
 Since PgDog is using logical replication to move and reshard data, a [publication](https://www.postgresql.org/docs/current/sql-createpublication.html) for the relevant tables needs to be created on the source database.
 
@@ -58,7 +60,7 @@ This will make sure _all_ tables in your database will be copied and resharded i
 !!! note "Multiple schemas"
     If you're using schemas other than `public`, create them on the destination database before running the schema sync.
 
-## Schema admin
+### Schema admin
 
 Schema sync creates tables, indexes, and other entities on the destination database. To make sure that's done with a user with sufficient privileges (e.g., `CREATE` permission on the database), you need to add it to [`users.toml`](../../../configuration/users.toml/users.md) and mark it as the schema administrator:
 
@@ -87,6 +89,12 @@ pg_dump_path = "/path/to/pg_dump"
 
 This step is performed after [data sync](hash.md) is complete. Running this step will create secondary indexes on all your tables, which will take some time, depending on the number of indexes in your schema.
 
-## Next steps
+## Sequences
+
+This steps is performed during the cutover stage once both schema sync and data sync are complete. The source database is no longer accepting writes and we are ready to move them to the destination.
+
+This step will calculate the `MAX(column) + 1` values for all table sequences and set them on the respective columns.
+
+## Read more
 
 - [Move data](hash.md)

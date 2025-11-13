@@ -20,10 +20,8 @@ PgDog has a command line interface you can call by running it directly:
 ```bash
 pgdog data-sync \
     --from-database <name> \
-    --from-user <name> \
     --to-database <name> \
-    --to-user <name> \
-    --publication <publication>
+    --publication <publication> \
 ```
 
 Required (*) and optional parameters for this command are as follows:
@@ -31,10 +29,11 @@ Required (*) and optional parameters for this command are as follows:
 | Option | Description |
 |-|-|
 | `--from-database`* | Name of the source database cluster. |
-| `--from-user`* | Name of the user configured in `users.toml` for the source database cluster. |
 | `--to-database`* | Name of the destination database cluster. |
-| `--to-user`* | Name of the user configured in `users.toml` for the destination database cluster. |
 | `--publication`* | Name of the Postgres [publication](schema.md#publication) for tables to be copied and sharded. It should exist on the **source** database. |
+| `--replication-slot` | Name of the replication slot to use (and create if it doesn't exist) for syncing real-time changes. |
+| `--replicate-only` | Don't copy data, just stream changes from the replication slot. |
+| `--sync-only` | Perform the initial data sync only and exit. |
 
 ## How it works
 

@@ -3,11 +3,11 @@ icon: material/function
 ---
 # Sharding functions
 
-The sharding function inside PgDog transforms column values in SQL queries to specific shard numbers. They are in turn used for routing queries to one or more databases in the [configuration](../../configuration/pgdog.toml/databases.md).
+The sharding function inside PgDog transforms column values in SQL queries to specific shard numbers, which are in turn used for routing queries to one or more databases in the [configuration](../../configuration/pgdog.toml/databases.md).
 
 ## How it works
 
-PgDog sharding function is based on PostgreSQL declarative partitions. This choice is intentional: it allows data to be sharded both inside PgDog and inside PostgreSQL, with the use of the same partition functions.
+The PgDog sharding function is based on PostgreSQL declarative partitions. This choice is intentional: it allows data to be sharded both inside PgDog and inside PostgreSQL, with the use of the same partition functions.
 
 PgDog supports all three PostgreSQL partition functions and uses them for sharding data between nodes:
 
@@ -81,14 +81,14 @@ values = [1, 2, 3]
 shard = 0
 ```
 
-This example will route all queries with `user_id` equals to one, two or three to shard zero. Unlike [hash](#hash) sharding, a value <-> shard mapping is required for _all_ values of the sharding key. If a value is used that doesn't have a mapping, the query will be sent to [all shards](cross-shard.md).
+This example will route all queries with `user_id` equal to one, two, or three to shard zero. Unlike [hash](#hash) sharding, a value <-> shard mapping is required for _all_ values of the sharding key. If a value is used that doesn't have a mapping, the query will be sent to [all shards](cross-shard.md).
 
 !!! note "Required configuration"
     The `[[sharded_tables]]` configuration entry is still required for list and range sharding. It specifies the data type of the column, which tells PgDog how to parse its value at runtime.
 
 ## Range
 
-Sharding by range function is similar to [list](#list) sharding function, except instead of specifying the values explicitly, you can specify a bounding range. All values which are included in the range will be sent to the specified shard, for example:
+Sharding by range is similar to [list](#list) sharding, except instead of specifying the values explicitly, you can specify a bounding range. All values that are included in the range will be sent to the specified shard, for example:
 
 ```toml
 [[sharded_mappings]]
@@ -180,14 +180,65 @@ shard = 0
 
 This will send all queries that don't specify a schema or use a schema without a mapping to shard zero.
 
-## Rewrite behaviour
+## Rewrite behavior
 
-PgDog can transparently move writes between shards when [`rewrite`](../../configuration/pgdog.toml/rewrite.md) is enabled.
+PgDog can transparently move writes between shards when the [`rewrite`](../../configuration/pgdog.toml/rewrite.md) feature is enabled.
 
-* **Shard-key updates** (`rewrite.shard_key = "rewrite"`) delete the matching row from its current shard and re-insert it on the shard implied by the new key. Exactly one row must match the `WHERE` clause; PgDog aborts rewrites that affect multiple rows or unresolved shards.
-* **Split INSERTs** (`rewrite.split_inserts = "rewrite"`) decompose multi-row `INSERT` statements so each shard receives only the rows it owns. PgDog opens per-shard transactions and can escalate to two-phase commit when configured to preserve atomicity across shards.
+### Sharding key updates
 
-Both features require `rewrite.enabled = true`, operate only on sharded tables, and fall back to returning errors when PgDog cannot determine a safe rewrite plan. Running them alongside [`general.two_phase_commit`](../../configuration/pgdog.toml/general.md#two_phase_commit) is recommended to guarantee atomic outcomes.
+Sharding key updates handle the situation when a query is changing the value of the sharding key, which could require the row to be moved to a different shard.
+
+For example:
+
+```postgresql
+UPDATE users SET id = $2 WHERE id = $1;
+```
+
+If configured, PgDog can rewrite this query into three statements, executed inside a cross-shard transaction:
+
+```postgresql
+SELECT * FROM users WHERE id = $1; /* query 1 */
+DELETE FROM users WHERE id = $1; /* query 2 */
+INSERT INTO users VALUES ($1, $2); /* row fetched in query #1 */
+```
+
+#### Limitations
+
+The row returned by _query 1_, constructed from the `WHERE` clause of the original `UPDATE` statement, has to match exactly one row. If that's not the case, the operation will be aborted and PgDog will raise an error.
+
+### Multi-tuple inserts
+
+Multi-tuple `INSERT` statements may write rows that belong on separate shards. To handle this situation, if configured, PgDog can rewrite the statement into multiple, single-tuple statements, and send them to their respective shards in a cross-shard transaction.
+
+For example:
+
+```postgresql
+INSERT INTO users (id, email) VALUES ($1, $2), ($3, $4);
+```
+
+This statement will be rewritten into the following two queries:
+
+```postgresql
+INSERT INTO users (id, email) VALUES ($1, $2);
+INSERT INTO users (id, email) VALUES ($3, $4);
+```
+
+#### Limitations
+
+Since PgDog starts a cross-shard transaction to make this operation atomic, the original `INSERT` statement must not be sent inside an explicit transaction by the client. If that's the case, PgDog will abort the operation and return an error.
+
+### Configuration
+
+Both features require the `enabled` flag to be set to `true`, for example:
+
+```toml
+[rewrite]
+enabled = true
+split_inserts = "rewrite"
+shard_key = "rewrite"
+```
+
+If a safe rewrite plan cannot be determined, PgDog will abort the transaction and return an error. To guarantee cross-shard atomicity of the operation, consider enabling [two-phase commit](2pc).
 
 ## Read more
 

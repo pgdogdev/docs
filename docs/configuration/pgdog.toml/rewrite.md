@@ -17,16 +17,16 @@ split_inserts = "error"
 
 | Field | Description | Default |
 | --- | --- | --- |
-| `enabled` | Master toggle; when `false`, PgDog parses but never applies rewrite plans. | `false` |
-| `shard_key` | Behaviour when an `UPDATE` changes a sharding key.<br>`error` rejects the statement.<br>`rewrite` migrates the row between shards.<br>`ignore` forwards it unchanged. | `"error"` |
-| `split_inserts` | Behaviour when a sharded table receives a multi-row `INSERT`.<br>`error` rejects the statement.<br>`rewrite` fans the rows out to their shards.<br>`ignore` forwards it unchanged. | `"error"` |
+| `enabled` | Master toggle: when `false`, PgDog parses but never applies rewrite plans. | `false` |
+| `shard_key` | Behavior when an `UPDATE` changes a sharding key: `error` rejects the statement,<br>`rewrite` migrates the row between shards,<br>`ignore` forwards it unchanged. | `"error"` |
+| `split_inserts` | Behavior when a sharded table receives a multi-row `INSERT`: `error` rejects the statement, `rewrite` fans the rows out to their shards, `ignore` forwards it unchanged. | `"error"` |
 
 !!! note "Two-phase commit"
-    PgDog recommends enabling [`general.two_phase_commit`](general.md#two_phase_commit) when either policy is set to `rewrite`. Without it, rewrites are committed shard-by-shard and can leave partial changes if a shard fails.
+    PgDog recommends enabling [two-phase commit](../../features/sharding/2pc.md) when either policy is set to `rewrite`. Without it, rewrites are committed shard-by-shard and can leave partial changes if a shard fails.
 
 ## Runtime overrides
 
-The admin database exposes these toggles via `SET`:
+The admin database exposes these toggles via the `SET` command:
 
 ```postgresql
 SET rewrite_enabled TO true;                -- mirrors [rewrite].enabled
@@ -34,12 +34,39 @@ SET rewrite_shard_key_updates TO rewrite;   -- error | rewrite | ignore
 SET rewrite_split_inserts TO rewrite;       -- error | rewrite | ignore
 ```
 
-Switches apply to subsequent sessions once the cluster reloads configuration. Session-level overrides allow canary testing before persisting them in `pgdog.toml`.
+The setting changes are applied immediately. These overrides allow canary testing before persisting them in `pgdog.toml`.
 
 ## Limitations
 
-* Shard-key rewrites require the `WHERE` clause to resolve to a single row; otherwise PgDog rolls back and raises `rewrite.shard_key="rewrite" is not yet supported ...`.
-* Split INSERT rewrites must run outside explicit transactions so PgDog can orchestrate per-shard `BEGIN`/`COMMIT` cycles. Inside a transaction PgDog returns `25001` and leaves the client transaction intact.
-* Both features fall back to `error` semantics while `rewrite.enabled = false` or when PgDog cannot determine a target shard.
+### Sharding key updates
 
-See [feature docs](../../features/sharding/sharding-functions.md#rewrite-behaviour) for walkthroughs of these flows.
+Sharding key rewrites in an `UPDATE` clause have to resolve to a single row. If the sharding key isn't unique or the `WHERE` clause has an incorrect `OR` condition, for example, PgDog will rollback the transaction and raise an error.
+
+For example:
+
+```postgresql
+UPDATE users SET id = 5 WHERE admin = true;
+```
+
+On a single-shard deployment, this would raise a unique index violation error. On a cross-shard deployment, the PgDog rewrite engine will block cross-shard updates that could potentially affect multiple rows.
+
+### Multi-tuple inserts
+
+`INSERT` statements with multiple tuples have to be executed outside of an explicit transaction. PgDog needs to start a cross-shard transaction to safely commit the rows to multiple shards, and an existing transaction will interfere with its internal state.
+
+For example:
+
+```postgresql
+BEGIN;
+INSERT INTO users VALUES ($1, $2), ($3, $4);
+```
+
+This scenario will raise an error (code `25001`).
+
+### Default behavior
+
+Both split inserts and sharding key updates fallback to raising an error if `enabled` is set to `false`.
+
+### Read more
+
+- [Rewrite behavior](../../features/sharding/sharding-functions.md#rewrite-behavior)

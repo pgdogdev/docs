@@ -57,9 +57,35 @@ This is performed efficiently, and server parameters are updated only if they di
 
     1. The database has a primary and replica(s)
     2. The database has more than one shard
-    3. [`prepared_statements`](../configuration/pgdog.toml/general.md#prepared_statements) setting is set to `"full"`
+    3. [`prepared_statements`](../configuration/pgdog.toml/general.md#prepared_statements) is set to `"full"`
+    4. [`query_parser_enabled`](../configuration/pgdog.toml/general.md#query_parser_enabled) is set to `true`
 
     This is to avoid unnecessary overhead of using `pg_query` (however small), when we don't absolutely have to.
+
+## Advisory locks
+
+Advisory locks are an implementation of distributed locking in PostgreSQL. They are set on the server connection and released when the client removes the lock or disconnects.
+
+For example:
+
+```postgresql
+SELECT pg_advisory_lock(1234);
+```
+
+In transaction mode, server connections are re-used between clients, so additional care needs to be taken to keep the server connection tied to the client that created the lock.
+
+PgDog is able to detect advisory lock usage and will pin the server connection to the client connection until one of the following conditions is met:
+
+1. The client releases the lock with `pg_advisory_unlock`
+2. The client disconnects
+
+!!! note "Performance"
+    If multiple clients use advisory locks and don't release them quickly, the effectiveness of transaction pooling will be reduced because server connections will not be effectively re-used between client transactions.
+
+### Limitations
+
+PgDog doesn't keep track of multiple advisory locks inside client connections. If a client acquires two different locks, for example, and only releases one, the server connection will still be returned back to the pool with the acquired lock.
+
 
 ### Connection parameters
 

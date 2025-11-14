@@ -197,9 +197,9 @@ UPDATE users SET id = $2 WHERE id = $1;
 If configured, PgDog can rewrite this query into three statements, executed inside a cross-shard transaction:
 
 ```postgresql
-SELECT * FROM users WHERE id = $2; /* query 1 */
-DELETE FROM users WHERE id = $2; /* query 2 */
-INSERT INTO users VALUES (/* row fetched in query #1 */); /* query 3 */
+SELECT * FROM users WHERE id = $1; /* query 1 */
+DELETE FROM users WHERE id = $1; /* query 2 */
+INSERT INTO users VALUES ($1, $2); /* row fetched in query #1 */
 ```
 
 #### Limitations

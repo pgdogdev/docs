@@ -199,12 +199,12 @@ If configured, PgDog can rewrite this query into three statements, executed insi
 ```postgresql
 SELECT * FROM users WHERE id = $2; /* query 1 */
 DELETE FROM users WHERE id = $2; /* query 2 */
-INSERT INTO users VALUES (/* row fetched in query #1 */]); /* query 3 */
+INSERT INTO users VALUES (/* row fetched in query #1 */); /* query 3 */
 ```
 
 #### Limitations
 
-The row returned by _query 1_, constructed from the `WHERE` clause of the original `UPDATE` statement, have to match exactly one row. If that's not the case, the operation will be aborted and PgDog will raise an error.
+The row returned by _query 1_, constructed from the `WHERE` clause of the original `UPDATE` statement, has to match exactly one row. If that's not the case, the operation will be aborted and PgDog will raise an error.
 
 ### Multi-tuple inserts
 
@@ -220,7 +220,7 @@ This statement will be rewritten into the following two queries:
 
 ```postgresql
 INSERT INTO users (id, email) VALUES ($1, $2);
-INSERT INTO users (id, email) VALUES ($1, $2);
+INSERT INTO users (id, email) VALUES ($3, $4);
 ```
 
 #### Limitations
@@ -229,7 +229,7 @@ Since PgDog starts a cross-shard transaction to make this operation atomic, the 
 
 ### Configuration
 
-Both features require `enabled` flag to be set to `true`, for example:
+Both features require the `enabled` flag to be set to `true`, for example:
 
 ```toml
 [rewrite]

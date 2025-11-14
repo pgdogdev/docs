@@ -18,8 +18,8 @@ split_inserts = "error"
 | Field | Description | Default |
 | --- | --- | --- |
 | `enabled` | Master toggle: when `false`, PgDog parses but never applies rewrite plans. | `false` |
-| `shard_key` | Behaviour when an `UPDATE` changes a sharding key: `error` rejects the statement,<br>`rewrite` migrates the row between shards,<br>`ignore` forwards it unchanged. | `"error"` |
-| `split_inserts` | Behaviour when a sharded table receives a multi-row `INSERT`: `error` rejects the statement, `rewrite` fans the rows out to their shards, `ignore` forwards it unchanged. | `"error"` |
+| `shard_key` | Behavior when an `UPDATE` changes a sharding key: `error` rejects the statement,<br>`rewrite` migrates the row between shards,<br>`ignore` forwards it unchanged. | `"error"` |
+| `split_inserts` | Behavior when a sharded table receives a multi-row `INSERT`: `error` rejects the statement, `rewrite` fans the rows out to their shards, `ignore` forwards it unchanged. | `"error"` |
 
 !!! note "Two-phase commit"
     PgDog recommends enabling [two-phase commit](../../features/sharding/2pc.md) when either policy is set to `rewrite`. Without it, rewrites are committed shard-by-shard and can leave partial changes if a shard fails.
@@ -48,7 +48,7 @@ For example:
 UPDATE users SET id = 5 WHERE admin = true;
 ```
 
-On a single-shard deployment, this would raise an unique index violation error. On a cross-shard deployment, PgDog rewrite engine will block cross-shard updates that could potentially affect multiple rows.
+On a single-shard deployment, this would raise a unique index violation error. On a cross-shard deployment, PgDog rewrite engine will block cross-shard updates that could potentially affect multiple rows.
 
 ### Multi-tuple inserts
 
@@ -69,4 +69,4 @@ Both split inserts and sharding key updates fallback to raising an error if `ena
 
 ### Read more
 
-- [Rewrite behavior](../../features/sharding/sharding-functions.md#rewrite-behaviour)
+- [Rewrite behavior](../../features/sharding/sharding-functions.md#rewrite-behavior)

@@ -82,7 +82,7 @@ PgDog is able to detect advisory lock usage and will pin the server connection t
 !!! note "Performance"
     If multiple clients use advisory locks and don't release them quickly, the effectiveness of transaction pooling will be reduced because server connections will not be effectively re-used between client transactions.
 
-### Limitions
+### Limitations
 
 PgDog doesn't keep track of multiple advisory locks inside client connections. If a client acquires two different locks, for example, and only releases one, the server connection will still be returned back to the pool with the acquired lock.
 

@@ -180,6 +180,15 @@ shard = 0
 
 This will send all queries that don't specify a schema or use a schema without a mapping to shard zero.
 
+## Rewrite behaviour
+
+PgDog can transparently move writes between shards when [`rewrite`](../../configuration/pgdog.toml/rewrite.md) is enabled.
+
+* **Shard-key updates** (`rewrite.shard_key = "rewrite"`) delete the matching row from its current shard and re-insert it on the shard implied by the new key. Exactly one row must match the `WHERE` clause; PgDog aborts rewrites that affect multiple rows or unresolved shards.
+* **Split INSERTs** (`rewrite.split_inserts = "rewrite"`) decompose multi-row `INSERT` statements so each shard receives only the rows it owns. PgDog opens per-shard transactions and can escalate to two-phase commit when configured to preserve atomicity across shards.
+
+Both features require `rewrite.enabled = true`, operate only on sharded tables, and fall back to returning errors when PgDog cannot determine a safe rewrite plan. Running them alongside [`general.two_phase_commit`](../../configuration/pgdog.toml/general.md#two_phase_commit) is recommended to guarantee atomic outcomes.
+
 ## Read more
 
 - [COPY command](copy.md)

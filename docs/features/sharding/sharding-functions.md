@@ -3,11 +3,11 @@ icon: material/function
 ---
 # Sharding functions
 
-The sharding function inside PgDog transforms column values in SQL queries to specific shard numbers. They are in turn used for routing queries to one or more databases in the [configuration](../../configuration/pgdog.toml/databases.md).
+The sharding function inside PgDog transforms column values in SQL queries to specific shard numbers, which are in turn used for routing queries to one or more databases in the [configuration](../../configuration/pgdog.toml/databases.md).
 
 ## How it works
 
-PgDog sharding function is based on PostgreSQL declarative partitions. This choice is intentional: it allows data to be sharded both inside PgDog and inside PostgreSQL, with the use of the same partition functions.
+The PgDog sharding function is based on PostgreSQL declarative partitions. This choice is intentional: it allows data to be sharded both inside PgDog and inside PostgreSQL, with the use of the same partition functions.
 
 PgDog supports all three PostgreSQL partition functions and uses them for sharding data between nodes:
 
@@ -81,14 +81,14 @@ values = [1, 2, 3]
 shard = 0
 ```
 
-This example will route all queries with `user_id` equals to one, two or three to shard zero. Unlike [hash](#hash) sharding, a value <-> shard mapping is required for _all_ values of the sharding key. If a value is used that doesn't have a mapping, the query will be sent to [all shards](cross-shard.md).
+This example will route all queries with `user_id` equal to one, two, or three to shard zero. Unlike [hash](#hash) sharding, a value <-> shard mapping is required for _all_ values of the sharding key. If a value is used that doesn't have a mapping, the query will be sent to [all shards](cross-shard.md).
 
 !!! note "Required configuration"
     The `[[sharded_tables]]` configuration entry is still required for list and range sharding. It specifies the data type of the column, which tells PgDog how to parse its value at runtime.
 
 ## Range
 
-Sharding by range function is similar to [list](#list) sharding function, except instead of specifying the values explicitly, you can specify a bounding range. All values which are included in the range will be sent to the specified shard, for example:
+Sharding by range is similar to [list](#list) sharding, except instead of specifying the values explicitly, you can specify a bounding range. All values that are included in the range will be sent to the specified shard, for example:
 
 ```toml
 [[sharded_mappings]]
@@ -182,11 +182,11 @@ This will send all queries that don't specify a schema or use a schema without a
 
 ## Rewrite behavior
 
-PgDog can transparently move writes between shards when [`rewrite`](../../configuration/pgdog.toml/rewrite.md) feature is enabled.
+PgDog can transparently move writes between shards when the [`rewrite`](../../configuration/pgdog.toml/rewrite.md) feature is enabled.
 
 ### Sharding key updates
 
-Sharding key updates handles the situation when a query is changing the value of the sharding key, which could require the row to be moved to a different shard.
+Sharding key updates handle the situation when a query is changing the value of the sharding key, which could require the row to be moved to a different shard.
 
 For example:
 

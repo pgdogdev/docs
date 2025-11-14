@@ -26,7 +26,7 @@ split_inserts = "error"
 
 ## Runtime overrides
 
-The admin database exposes these toggles via `SET` command:
+The admin database exposes these toggles via the `SET` command:
 
 ```postgresql
 SET rewrite_enabled TO true;                -- mirrors [rewrite].enabled
@@ -48,7 +48,7 @@ For example:
 UPDATE users SET id = 5 WHERE admin = true;
 ```
 
-On a single-shard deployment, this would raise a unique index violation error. On a cross-shard deployment, PgDog rewrite engine will block cross-shard updates that could potentially affect multiple rows.
+On a single-shard deployment, this would raise a unique index violation error. On a cross-shard deployment, the PgDog rewrite engine will block cross-shard updates that could potentially affect multiple rows.
 
 ### Multi-tuple inserts
 

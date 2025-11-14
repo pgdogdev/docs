@@ -376,6 +376,10 @@ Limit on the number of statements saved in the statement cache used to accelerat
 
 Default: **`50_000`**
 
+### `query_parser_enabled`
+
+Force-enable query parsing to take advantage of its features in non-sharded databases, like [advisory locks](../../features/transaction-mode.md#advisory-locks) or managing [session state](../../features/transaction-mode.md#session-state).
+
 ## Logging
 
 ### `log_connections`

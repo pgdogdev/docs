@@ -238,7 +238,7 @@ split_inserts = "rewrite"
 shard_key = "rewrite"
 ```
 
-If a safe rewrite plan cannot be determined, PgDog will abort the transaction and return an error. To guarantee cross-shard atomicity of the operation, consider enabling [two-phase commit](2pc).
+If a safe rewrite plan cannot be determined, PgDog will abort the transaction and return an error. To guarantee cross-shard atomicity of the operation, consider enabling [two-phase commit](2pc.md).
 
 ## Read more
 

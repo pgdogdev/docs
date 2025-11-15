@@ -1,6 +1,6 @@
 # Migrating from PgBouncer
 
-PgBouncer is a popular PostgreSQL connection pooler. PgDog implements the majority of its features, which makes the migration process relatively straight forward.
+PgBouncer is a popular PostgreSQL connection pooler. PgDog implements the majority of its features, which makes the migration process relatively straightforward.
 
 ## Configuration
 
@@ -97,18 +97,18 @@ Settings that control general connection pooler operations.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| `listen_addr` | `host` | PgDog doesn't support UNIX sockets. |
-| `listen_port` | `port` | - |
-| `default_pool_size` | `default_pool_size` | - |
-| `min_pool_size` | `min_pool_size` | - |
-| `reserve_pool_size` | N/A | PgDog doesn't support reserve connection pools. |
-| `pool_mode` | `pooler_mode` | PgDog doesn't currently support statement mode. |
-| `max_client_conn` | N/A | PgDog doesn't place an upper bound on the number of client connections. |
-| `max_db_connections` | N/A | PgDog doesn't have a global database connection limit. Individual pools configure their own limits. |
-| `server_round_robin` | N/A | PgDog has its own [load balancing](../features/load-balancer/index.md) algorithms that are configured separetly. |
-| `track_extra_parameters` | N/A | PgDog tracks [all parameters](../features/transaction-mode.md#session-state) by default, including those that PgBouncer doesn't. |
-| `stats_period` | `stats_period` | - |
-| `max_prepared_statements` | `prepared_statements_limit` | PgDog's [prepared statements](../features/prepared-statements.md) limit is soft and is only enforced on server connections. |
+| [`listen_addr`](https://www.pgbouncer.org/config.html#listen_addr) | [`host`](../configuration/pgdog.toml/general.md#host) | PgDog doesn't support UNIX sockets. |
+| [`listen_port`](https://www.pgbouncer.org/config.html#listen_port) | [`port`](../configuration/pgdog.toml/general.md#port) | - |
+| [`default_pool_size`](https://www.pgbouncer.org/config.html#default_pool_size) | [`default_pool_size`](../configuration/pgdog.toml/general.md#default_pool_size) | - |
+| [`min_pool_size`](https://www.pgbouncer.org/config.html#min_pool_size) | [`min_pool_size`](../configuration/pgdog.toml/general.md#min_pool_size) | - |
+| [`reserve_pool_size`](https://www.pgbouncer.org/config.html#reserve_pool_size) | N/A | PgDog doesn't support reserve connection pools. |
+| [`pool_mode`](https://www.pgbouncer.org/config.html#pool_mode) | [`pooler_mode`](../configuration/pgdog.toml/general.md#pooler_mode) | PgDog doesn't currently support statement mode. |
+| [`max_client_conn`](https://www.pgbouncer.org/config.html#max_client_conn) | N/A | PgDog doesn't place an upper bound on the number of client connections. |
+| [`max_db_connections`](https://www.pgbouncer.org/config.html#max_db_connections) | N/A | PgDog doesn't have a global database connection limit. Individual pools configure their own limits. |
+| [`server_round_robin`](https://www.pgbouncer.org/config.html#server_round_robin) | N/A | PgDog has its own [load balancing](../features/load-balancer/index.md) algorithms that are configured separately. |
+| [`track_extra_parameters`](https://www.pgbouncer.org/config.html#track_extra_parameters) | N/A | PgDog tracks [all parameters](../features/transaction-mode.md#session-state) by default, including those that PgBouncer doesn't. |
+| [`stats_period`](https://www.pgbouncer.org/config.html#stats_period) | [`stats_period`](../configuration/pgdog.toml/general.md#stats_period) | - |
+| [`max_prepared_statements`](https://www.pgbouncer.org/config.html#max_prepared_statements) | [`prepared_statements_limit`](../configuration/pgdog.toml/general.md#prepared_statements_limit) | PgDog's [prepared statements](../features/prepared-statements.md) limit is soft and is only enforced on server connections. |
 
 ##### Authentication settings
 
@@ -116,10 +116,10 @@ Settings that control how clients and server connections authenticate.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| `auth_type` | `auth_type` | PgDog supports only a subset of [authentication](../features/authentication.md) mechanisms.
-| `auth_file` | N/A | The path to `users.toml` can be passed in as a CLI argument on startup: `--users <PATH>`. |
-| `log_connections` | `log_connections` | - |
-| `log_disconnections` | `log_disconnections` | - |
+| [`auth_type`](https://www.pgbouncer.org/config.html#auth_type) | [`auth_type`](../configuration/pgdog.toml/general.md#auth_type) | PgDog supports only a subset of [authentication](../features/authentication.md) mechanisms.
+| [`auth_file`](https://www.pgbouncer.org/config.html#auth_file) | N/A | The path to `users.toml` can be passed in as a CLI argument on startup: `--users <PATH>`. |
+| [`log_connections`](https://www.pgbouncer.org/config.html#log_connections) | [`log_connections`](../configuration/pgdog.toml/general.md#log_connections) | - |
+| [`log_disconnections`](https://www.pgbouncer.org/config.html#log_disconnections) | [`log_disconnections`](../configuration/pgdog.toml/general.md#log_disconnections) | - |
 
 ##### Administration settings
 
@@ -127,8 +127,8 @@ Settings that control admin database access.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| `admin_users` | N/A | Admin users are configured separately in the [`[admin]`](../configuration/pgdog.toml/admin.md) section. |
-| `stats_users` | N/A | There is no distinction between admin users and stats users in PgDog. |
+| [`admin_users`](https://www.pgbouncer.org/config.html#admin_users) | N/A | Admin users are configured separately in the [`[admin]`](../configuration/pgdog.toml/admin.md) section. |
+| [`stats_users`](https://www.pgbouncer.org/config.html#stats_users) | N/A | There is no distinction between admin users and stats users in PgDog. |
 
 ##### Connection checks
 
@@ -136,14 +136,14 @@ Various connection-related and DNS-related settings.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| `server_reset_query` | N/A | Server state is [managed](../features/transaction-mode.md#session-state) by PgDog and different reset queries are used, depending on circumstances. |
-| `server_check_query` | N/A | Not currently configurable. PgDog runs an empty query (`;`) by default. |
-| `server_lifetime` | `server_lifetime` | - |
-| `server_idle_timeout` | `idle_timeout` | - |
-| `server_connect_timeout` | `connect_timeout` | - |
-| `server_login_retry` | `connect_attempt_delay` | PgDog can retry server connections for any error, not just authentication. |
-| `client_login_timeout` | `client_login_timeout` | - |
-| `dns_max_ttl` | `dns_ttl` | - |
+| [`server_reset_query`](https://www.pgbouncer.org/config.html#server_reset_query) | N/A | Server state is [managed](../features/transaction-mode.md#session-state) by PgDog and different reset queries are used, depending on circumstances. |
+| [`server_check_query`](https://www.pgbouncer.org/config.html#server_check_query) | N/A | Not currently configurable. PgDog runs an empty query (`;`) by default. |
+| [`server_lifetime`](https://www.pgbouncer.org/config.html#server_lifetime) | `server_lifetime` | - |
+| [`server_idle_timeout`](https://www.pgbouncer.org/config.html#server_idle_timeout) | [`idle_timeout`](../configuration/pgdog.toml/general.md#idle_timeout) | - |
+| [`server_connect_timeout`](https://www.pgbouncer.org/config.html#server_connect_timeout) | [`connect_timeout`](../configuration/pgdog.toml/general.md#connect_timeout) | - |
+| [`server_login_retry`](https://www.pgbouncer.org/config.html#server_login_retry) | [`connect_attempt_delay`](../configuration/pgdog.toml/general.md#connect_attempt_delay) | PgDog can retry server connections for any error, not just authentication. |
+| [`client_login_timeout`](https://www.pgbouncer.org/config.html#client_login_timeout) | [`client_login_timeout`](../configuration/pgdog.toml/general.md#client_login_timeout) | - |
+| [`dns_max_ttl`](https://www.pgbouncer.org/config.html#dns_max_ttl) | `dns_ttl` | - |
 
 ##### TLS
 
@@ -151,18 +151,18 @@ Settings that control how client and server connections use TLS.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| `client_tls_sslmode` | `tls_client_required` | Boolean setting in PgDog only. `true` forces clients to use TLS, `false` doesn't. |
-| `client_tls_key_file` | `tls_private_key` | - |
-| `client_tls_cert_file` | `tls_certificate` | - |
-| `client_tls_ca_file` | N/A | mTLS is not currently supported in PgDog. |
-| `client_tls_protocols` | N/A | Only modern and secure protocols are supported. |
-| `client_tls_ciphers` | N/A | Same as above. |
-| `server_tls_sslmode` | `tls_verify` | Read more in [TLS](../features/tls.md#server-connections). |
-| `server_tls_ca_file` | `tls_server_ca_certificate` | Same as above. |
-| `server_tls_key_file` | N/A | PgDog doesn't support mTLS for server connections. |
-| `server_tls_cert_file` | N/A | Same as above. |
-| `server_tls_protocols` | N/A | Same as `client_tls_protocols`. Only secure procotols are supported. |
-| `server_tls_ciphers` | N/A | Same as above. |
+| [`client_tls_sslmode`](https://www.pgbouncer.org/config.html#client_tls_sslmode) | [`tls_client_required`](../configuration/pgdog.toml/general.md#tls_client_required) | Boolean setting in PgDog only. `true` forces clients to use TLS, `false` doesn't. |
+| [`client_tls_key_file`](https://www.pgbouncer.org/config.html#client_tls_key_file) | [`tls_private_key`](../configuration/pgdog.toml/general.md#tls_private_key) | - |
+| [`client_tls_cert_file`](https://www.pgbouncer.org/config.html#client_tls_cert_file) | [`tls_certificate`](../configuration/pgdog.toml/general.md#tls_certificate) | - |
+| [`client_tls_ca_file`](https://www.pgbouncer.org/config.html#client_tls_ca_file) | N/A | mTLS is not currently supported in PgDog. |
+| [`client_tls_protocols`](https://www.pgbouncer.org/config.html#client_tls_protocols) | N/A | Only modern and secure protocols are supported. |
+| [`client_tls_ciphers`](https://www.pgbouncer.org/config.html#client_tls_ciphers) | N/A | Same as above. |
+| [`server_tls_sslmode`](https://www.pgbouncer.org/config.html#server_tls_sslmode) | [`tls_verify`](../configuration/pgdog.toml/general.md#tls_verify) | Read more in [TLS](../features/tls.md#server-connections). |
+| [`server_tls_ca_file`](https://www.pgbouncer.org/config.html#server_tls_ca_file) | [`tls_server_ca_certificate`](../configuration/pgdog.toml/general.md#tls_server_ca_certificate) | Same as above. |
+| [`server_tls_key_file`](https://www.pgbouncer.org/config.html#server_tls_key_file) | N/A | PgDog doesn't support mTLS for server connections. |
+| [`server_tls_cert_file`](https://www.pgbouncer.org/config.html#server_tls_cert_file) | N/A | Same as above. |
+| [`server_tls_protocols`](https://www.pgbouncer.org/config.html#server_tls_protocols) | N/A | Same as `client_tls_protocols`. Only secure protocols are supported. |
+| [`server_tls_ciphers`](https://www.pgbouncer.org/config.html#server_tls_ciphers) | N/A | Same as above. |
 
 ##### Dangerous timeouts
 
@@ -170,11 +170,11 @@ Settings that can abort queries mid-transaction or forcibly close client or serv
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| `query_timeout` | `query_timeout` | - |
-| `query_wait_timeout` | `checkout_timeout` | - |
-| `client_idle_timeout` | `client_idle_timeout` | - |
-| `idle_transaction_timeout` | N/A | Not currently supported in PgDog. |
-| `transaction_timeout` | N/A | Same as above. |
+| [`query_timeout`](https://www.pgbouncer.org/config.html#query_timeout) | [`query_timeout`](../configuration/pgdog.toml/general.md#query_timeout) | - |
+| [`query_wait_timeout`](https://www.pgbouncer.org/config.html#query_wait_timeout) | [`checkout_timeout`](../configuration/pgdog.toml/general.md#checkout_timeout) | - |
+| [`client_idle_timeout`](https://www.pgbouncer.org/config.html#client_idle_timeout) | [`client_idle_timeout`](../configuration/pgdog.toml/general.md#client_idle_timeout) | - |
+| [`idle_transaction_timeout`](https://www.pgbouncer.org/config.html#idle_transaction_timeout) | N/A | Not currently supported in PgDog. |
+| [`transaction_timeout`](https://www.pgbouncer.org/config.html#transaction_timeout) | N/A | Same as above. |
 
 ##### TCP settings
 
@@ -182,8 +182,8 @@ Low-level network settings controlling how TCP works.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| `tcp_keepalive` | `keepalive` | Read more in [Network](../configuration/pgdog.toml/network.md) settings. |
-| `tcp_keepcnt` | `retries` | Same as above. |
-| `tcp_keepidle` | `time` | Same as above. |
-| `tcp_keepintvl` | `interval` | Same as above. |
-| `tcp_user_timeout` | `user_timeout` | Same as above. |
+| [`tcp_keepalive`](https://www.pgbouncer.org/config.html#tcp_keepalive) | [`keepalive`](../configuration/pgdog.toml/network.md#keepalives) | Read more in [Network](../configuration/pgdog.toml/network.md) settings. |
+| [`tcp_keepcnt`](https://www.pgbouncer.org/config.html#tcp_keepcnt) | [`retries`](../configuration/pgdog.toml/network.md#retries) | Same as above. |
+| [`tcp_keepidle`](https://www.pgbouncer.org/config.html#tcp_keepidle) | [`time`](../configuration/pgdog.toml/network.md#time) | Same as above. |
+| [`tcp_keepintvl`](https://www.pgbouncer.org/config.html#tcp_keepintvl) | [`interval`](../configuration/pgdog.toml/network.md#interval) | Same as above. |
+| [`tcp_user_timeout`](https://www.pgbouncer.org/config.html#tcp_user_timeout) | [`user_timeout`](../configuration/pgdog.toml/network.md#user_timeout) | Same as above. |

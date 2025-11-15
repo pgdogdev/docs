@@ -212,6 +212,12 @@ Maximum amount of time new clients have to complete authentication. Clients that
 
 Default: **`60_000`** (60s)
 
+### `server_lifetime`
+
+Maximum amount of time a server connection is allowed to exist. Any connections exceeding this limit will be closed once they are checked back into the pool.
+
+Default: **`86400000`** (24h)
+
 ## Load balancer
 
 ### `load_balancing_strategy`
@@ -401,3 +407,11 @@ Default: **`true`** (enabled)
 How often to calculate averages shown in `SHOW STATS` [admin](../../administration/index.md) command and the [Prometheus](../../features/metrics.md) metrics.
 
 Default: **`15_000`** (15s)
+
+## DNS
+
+### `dns_ttl`
+
+Overrides the TTL set on DNS records received from DNS servers. Allows for faster failover when the primary/replica hostnames are changed by the database hosting provider.
+
+Default: **none** (disabled)

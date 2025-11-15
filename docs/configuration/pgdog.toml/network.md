@@ -20,7 +20,7 @@ To be consistent with the rest of PgDog documentation, units of time are in mill
 !!! note "Support for keep-alives"
     Not all networks support or play well with TCP keep-alives. If you see an increased number of dropped connections after enabling these settings, you may have to disable them.
 
-### `keepalives`
+### `keepalive`
 
 Enable TCP keep-alives. When enabled, idle client & server connections will send keep-alive packets to make sure the TCP connections are healthy.
 

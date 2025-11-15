@@ -87,6 +87,14 @@ Overrides the [`default_pool_size`](general.md#default_pool_size) setting. All c
 !!! note "Recommendation"
     We strongly recommend keeping this value well below the supported connections of the backend database(s) to allow connections for maintenance in high load scenarios.
 
+### `pooler_mode`
+
+Overrides the [`pooler_mode`](general.md#pooler_mode) setting. Connections to this database will use this connection pool mode.
+
+### `min_pool_size`
+
+Overrides the [`min_pool_size`](general.md#min_pool_size) setting. The connection pool will maintain at minimum this many connections.
+
 ### `statement_timeout`
 
 This setting configures the `statement_timeout` connection parameter on all connections to Postgres for this database.

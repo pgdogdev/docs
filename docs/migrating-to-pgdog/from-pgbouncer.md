@@ -1,3 +1,7 @@
+---
+icon: material/swap-horizontal
+---
+
 # Migrating from PgBouncer
 
 PgBouncer is a popular PostgreSQL connection pooler. PgDog implements the majority of its features, which makes the migration process relatively straightforward.
@@ -138,12 +142,12 @@ Various connection-related and DNS-related settings.
 |-|-|-|
 | [`server_reset_query`](https://www.pgbouncer.org/config.html#server_reset_query) | N/A | Server state is [managed](../features/transaction-mode.md#session-state) by PgDog and different reset queries are used, depending on circumstances. |
 | [`server_check_query`](https://www.pgbouncer.org/config.html#server_check_query) | N/A | Not currently configurable. PgDog runs an empty query (`;`) by default. |
-| [`server_lifetime`](https://www.pgbouncer.org/config.html#server_lifetime) | `server_lifetime` | - |
+| [`server_lifetime`](https://www.pgbouncer.org/config.html#server_lifetime) | [`server_lifetime`](../configuration/pgdog.toml/general.md#server_lifetime) | - |
 | [`server_idle_timeout`](https://www.pgbouncer.org/config.html#server_idle_timeout) | [`idle_timeout`](../configuration/pgdog.toml/general.md#idle_timeout) | - |
 | [`server_connect_timeout`](https://www.pgbouncer.org/config.html#server_connect_timeout) | [`connect_timeout`](../configuration/pgdog.toml/general.md#connect_timeout) | - |
 | [`server_login_retry`](https://www.pgbouncer.org/config.html#server_login_retry) | [`connect_attempt_delay`](../configuration/pgdog.toml/general.md#connect_attempt_delay) | PgDog can retry server connections for any error, not just authentication. |
 | [`client_login_timeout`](https://www.pgbouncer.org/config.html#client_login_timeout) | [`client_login_timeout`](../configuration/pgdog.toml/general.md#client_login_timeout) | - |
-| [`dns_max_ttl`](https://www.pgbouncer.org/config.html#dns_max_ttl) | `dns_ttl` | - |
+| [`dns_max_ttl`](https://www.pgbouncer.org/config.html#dns_max_ttl) | [`dns_ttl`](../configuration/pgdog.toml/general.md#dns_ttl) | - |
 
 ##### TLS
 
@@ -187,3 +191,40 @@ Low-level network settings controlling how TCP works.
 | [`tcp_keepidle`](https://www.pgbouncer.org/config.html#tcp_keepidle) | [`time`](../configuration/pgdog.toml/network.md#time) | Same as above. |
 | [`tcp_keepintvl`](https://www.pgbouncer.org/config.html#tcp_keepintvl) | [`interval`](../configuration/pgdog.toml/network.md#interval) | Same as above. |
 | [`tcp_user_timeout`](https://www.pgbouncer.org/config.html#tcp_user_timeout) | [`user_timeout`](../configuration/pgdog.toml/network.md#user_timeout) | Same as above. |
+
+### `userlist.txt`
+
+The PgBouncer's user list is a list of username/password pairs. The users listed there are allowed to connect to the pooler. PgDog does the same thing, using TOML, in [`users.toml`](../configuration/users.toml/users.md).
+
+=== "PgBouncer"
+    ```txt
+    "postgres" "hunter2"
+    "apples" "oranges"
+    ```
+=== "PgDog"
+    ```toml
+    [[users]]
+    name = "postgres"
+    database = "prod"
+    password = "hunter2"
+
+    [[users]]
+    name = "apples"
+    database = "staging"
+    password = "oranges"
+    ```
+
+In addition to passwords, [`users.toml`](../configuration/users.toml/users.md) entries allow to configure user-specific overrides, for example:
+
+```toml
+[[users]]
+name = "postgres"
+database = "postgres"
+password = "hunter2"
+pooler_mode = "session"
+```
+
+## Read more
+
+- [`pgdog.toml`](../configuration/pgdog.toml/general.md)
+- [`users.toml`](../configuration/users.toml/users.md)

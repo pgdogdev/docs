@@ -272,7 +272,7 @@ Advanced network settings for performance tuning.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| [`pkt_buf`](https://www.pgbouncer.org/config.html#pkt_buf) | N/A | Not currently configurable. |
+| [`pkt_buf`](https://www.pgbouncer.org/config.html#pkt_buf) | N/A | `memory.net_buffer` (not yet documented). |
 | [`max_packet_size`](https://www.pgbouncer.org/config.html#max_packet_size) | N/A | Same as above. |
 | [`listen_backlog`](https://www.pgbouncer.org/config.html#listen_backlog) | N/A | Same as above. |
 | [`sbuf_loopcnt`](https://www.pgbouncer.org/config.html#sbuf_loopcnt) | N/A | Same as above. |

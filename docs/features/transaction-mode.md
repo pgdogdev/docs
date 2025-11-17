@@ -1,6 +1,7 @@
 ---
 icon: material/speedometer
 ---
+
 # Transaction mode
 
 Transaction mode allows PgDog to share just a few of PostgreSQL server connections with thousands of clients. This is required for at-scale production deployments where the number of clients is much higher than the number of available connections to the database.
@@ -62,6 +63,26 @@ This is performed efficiently, and server parameters are updated only if they di
 
     This is to avoid unnecessary overhead of using `pg_query` (however small), when we don't absolutely have to.
 
+### Connection parameters
+
+Most Postgres connection drivers support passing parameters in the connection URL. Using the special `options` setting, each parameter is set using the `-c` flag, for example:
+
+```
+postgres://user@host:6432/db?options=-c%20statement_timeout%3D3s
+```
+
+This sets the `statement_timeout` setting to `3s` (3 seconds). Each time this client
+executes a transaction, the pooler will check the value for `statement_timeout` on the server connection,
+and if it differs, issue a command to Postgres to update it:
+
+```postgresql
+SET statement_timeout TO '3s';
+```
+
+### Latency
+
+PgDog keeps a real-time mapping of servers and their parameters, so checking the current value for any parameter doesn't require the pooler to talk to the database. Additionally, it's typically expected that applications have similar connection parameters, so the pooler won't have to synchronize parameters frequently.
+
 ## Advisory locks
 
 Advisory locks are an implementation of distributed locking in PostgreSQL. They are set on the server connection and released when the client removes the lock or disconnects.
@@ -86,23 +107,30 @@ PgDog is able to detect advisory lock usage and will pin the server connection t
 
 PgDog doesn't keep track of multiple advisory locks inside client connections. If a client acquires two different locks, for example, and only releases one, the server connection will still be returned back to the pool with the acquired lock.
 
+## Statement mode
 
-### Connection parameters
+Statement mode is a subset of transaction mode. In statement mode, clients are not allowed to start explicit transactions, i.e. using the `BEGIN` statement. All queries will be sent to the first available connection in the pool.
 
-Most Postgres connection drivers support passing parameters in the connection URL. Using the special `options` setting, each parameter is set using the `-c` flag, for example:
+To use statement mode, you can configure it globally or per user/database, for example:
 
-```
-postgres://user@host:6432/db?options=-c%20statement_timeout%3D3s
-```
+=== "pgdog.toml (global)"
+    ```toml
+    [general]
+    pooler_mode = "statement"
+    ```
+=== "pgdog.toml (database)"
+    ```toml
+    [[databases]]
+    name = "prod"
+    host = "127.0.0.1"
+    pooler_mode = "statement"
+    ```
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "alice"
+    database = "prod"
+    pooler_mode = "statement"
+    ```
 
-This sets the `statement_timeout` setting to `3s` (3 seconds). Each time this client
-executes a transaction, the pooler will check the value for `statement_timeout` on the server connection,
-and if it differs, issue a command to Postgres to update it:
-
-```postgresql
-SET statement_timeout TO '3s';
-```
-
-### Latency
-
-PgDog keeps a real-time mapping of servers and their parameters, so checking the current value for any parameter doesn't require the pooler to talk to the database. Additionally, it's typically expected that applications have similar connection parameters, so the pooler won't have to synchronize parameters frequently.
+Statement mode is useful when you want to avoid holding server connections idle while the client executes long transactions, but it does remove an important feature of Postgres, so additional care needs to be taken on the client to handle concurrent database updates.

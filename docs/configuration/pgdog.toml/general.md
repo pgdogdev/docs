@@ -53,7 +53,16 @@ Default: **`1`**
 
 ### `pooler_mode`
 
-Default pooler mode to use for database pools. See [Transaction mode](../../features/transaction-mode.md) and [session mode](../../features/session-mode.md) for more details on each mode.
+Default pooler mode to use for database pools.
+
+Available options:
+
+- `session`
+- `transaction` (default)
+- `statement`
+
+
+See [transaction mode](../../features/transaction-mode.md) and [session mode](../../features/session-mode.md) for more details on each mode.
 
 Default:  **`transaction`**
 

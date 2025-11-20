@@ -27,6 +27,7 @@ The admin database name is [configurable](../configuration/pgdog.toml/admin.md).
 | `SHOW PREPARED` | List prepared statements currently in the cache. |
 | `SHOW QUERY_CACHE` | List statements currently in the AST cache used for query routing. |
 | [`MAINTENANCE`](maintenance_mode.md) | Pause all queries to synchronize configuration changes across multiple instances of PgDog. |
+| [`SHOW REPLICATION`](replication.md) | Show the status of PostgreSQL replication for each database, including replica lag. |
 
 ## Shutting down PgDog
 

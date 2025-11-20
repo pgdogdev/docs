@@ -429,18 +429,18 @@ Default: **none** (disabled)
 
 ### `lsn_check_delay`
 
-For how long to delay checking for [replication delay](../../features/replication-failover.md).
+For how long to delay checking for [replication delay](../../features/load-balancer/replication-failover.md).
 
 Default: **`infinity`** (disabled)
 
 ### `lsn_check_interval`
 
-How frequently to run the [replication delay](../../features/replication-failover.md) check.
+How frequently to run the [replication delay](../../features/load-balancer/replication-failover.md) check.
 
 Default: **`5_000`** (5s)
 
 ### `lsn_check_timeout`
 
-Maximum amount of time allowed for the [replication delay](../../features/replication-failover.md) query to return a result.
+Maximum amount of time allowed for the [replication delay](../../features/load-balancer/replication-failover.md) query to return a result.
 
 Default: **`5_000`** (5s)

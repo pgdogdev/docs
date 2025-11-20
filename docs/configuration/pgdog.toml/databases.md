@@ -48,8 +48,7 @@ Default: **`5432`**
 
 ### `role`
 
-Type of role this host performs in your database cluster. This can be either `primary` for primary databases that serve writes (and reads),
-and `replica` for PostgreSQL replicas that can only serve reads.
+Type of role this host performs in your database cluster. This can be `primary` for primary databases that serve writes (and reads), `replica` for PostgreSQL replicas that can only serve reads, or `auto` to let PgDog decide (see [failover](../../features/load-balancer/replication-failover.md#failover) for more details).
 
 Default: **`primary`**
 

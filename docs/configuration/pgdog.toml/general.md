@@ -424,3 +424,23 @@ Default: **`15_000`** (15s)
 Overrides the TTL set on DNS records received from DNS servers. Allows for faster failover when the primary/replica hostnames are changed by the database hosting provider.
 
 Default: **none** (disabled)
+
+## Replication
+
+### `lsn_check_delay`
+
+For how long to delay checking for [replication delay](../../features/load-balancer/replication-failover.md).
+
+Default: **`infinity`** (disabled)
+
+### `lsn_check_interval`
+
+How frequently to run the [replication delay](../../features/load-balancer/replication-failover.md) check.
+
+Default: **`5_000`** (5s)
+
+### `lsn_check_timeout`
+
+Maximum amount of time allowed for the [replication delay](../../features/load-balancer/replication-failover.md) query to return a result.
+
+Default: **`5_000`** (5s)

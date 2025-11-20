@@ -8,7 +8,7 @@ icon: material/chart-timeline-variant
     This feature is new and experimental. Make sure to test it before deploying
     to production.
 
-PgDog has built-in functionality for monitoring the state of Postgres replica databases. If configured, it can also automatically detect when a replica is promoted, and redirecting write queries to the new primary.
+PgDog has built-in functionality for monitoring the state of Postgres replica databases. If configured, it can also automatically detect when a replica is promoted and redirect write queries to the new primary.
 
 ## Replication
 
@@ -57,7 +57,7 @@ lsn_check_interval = 1_000
   <img src="/images/failover.png" width="95%" alt="Failover" />
 </center>
 
-If `pg_is_in_recovery()` returns `true`, PgDog will assume that the database is the primary and will start sending it write query traffic. The old primary is demoted to the replica role.
+If `pg_is_in_recovery()` returns `false`, PgDog will assume that the database is the primary and will start sending it write query traffic. The old primary is demoted to the replica role.
 
 !!! warning "Failover trigger"
     PgDog does not detect primary failure and **will not** call `pg_promote()`. It is expected that the databases are managed externally by another tool, like Patroni or AWS RDS, which handle replica promotion.

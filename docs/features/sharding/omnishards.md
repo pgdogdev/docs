@@ -30,7 +30,7 @@ If the query contains a sharding key, it will be used instead, and omnisharded t
 
 ### Consistency
 
-Writing data to omnisharded tables is atomic if you enabled [two-phase commit](2pc.md).
+Writing data to omnisharded tables is atomic if you enable [two-phase commit](2pc.md).
 
 If you can't or choose not to use 2pc, make sure writes to omnisharded tables can be repeated in case of failure. This can be achieved by using unique indexes and `INSERT ... ON CONFLICT ... DO UPDATE` queries.
 

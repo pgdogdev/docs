@@ -70,4 +70,4 @@ tables = [
 ]
 ```
 
-Once configured, commands like `\d`, `\d+` and others sent from `psql` will start to return correct results.
+Once configured, commands like `\d`, `\d+` and others sent from `psql` will start to return correct results as well.

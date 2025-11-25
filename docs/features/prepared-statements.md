@@ -82,6 +82,10 @@ prepared_statements = "full"
 Statements prepared using this method can be executed normally with `Bind` and `Execute` messages. Result data types can be inspected with `Describe`, just
 like a regular prepared statement.
 
+!!! note "Sharding support"
+    Currently, `EXECUTE` of prepared statements requiring [sharding](sharding/index.md) isn't supported. By default, the statement
+    will be sent to all shards.
+
 ## Unnamed statements
 
 By default, unnamed (or anonymous) prepared statements are not cached and are sent to Postgres as-is. This works fine for most client drivers because they send the entire query in a single request. However, some drivers, like `go/pq` do not.

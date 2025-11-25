@@ -20,6 +20,7 @@ The following information is returned for each connection pool (user/database pa
 | `cl_waiting` | Number of clients waiting for a connection from this pool. | `3` |
 | `sv_idle` | Number of idle server connections in the pool. | `8` |
 | `sv_active` | Number of checked out (used) server connections in the pool. | `12` |
+| `sv_idle_xact` | Number of idle-in-transaction server connections in the pool. | `0` |
 | `sv_total` | Total number of server connections in the pool. | `20` |
 | `maxwait` | Maximum wait time for connections. | `30` |
 | `maxwait_us` | Maximum wait time for connections in microseconds. | `30000000` |

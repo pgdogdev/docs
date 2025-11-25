@@ -74,6 +74,7 @@ The following metrics are exported via the OpenMetrics endpoint:
 | `cl_waiting` | Clients waiting for a connection from a pool. | `gauge` |
 | `sv_active` | Servers currently serving client requests. | `gauge` |
 | `sv_idle` | Servers available for clients to use. | `gauge` |
+| `sv_idle_xact` | Servers currently idle in transaction. | `gauge` |
 | `maxwait` | How long clients have been waiting for a connection (in seconds). | `gauge` |
 | `errors` | Errors that connections in the pool have experienced. | `counter` |
 | `out_of_sync` | Connections that have been returned to the pool in a broken state. | `counter` |

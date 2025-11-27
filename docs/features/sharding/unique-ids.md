@@ -42,6 +42,7 @@ Once configured, you can fetch unique IDs using a standard SQL command:
 
     ```
 
+
 ### Configuration
 
 #### Node identifier
@@ -61,15 +62,15 @@ For example, if you have a three node deployment, they could be identified as fo
 
 === "Node 1"
     ```bash
-    export NODE_ID=pgdog-prod-1
+    export NODE_ID=pgdog-prod-0
     ```
 === "Node 2"
     ```bash
-    export NODE_ID=pgdog-prod-2
+    export NODE_ID=pgdog-prod-1
     ```
 === "Node 3"
     ```bash
-    export NODE_ID=pgdog-prod-3
+    export NODE_ID=pgdog-prod-2
     ```
 
 When configured correctly, you're able to get each node's identifier by querying the [admin](../../administration/index.md) database, for example:
@@ -82,12 +83,12 @@ When configured correctly, you're able to get each node's identifier by querying
     ```
       instance_id
     ----------------
-      pgdog-prod-1
+      pgdog-prod-0
     ```
 
 !!! note "Maximum number of nodes"
     Due to how the ID generation algorithm is implemented, PgDog allows up to a maximum
-    of **1023** instances in the same deployment.
+    of **1024** instances (starting at 0) in the same deployment.
 
 
 #### Minimum ID
@@ -100,3 +101,24 @@ unique_id_min = 5_000_000
 ```
 
 When set, all generated IDs are guaranteed to be larger than this value.
+
+## Limitations
+
+The generated unique IDs are 64-bit signed integers, matching the `BIGINT` (and `BIGSERIAL`) PostgreSQL format. However, since they are time-based, subsequently generated IDs will have gaps, for example:
+
+```
+678973936041
+678944576104
+678948770152
+```
+
+This is normally not an issue, since PostgreSQL sequences are not guaranteed to be gap-free either, but this is something to be aware of for applications that attempt to detect rolled back transactions.
+
+Additionally, because PgDog reserves only 41 bits for the timestamp portion of the identifier, the IDs have a maximum value. Currently, the available
+ID range is **69.73 years**, set to overflow on **August 3, 2095**. We expect databases to use 128-bit integers by then, expanding the ID range almost indefinitely.
+
+### Generation rate
+
+Since the identifiers are time-based, to ensure uniqueness, PgDog limits how many IDs can be generated per unit of time. This limit is currently **4,096** IDs per millisecond.
+
+When it's reached, PgDog will pause ID generation until the clock ticks to the next millisecond. This gives it an effective ID generation rate of _4,096,000 / second / node_, which should be sufficient for most deployments.

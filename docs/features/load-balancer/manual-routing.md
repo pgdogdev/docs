@@ -21,11 +21,11 @@ Query comments are supported in all types of queries, including prepared stateme
 
 ## Parameters
 
-Startup parameters are connection-specific settings that are typically set on connection creation to configure database behavior. For example, this is how ORMs and web frameworks control settings like `application_name`, `work_mem`, `statement_timeout` and many others.
+Parameters are connection-specific settings that can be set on connection creation to configure database behavior. For example, this is how ORMs and web frameworks control settings like `application_name`, `statement_timeout` and many others.
 
-The Postgres protocol doesn't have any restrictions on parameter names or values, and PgDog can choose to forward those settings to Postgres (or not).
+The Postgres protocol doesn't have any restrictions on parameter names or values, and PgDog has access to them at connection creation.
 
-PgDog has two parameters that control which database is used for all queries on a client connection:
+The following two parameters allow you to control which database is used for all queries on a client connection:
 
 | Parameter | Description |
 |-|-|
@@ -43,7 +43,7 @@ The `pgdog.shard` parameter accepts a shard number for any database specified in
 
 ### Setting the parameters
 
-Setting the parameter at connection creation is PostgreSQL driver-specific. Some of the common drivers and frameworks are shown below.
+Configuring parameters at connection creation is PostgreSQL driver-specific. Some of the common drivers and frameworks are shown below.
 
 #### Database URL
 
@@ -57,7 +57,7 @@ Depending on the environment, the parameters may need to be URL-encoded, e.g., `
 
 === "asyncpg"
 
-    [asyncpg](https://pypi.org/project/asyncpg/) is a popular PostgreSQL driver for asynchronous Python applications. It allows you to set connection parameters when creating a connection:
+    [asyncpg](https://pypi.org/project/asyncpg/) is a popular PostgreSQL driver for asynchronous Python applications. It allows you to set connection parameters on connection setup:
 
     ```python
     conn = await asyncpg.connect(
@@ -74,16 +74,13 @@ Depending on the environment, the parameters may need to be URL-encoded, e.g., `
 
 === "SQLAlchemy"
 
-    [SQLAlchemy](https://www.sqlalchemy.org/) is a popular Python ORM, which supports any number of PostgreSQL connection drivers. For example, if you're using `asyncpg`, you can set connection parameters as follows:
+    [SQLAlchemy](https://www.sqlalchemy.org/) is a Python ORM, which supports any number of PostgreSQL connection drivers. For example, if you're using `asyncpg`, you can set connection parameters as follows:
 
     ```python
     engine = create_async_engine(
         "postgresql+asyncpg://pgdog:pgdog@10.0.0.0:6432/pgdog",
         pool_size=20,
-        max_overflow=30,
-        pool_timeout=30,
-        pool_recycle=3600,
-        pool_pre_ping=True,
+        # [...]
         connect_args={"server_settings": {"pgdog.role": "primary"}},
     )
     ```
@@ -103,31 +100,33 @@ Depending on the environment, the parameters may need to be URL-encoded, e.g., `
       options: "-c pgdog.role=replica -c pgdog.shard=0"
     ```
 
-    These options are passed to the [`pg`](https://github.com/ged/ruby-pg) driver, so if you're using it directly, you can create connections manually like so:
+    These options are passed to the [`pg`](https://github.com/ged/ruby-pg) driver. If you're using it directly, you can create connections like so:
 
     ```ruby
     require "pg"
 
     conn = PG.connect(
       host: "10.0.0.0",
-      # user, password, etc.
+      # [...]
       options: "-c pgdog.role=primary -c pgdog.shard=1"
     )
     ```
 
 ### Using `SET`
 
-The PostgreSQL protocol supports setting connection parameters using the `SET` statement. This also works for configuring both `pgdog.role` and `pgdog.shard` parameters.
+The PostgreSQL protocol supports configuring connection parameters using the `SET` statement. This also works for configuring both `pgdog.role` and `pgdog.shard`.
 
-For example, if you want all subsequent queries to be sent to the primary, you can execute the following statement:
+For example, to make sure all subsequent queries to be sent to the primary, you can execute the following statement:
 
 ```postgresql
 SET pgdog.role TO "primary";
 ```
 
+The parameter is persisted on the connection until it's closed or the parameter is changed with another `SET` statement.
+
 #### Inside transactions
 
-If you want to provide a transaction routing hint without affecting the rest of the connection, you can use `SET LOCAL`:
+If you want to provide a transaction routing hint without affecting the rest of the connection, you can use `SET LOCAL` instead:
 
 ```postgresql
 BEGIN;
@@ -154,17 +153,15 @@ In this example, all transaction statements (including the `BEGIN` statement) wi
 
 In certain situations, the overhead of parsing queries may be too high, e.g., when your application can't use prepared statements.
 
-If you've configured the desired database role (and/or shard) for each of your application connections, you can safely disable the query parser in [pgdog.toml](../../configuration/pgdog.toml/general.md#query_parser):
+If you've configured the desired database role (and/or shard) for each of your application connections, you can disable the query parser in [pgdog.toml](../../configuration/pgdog.toml/general.md#query_parser):
 
 ```toml
 [general]
 query_parser = "off"
 ```
 
-Once the parser is disabled, PgDog will rely solely on the `pgdog.role` and `pgdog.shard` parameters to make its routing decisions.
+Once it's disabled, PgDog will rely solely on the `pgdog.role` and `pgdog.shard` parameters to make its routing decisions.
 
-### Session state
+### Session state & `SET`
 
-The query parser is used to intercept and interpret `SET` commands, which set session variables at runtime.
-
-If the parser is disabled and your application uses `SET` commands to configure the connection at startup, PgDog will not be able to guarantee that all connections have the correct session settings in [transaction mode](../transaction-mode.md).
+The query parser is used to intercept and interpret `SET` commands. If the parser is disabled and your application uses `SET` commands to configure the connection, PgDog will not be able to guarantee that all connections have the correct session settings in [transaction mode](../transaction-mode.md).

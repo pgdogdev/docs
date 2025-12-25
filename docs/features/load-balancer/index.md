@@ -21,23 +21,23 @@ When a query is received by PgDog, it will inspect it using the native Postgres 
 Applications don't have to manually route queries between databases or maintain several connection pools internally.
 
 !!! note "SQL compatibility"
-    PgDog's query parser is powered by the `pg_query` library, which extracts the Postgres native SQL parser directly from its source code. This makes it **100% compatible** with the PostgreSQL query language and allows PgDog to understand all valid Postgres queries.
+    PgDog's query parser is powered by the `pg_query` library, which extracts the Postgres native SQL parser directly from its source code. This makes it **100% compatible** with the PostgreSQL query language and allows PgDog to understand all valid PostgreSQL queries.
 
 ## Load distribution
 
 The load balancer is configurable and can distribute read queries between replicas using one of the following strategies:
 
-* Round robin (default)
-* Random
-* Least active connections
+* [Round robin](#round-robin) (default)
+* [Random](#random)
+* [Least active connections](#least-active-connections)
 
-Choosing the best strategy depends on your query workload and the size of the databases. Each one has its pros and cons. If you're not sure, using the **round robin** strategy usually works well for most deployments.
+Choosing the best strategy depends on your query workload and the size of the databases. Each strategy has its pros and cons. If you're not sure, using the **round robin** strategy usually works well for most deployments.
 
 ### Round robin
 
-Round robin is often used in HTTP load balancers (e.g., nginx) to evenly distribute requests to hosts, in the same order as they appear in the configuration. Each database receives exactly one query before the next one is used.
+Round robin is often used in HTTP load balancers (e.g., nginx) to evenly distribute requests between hosts, in the same order as they appear in the configuration. Each database receives exactly one transaction before the next one is used.
 
-This algorithm makes no assumptions about the capacity of each database host or the cost of each query. It works best when all queries have similar runtime cost and replica databases have identical hardware.
+This algorithm makes no assumptions about the capacity of each database or the cost of each query. It works best when all queries have similar runtime cost and replica databases have identical hardware.
 
 ##### Configuration
 
@@ -50,7 +50,7 @@ load_balancing_strategy = "round_robin"
 
 ### Random
 
-The random strategy sends queries to a database based on the output of a random number generator modulus the number of replicas in the configuration. This strategy assumes no knowledge about the runtime cost of queries or the size of database hardware.
+The random strategy sends queries to a database based on the output of a random number generator modulus the number of replicas in the configuration. This strategy assumes no knowledge about the runtime cost of queries or the capacity of database hardware.
 
 This algorithm is often effective when queries have unpredictable runtime. By randomly distributing them between databases, it reduces hot spots in the replica cluster.
 
@@ -87,6 +87,10 @@ The most common edge case is `SELECT FOR UPDATE` which locks rows for exclusive 
 
 The load balancer detects this and will send this query to the primary database instead of a replica.
 
+!!! note "Transaction required"
+
+    `SELECT FOR UPDATE` is used inside manual [transactions](#transactions) (i.e., started with `BEGIN`), which are routed to the primary database by default.
+
 ### Write CTEs
 
 Some `SELECT` queries can trigger a write to the database from a CTE, for example:
@@ -98,7 +102,7 @@ WITH t AS (
 SELECT * FROM users INNER JOIN t ON t.id = users.id
 ```
 
-The load balancer recursively checks all of them and, if any CTE contains a query that could trigger a write, it will send the whole statement to the primary database.
+The load balancer recursively checks CTEs and, if any of them contains a query that could trigger a write, it will send the whole statement to the primary database.
 
 ### Transactions
 

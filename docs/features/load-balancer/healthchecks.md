@@ -1,6 +1,7 @@
 ---
 icon: material/lan-check
 ---
+
 # Health checks
 
 All databases load balanced by PgDog are regularly checked with health checks. A health check is a small query that ensures the database is reachable and able to handle requests.
@@ -90,7 +91,7 @@ The **default** value is **5 minutes** (`300_000` milliseconds).
 !!! note
     A database will not be placed back into the load balancer until it passes a health check again.
 
-    Make sure that `idle_healthcheck_timeout` is set to a lower setting than `ban_timeout`, so health checks have time to run before you expect the database to resume serving traffic.
+    Make sure that `idle_healthcheck_interval` is set to a lower value than `ban_timeout`, so health checks have time to run before you expect the database to resume serving traffic.
 
 ### False positives
 

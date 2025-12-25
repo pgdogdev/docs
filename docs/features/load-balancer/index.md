@@ -1,6 +1,9 @@
 ---
 next_steps:
-  - ["Health checks", "/features/healthchecks/", "Ensure replica databases are up and running. Block offline databases from serving queries."]
+  - ["Health checks", "/features/load-balancer/healthchecks", "Ensure replica databases are up and running. Block offline databases from serving queries."]
+  - ["Replication & failover", "/features/load-balancer/replication-failover", "Replica lag detection and automatic traffic failover on replica promotion."]
+  - ["Transactions", "/features/load-balancer/transactions", "Handling of manually-started transactions."]
+  - ["Manual routing", "/features/load-balancer/manual-routing", "Overriding the load balancer using connection parameters or query comments."]
 icon: material/lan
 ---
 
@@ -89,7 +92,7 @@ The load balancer detects this and will send this query to the primary database 
 
 !!! note "Transaction required"
 
-    `SELECT FOR UPDATE` is used inside manual [transactions](#transactions) (i.e., started with `BEGIN`), which are routed to the primary database by default.
+    `SELECT FOR UPDATE` is used inside manual [transactions](transactions.md) (i.e., started with `BEGIN`), which are routed to the primary database by default.
 
 ### Write CTEs
 
@@ -103,114 +106,6 @@ SELECT * FROM users INNER JOIN t ON t.id = users.id
 ```
 
 The load balancer recursively checks CTEs and, if any of them contains a query that could trigger a write, it will send the whole statement to the primary database.
-
-### Transactions
-
-All manual transactions are sent to the primary database by default. Transactions are started by sending the `BEGIN` command, for example:
-
-```postgresql
-BEGIN;
-INSERT INTO users (email, created_at) VALUES ($1, NOW()) RETURNING *;
-COMMIT;
-```
-
-PgDog processes queries immediately upon receiving them, and since transactions can contain multiple statements, it isn't possible to determine whether the whole transaction writes to the database. Therefore, it is more reliable to send it to the primary database.
-
-!!! note "Replica lag"
-    While transactions are used to atomically change multiple tables, they can also be used to manually route `SELECT` queries to the primary database. For example:
-
-    ```postgresql
-    BEGIN;
-    SELECT * FROM users WHERE id = $1;
-    COMMIT;
-    ```
-
-
-    This is useful when the data in the table(s) has been recently updated and you want to avoid errors caused by replication lag. This often manifests as "record not-found"-style errors, for example:
-
-    ```
-    ActiveRecord::RecordNotFound (Couldn't find User with 'id'=9999):
-    ```
-
-    While sending read queries to the primary adds load, it is often necessary in real-time systems that are not equipped to handle replication delays.
-
-
-#### Read-only transactions
-
-The PostgreSQL query language allows you to declare a transaction as read-only. This prevents it from writing data to the database. PgDog takes advantage of this property and will send such transactions to a replica database.
-
-Read-only transactions can be started with the `BEGIN READ ONLY` command, for example:
-
-```postgresql
-BEGIN READ ONLY;
-SELECT * FROM users WHERE id = $1;
-COMMIT;
-```
-
-Read-only transactions are useful when queries depend on each other's results and need a consistent view of the database. Some Postgres database drivers allow this option to be set in the code, for example:
-
-=== "pgx (go)"
-    ```go
-    tx, err := conn.BeginTx(ctx, pgx.TxOptions{
-        AccessMode: pgx.ReadOnly,
-    })
-    ```
-=== "Sequelize (node)"
-    ```javascript
-    const tx = await sequelize.transaction({
-      readOnly: true,
-    });
-    ```
-=== "SQLAlchemy (python)"
-    Add `postgresql_readonly=True` to [execution options](https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Engine.execution_options), like so:
-    ```python
-    engine = create_engine("postgresql://user:pw@pgdog:6432/prod")
-              .execution_options(postgresql_readonly=True)
-    ```
-
-#### Primary-only connections
-
-If you need to override the load balancer routing decision and send a query (or all queries) to the primary, it's possible to do so by configuring the `pgdog.role` connection parameter.
-
-Configuring this connection parameter can be done at connection creation:
-
-=== "Connection URL"
-    ```bash
-    postgres://pgdog:pgdog@10.0.0.0:6432/database?options=-c%20pgdog.role%3Dprimary
-    ```
-=== "asyncpg (Python)"
-    ```python
-    conn = await asyncpg.connect(
-        user="pgdog",
-        password="pgdog",
-        database="pgdog",
-        host="10.0.0.0",
-        port=6432,
-        server_settings={
-            "pgdog.role": "primary",
-        }
-    )
-    ```
-=== "SQLAlchemy (Python)"
-    ```python
-    engine = create_async_engine(
-        "postgresql+asyncpg://pgdog:pgdog@10.0.0.0:6432/pgdog",
-        pool_size=20,
-        max_overflow=30,
-        pool_timeout=30,
-        pool_recycle=3600,
-        pool_pre_ping=True,
-        connect_args={"server_settings": {"pgdog.role": "primary"}},
-    )
-    ```
-
-The following values are supported:
-
-| Value | Routing decision |
-|-|-|
-| `primary` | Queries are sent to the primary database only. |
-| `replica` | Queries are load balanced between primary and replicas, depending on the value of the [`read_write_split`](../../configuration/pgdog.toml/general.md#read_write_split) setting. |
-
 
 ## Using the load balancer
 
@@ -246,17 +141,6 @@ In case one of your replicas fails, you can configure the primary to serve read 
 ```toml
 [general]
 read_write_split = "include_primary_if_replica_banned"
-```
-
-### Manual routing
-
-!!! note "New feature"
-    This feature was added in commit version [`c49339f`](https://github.com/pgdogdev/pgdog/commit/c49339f70db8be63b76ebb3aa0f31433c4266f21). If using this feature, make sure to run the latest version of PgDog.
-
-If your query is replica-lag sensitive (e.g., you are reading data that you just wrote), you can route it to the primary manually. The query router supports doing this with a query comment:
-
-```postgresql
-/* pgdog_role: primary */ SELECT * FROM users WHERE id = $1
 ```
 
 ## Learn more

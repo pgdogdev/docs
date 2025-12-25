@@ -49,7 +49,7 @@ By default, PgDog will not query databases for their replication status. To enab
 lsn_check_delay = 0
 
 # Run LSN check every second.
-lsn_check_interval = 1_000 
+lsn_check_interval = 1_000
 ```
 
 | Setting | Description |

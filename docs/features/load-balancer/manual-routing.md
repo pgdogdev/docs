@@ -23,7 +23,7 @@ Query comments are supported in all types of queries, including prepared stateme
 
 Parameters are connection-specific settings that can be set on connection creation to configure database behavior. For example, this is how ORMs and web frameworks control settings like `application_name`, `statement_timeout` and many others.
 
-The Postgres protocol doesn't have any restrictions on parameter names or values, and PgDog has access to them at connection creation.
+The Postgres protocol doesn't have any restrictions on parameter names or values, and PgDog can intercept and handle them at any time.
 
 The following two parameters allow you to control which database is used for all queries on a client connection:
 
@@ -34,16 +34,20 @@ The following two parameters allow you to control which database is used for all
 
 The `pgdog.role` parameter accepts the following values:
 
-| Parameter value | Behavior |
-|-|-|
-| `primary` | All queries are sent to the primary database. |
-| `replica` | All queries are load balanced between replica databases, and possibly the primary if [`read_write_split`](../../configuration/pgdog.toml/general.md#read_write_split) is set to `include_primary` (default). |
+| Parameter value | Behavior | Example |
+|-|-|-|
+| `primary` | All queries are sent to the primary database. | `SET pgdog.role TO "primary"` |
+| `replica` | All queries are load balanced between replica databases, and possibly the primary if [`read_write_split`](../../configuration/pgdog.toml/general.md#read_write_split) is set to `include_primary` (default). | `SET pgdog.role TO "replica"` |
 
-The `pgdog.shard` parameter accepts a shard number for any database specified in [`pgdog.toml`](../../configuration/pgdog.toml/databases.md).
+The `pgdog.shard` parameter accepts a shard number for any database specified in [`pgdog.toml`](../../configuration/pgdog.toml/databases.md), for example:
+
+```postgresql
+SET pgdog.shard TO 1;
+```
 
 ### Setting the parameters
 
-Configuring parameters at connection creation is PostgreSQL driver-specific. Some of the common drivers and frameworks are shown below.
+Configuring parameters can be done at connection creation, or by using the `SET` command. Below are examples of some of the common PostgreSQL drivers and web frameworks.
 
 #### Database URL
 
@@ -114,19 +118,19 @@ Depending on the environment, the parameters may need to be URL-encoded, e.g., `
 
 ### Using `SET`
 
-The PostgreSQL protocol supports configuring connection parameters using the `SET` statement. This also works for configuring both `pgdog.role` and `pgdog.shard`.
+The PostgreSQL protocol supports changing connection parameters using the `SET` statement. By extension, this also works for changing `pgdog.role` and `pgdog.shard` settings.
 
-For example, to make sure all subsequent queries to be sent to the primary, you can execute the following statement:
+For example, to make sure all subsequent queries are sent to the primary, you can execute the following statement:
 
 ```postgresql
 SET pgdog.role TO "primary";
 ```
 
-The parameter is persisted on the connection until it's closed or the parameter is changed with another `SET` statement.
+The parameter is persisted on the connection until it's closed or the value is changed with another `SET` statement. Before routing a query, the load balancer will check the value of this parameter, so setting it early on during connection creation ensures all transactions are executed on the right database.
 
 #### Inside transactions
 
-If you want to provide a transaction routing hint without affecting the rest of the connection, you can use `SET LOCAL` instead:
+It's possible to set routing hints for the lifetime of a single transaction, by using the `SET LOCAL` command. This ensures the routing hint is used for one transaction only and doesn't affect the rest of the queries:
 
 ```postgresql
 BEGIN;
@@ -136,7 +140,7 @@ SET LOCAL pgdog.role TO "primary";
 In this example, all transaction statements (including the `BEGIN` statement) will be sent to the primary database. Whether the transaction is committed or reverted, the value of `pgdog.role` will be reset to its previous value.
 
 !!! note "Statement ordering"
-    To make sure PgDog intercepts the routing hint early enough in the transaction flow, make sure to send all hints _before_ executing actual queries.
+    To make sure PgDog intercepts the routing hint early enough in the transaction flow, you need to send all hints _before_ executing actual queries.
 
     The following flow, for example, _will not_ work:
 
@@ -153,7 +157,7 @@ In this example, all transaction statements (including the `BEGIN` statement) wi
 
 In certain situations, the overhead of parsing queries may be too high, e.g., when your application can't use prepared statements.
 
-If you've configured the desired database role (and/or shard) for each of your application connections, you can disable the query parser in [pgdog.toml](../../configuration/pgdog.toml/general.md#query_parser):
+If you've configured the desired database role (and/or shard) for each of your application connections, you can disable the query parser in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#query_parser):
 
 ```toml
 [general]

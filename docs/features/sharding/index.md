@@ -19,9 +19,9 @@ PgDog is a query router. It can extract sharding hints directly from the SQL usi
 | Query router feature | Description |
 |-|-|
 | [**Direct-to-shard queries**](query-routing.md) | Automatic sharding key detection which sends the query to one shard only. |
-| [**Cross-shard queries**](cross-shard.md) | Queries that don't have a sharding key are sent to all shards with results collected and transformed, as if they came from one database. |
+| [**Cross-shard queries**](cross-shard-queries/index.md) | Queries that don't have a sharding key are sent to all shards with results collected and transformed, as if they came from one database. |
 | [**Manual routing**](manual-routing.md) | Provide the sharding key in a query comment, or separately with a `SET` PostgreSQL command. |
-| [**Sharded COPY**](copy.md) | Data sent via `COPY` commands is automatically split between all shards, using the configured [sharding function](sharding-functions.md). |
+| [**Sharded COPY**](cross-shard-queries/copy.md) | Data sent via `COPY` commands is automatically split between all shards, using the configured [sharding function](sharding-functions.md). |
 
 ## Managing data
 

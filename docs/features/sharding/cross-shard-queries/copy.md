@@ -22,7 +22,7 @@ PgDog supports sharding data sent via `COPY`, using any one of the following for
 | Text | PostgreSQL version of CSV, with `<tab>` (`\t`) as the delimiter. | `hello\tworld\t1\t2\t3` |
 | Binary | PostgreSQL-specific format that encodes data using the format used to store it on disk. | |
 
-Each row is extracted from the data stream, inspected for the sharding key, and sent to a data node. The sharding key should be specified in the [configuration](../../configuration/pgdog.toml/sharded_tables.md) and provided in the command statement, for example:
+Each row is extracted from the data stream, inspected for the sharding key, and sent to a data node. The sharding key should be specified in the [configuration](../../../configuration/pgdog.toml/sharded_tables.md) and provided in the command statement, for example:
 
 ```postgresql
 COPY users (id, email) FROM STDIN;
@@ -38,5 +38,5 @@ The cost of parsing and sharding the CSV stream in PgDog is negligibly small.
 
 ## Read more
 
-- [Two-phase commit](2pc.md)
-- [Omnisharded tables](omnishards.md)
+- [Two-phase commit](../2pc.md)
+- [Omnisharded tables](../omnishards.md)

@@ -8,7 +8,7 @@ icon: material/table-cog
 
 ## Atomicity
 
-DDL statements should be atomic across all shards. This is to protect against a single shard failure to create a table or index, which could result in an inconsistent schema. PgDog can use [two-phase commit](2pc.md) to ensure this is the case, however that means that all DDL statements must be executed inside a transaction, for example:
+DDL statements should be atomic across all shards. This is to protect against a single shard failure to create a table or index, which could result in an inconsistent schema. PgDog can use [two-phase commit](../2pc.md) to ensure this is the case, however that means that all DDL statements must be executed inside a transaction, for example:
 
 ```postgresql
 BEGIN;
@@ -22,7 +22,7 @@ COMMIT;
 
 ## Idempotency
 
-Some statements, like `CREATE INDEX CONCURRENTLY`, cannot run inside transactions. To make sure these are safely executed, you have two options: use [manual routing](manual-routing.md) and execute it on each shard individually, or write idempotent schema migrations, for example:
+Some statements, like `CREATE INDEX CONCURRENTLY`, cannot run inside transactions. To make sure these are safely executed, you have two options: use [manual routing](../manual-routing.md) and execute it on each shard individually, or write idempotent schema migrations, for example:
 
 ```postgresql
 DROP INDEX IF EXISTS user_id_idx;

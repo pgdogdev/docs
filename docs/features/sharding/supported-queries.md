@@ -71,7 +71,7 @@ Currently, PgDog only supports `INSERT` statements with one tuple in the `VALUES
 
 ### `COPY`
 
-`COPY` statements are automatically sharded between all shards. See [COPY](copy.md) for more details.
+`COPY` statements are automatically sharded between all shards. See [COPY](cross-shard-queries/copy.md) for more details.
 
 ## DDL
 

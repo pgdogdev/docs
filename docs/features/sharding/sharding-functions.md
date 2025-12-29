@@ -23,7 +23,7 @@ The sharding functions are configurable in [`pgdog.toml`](../../configuration/pg
     Since sharding is configured for each table or column name, this allows storing tables
     with different sharding functions in the same database.
 
-    While this works for some [cross-shard](cross-shard.md) queries, joins between tables using a different sharding function are not possible for [direct-to-shard](query-routing.md) queries.
+    While this works for some [cross-shard](cross-shard-queries/index.md) queries, joins between tables using a different sharding function are not possible for [direct-to-shard](query-routing.md) queries.
 
 
 ## Hash
@@ -81,7 +81,7 @@ values = [1, 2, 3]
 shard = 0
 ```
 
-This example will route all queries with `user_id` equal to one, two, or three to shard zero. Unlike [hash](#hash) sharding, a value <-> shard mapping is required for _all_ values of the sharding key. If a value is used that doesn't have a mapping, the query will be sent to [all shards](cross-shard.md).
+This example will route all queries with `user_id` equal to one, two, or three to shard zero. Unlike [hash](#hash) sharding, a value <-> shard mapping is required for _all_ values of the sharding key. If a value is used that doesn't have a mapping, the query will be sent to [all shards](cross-shard-queries/index.md).
 
 !!! note "Required configuration"
     The `[[sharded_tables]]` configuration entry is still required for list and range sharding. It specifies the data type of the column, which tells PgDog how to parse its value at runtime.
@@ -242,5 +242,5 @@ If a safe rewrite plan cannot be determined, PgDog will abort the transaction an
 
 ## Read more
 
-- [COPY command](copy.md)
+- [COPY command](cross-shard-queries/copy.md)
 - [Two-phase commit](2pc.md)

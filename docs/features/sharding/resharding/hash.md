@@ -39,7 +39,7 @@ Required (*) and optional parameters for this command are as follows:
 
 The first thing PgDog will do when data sync is started is create a replication slot on each primary database in the source cluster. This will prevent Postgres from removing the WAL, while we copy data for each table to the destination.
 
-Next, each table will be copied, in parallel, to the destination database, using [sharded COPY](../copy.md). Once that's done, table changes are synchronized, in real-time, with logical replication from the replication slot created earlier.
+Next, each table will be copied, in parallel, to the destination database, using [sharded COPY](../cross-shard-queries/copy.md). Once that's done, table changes are synchronized, in real-time, with logical replication from the replication slot created earlier.
 
 The whole process happens entirely online, and doesn't require database reboots or pausing writes to the source database.
 
@@ -95,7 +95,7 @@ PgDog will distribute the table copy load evenly between all replicas in the con
 
 #### Binary `COPY`
 
-PgDog uses the binary `COPY` format to send and receive data, which has been shown to be consistently faster than text, because it avoids the (de)serialization overhead of sending tuples in text form. PgDog decodes tuples in-flight and splits them evenly between destination shards, using the [sharded COPY](../copy.md) implementation.
+PgDog uses the binary `COPY` format to send and receive data, which has been shown to be consistently faster than text, because it avoids the (de)serialization overhead of sending tuples in text form. PgDog decodes tuples in-flight and splits them evenly between destination shards, using the [sharded COPY](../cross-shard-queries/copy.md) implementation.
 
 !!! note "Binary compatibility"
     While the data format used by PostgreSQL databases hasn't changed in decades, binary `COPY` sends rows exactly as they are stored on disk.

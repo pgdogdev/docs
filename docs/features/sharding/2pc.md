@@ -104,4 +104,4 @@ Two-phase commit is used for writes only. Read transactions are finished using n
 ## Read more
 
 - [Omnisharded tables](omnishards.md)
-- [Cross-shard queries](cross-shard.md)
+- [Cross-shard queries](cross-shard-queries/index.md)

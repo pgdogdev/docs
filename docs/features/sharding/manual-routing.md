@@ -140,5 +140,5 @@ You can read more about this in [our blog](https://pgdog.dev/blog/sharding-a-rea
 
 ## Read more
 
-- [Cross-shard queries](cross-shard.md)
+- [Cross-shard queries](cross-shard-queries/index.md)
 - [Sharding functions](sharding-functions.md)

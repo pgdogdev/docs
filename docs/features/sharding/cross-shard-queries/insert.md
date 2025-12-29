@@ -86,14 +86,81 @@ Finally, if the `INSERT` statement has more than one tuple, the statement is aut
 
 ## Sharded tables
 
-If the `INSERT` is creating a row in a sharded table, but the primary key is [database-generated](schema_management/primary_keys.md) _and_ used for sharding that table, the statement is sent to only one of the shards, using the round robin algorithm.
+`INSERT` statements targetting sharded tables will commonly provide the sharding key. A notable exception to this rule is tables that shard on the primary key, which is often database-generated, e.g., using a sequence.
 
-For example:
+The simplest way to work around this is to use the `pgdog.unique_id()` function to create a unique identifier on the fly, for example:
 
 ```postgresql
-INSERT INTO users (id, email) VALUES (DEFAULT, 'test@acme.com') RETURNING *;
+INSERT INTO users
+    (id, email, created_at)
+VALUES
+    (pgdog.unqiue_id(), $1, $2)
+RETURNING *;
 ```
 
-Instead of creating one user per shard, which would cause duplicate entries, PgDog will let the database generate a _globally_ unique primary key and place it on one of the shards only. This ensures even data distribution across the entire database cluster.
+If however, you prefer to use sequences instead, you can rely on [database-generated](../schema_management/primary_keys.md) primary keys.
+
+Statements that don't include the primary key in the `INSERT` tuple will be sent to one of the shards, using same round robin algorithm used for [omnisharded](#omnisharded-tables) tables. The shard will then generate the primary key value using PgDog's [sharded sequences](../schema_management/primary_keys.md#pgdognext_id_seq).
+
+For example, assuming the table `users` is sharded on the primary key `id`, omitting it from the `INSERT` statement will send it to only one of the shards:
+
+```postgresql
+INSERT INTO users (email, created_at) VALUES ($1, $2) RETURNING *;
+```
 
 ## Multiple tuples
+
+In order to create multiple rows at once, the PostgreSQL query syntax supports sending multiple tuples in one statement. For example:
+
+```postgresql
+INSERT INTO users
+    (id, email, created_at)
+VALUES
+    ($1, $2, $3),
+    ($4, $5, $6);
+```
+
+In sharded databases, however, the individual tuples are likley to belong on different shards. To make this work, PgDog can automatically rewrite the statement and send each tuple to the right shard. Using the example above, the result of that operation produces two single-tuple statements:
+
+=== "Statement 1"
+      ```postgresql
+      INSERT INTO users
+          (id, email, created_at)
+      VALUES
+          ($1, $2, $3)
+      ```
+=== "Statement 2"
+    ```postgresql
+    INSERT INTO users
+        (id, email, created_at)
+    VALUES
+        ($1, $2, $3)
+    ```
+
+This works for all queries, including prepared statements. PgDog will rewrite all Postgres protocol messages (e.g., `Bind`, `Describe`, etc.) without the application having to change its queries.
+
+Since this feature has additional overhead by using multiple shards for each query, it is **disabled** by default and can be enabled in [`pgdog.toml`](../../../configuration/pgdog.toml/rewrite.md):
+
+```toml
+[rewrite]
+enabled = true
+split_inserts = "rewrite"
+```
+
+### Transaction required
+
+Since multi-tuple inserts will likely write rows to several shards, PgDog requires the application to start a transaction before executing such queries. For example:
+
+```postgresql
+BEGIN;
+INSERT INTO users (email, created_at) VALUES ($1, $2), ($3, $4);
+COMMIT; -- or ROLLBACK;
+```
+
+If a transaction isn't started and a multi-tuple statement is sent by the application, PgDog will return an error and abort the request.
+
+Requiring transactions ensures that if one of the `INSERT` statements fails, e.g., because of a unique constraint violation, the transaction can be rolled back, leaving the database in a consistent state.
+
+!!! note "Consistency guarantees"
+
+    Much like [omnisharded](#omnisharded-tables) table inserts, it's best to enable [2pc](../2pc.md) before attempting cross-shard multi-tuple inserts. This feature increases the likelihood that cross-shard transactions are atomic.

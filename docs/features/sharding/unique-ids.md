@@ -8,31 +8,29 @@ icon: material/identifier
 
 To generate unique identifiers, regular PostgreSQL databases use [sequences](https://www.postgresql.org/docs/current/sql-createsequence.html). For example, `BIGSERIAL` and `SERIAL` columns get their values by calling:
 
-```
+```postgresql
 SELECT nextval('sequence_name');
 ```
 
 This guarantees that these columns contain unique and monotonically increasing integers.
 
-<!--The `BIGSERIAL` data type is used to identify rows in ORMs like ActiveRecord (Rails) and Django, so making them work in sharded databases is pretty important.-->
-
-If your database is sharded however, using sequences will create identical IDs for different rows on different shards. To address this, PgDog can generate unique 64-bit signed identifiers internally, based on the system clock.
+If your database is sharded, however, using sequences will create identical IDs for different rows on different shards. To address this, PgDog can generate unique 64-bit signed identifiers internally, based on the system clock.
 
 ## How it works
 
 The unique ID algorithm implemented by PgDog is based on three inputs:
 
 - Current system time in milliseconds
-- Unique identifier for the PgDog node (e.g. `hostname`)
+- Unique identifier for the PgDog node (e.g., `hostname`)
 - An internal sequence
 
 The unique node identifier ensures that two different instances of PgDog can't produce the same ID at the same time. Additionally, the internal sequence allows for submillisecond ID creation in very busy deployments.
 
-Once configured, you can fetch unique IDs using a standard SQL command:
+Once configured, you can fetch unique IDs using a standard SQL statement:
 
-=== "Command"
+=== "SQL"
     ```postgresql
-    SHOW pgdog.unique_id;
+    SELECT pgdog.unique_id() AS unique_id;
     ```
 === "Output"
     ```
@@ -58,7 +56,7 @@ statefulSet:
 
 Otherwise, you need to ensure each PgDog instance has a different **`NODE_ID`** environment variable configured at startup. The variable can contain anything, as long as it ends with `-<number>` (hyphen and a number).
 
-For example, if you have a three node deployment, they could be identified as follows:
+For example, if you have a three-node deployment, they could be identified as follows:
 
 === "Node 1"
     ```bash
@@ -73,7 +71,7 @@ For example, if you have a three node deployment, they could be identified as fo
     export NODE_ID=pgdog-prod-2
     ```
 
-When configured correctly, you're able to get each node's identifier by querying the [admin](../../administration/index.md) database, for example:
+When configured correctly, you can get each node's identifier by querying the [admin](../../administration/index.md) database, for example:
 
 === "Command"
     ```

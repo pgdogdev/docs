@@ -45,20 +45,20 @@ Query engine provides a uniform view over multiple shards. Clients can use regul
 |----------|--------|-------|
 | [Direct-to-shard reads](features/sharding/query-routing.md#select) | :material-check-circle-outline: | Sharding key must be specified in the query. |
 | [Direct-to-shard writes](features/sharding/query-routing.md#insert) | :material-wrench: | Sharding key must be specified in the query. Multi-tuple `INSERT`s not supported yet. |
-| [Cross-shard queries](features/sharding/cross-shard.md) | :material-wrench: | Partial [aggregates](#aggregates) and [sorting](#sorting) support. CTEs & subqueries not supported yet. |
+| [Cross-shard queries](features/sharding/cross-shard-queries/index.md) | :material-wrench: | Partial [aggregates](#aggregates) and [sorting](#sorting) support. CTEs & subqueries not supported yet. |
 | Cross-shard CTEs | :material-calendar-check: | [#380](https://github.com/pgdogdev/pgdog/issues/380) |
 | Cross-shard subqueries | :material-calendar-check: | [#381](https://github.com/pgdogdev/pgdog/issues/381) |
 | Cross-shard joins | :material-calendar-check: | [#94](https://github.com/pgdogdev/pgdog/issues/94) |
 | [Cross-shard transactions](features/sharding/2pc.md) | :material-wrench: | Supports [two-phase commit](features/sharding/2pc.md). Not benchmarked yet. |
 | [Omnisharded tables](features/sharding/omnishards.md) | :material-wrench: | Unsharded tables with identical data on all shards. |
 | Rewrite queries | :material-calendar-check: | Alter queries to support aggregate/sorting by rows not returned in result set. |
-| [`COPY`](features/sharding/copy.md) | :material-check-circle-outline: | Sharding key must be specified in the statement and the data. Supports text, CSV, and binary formats only. |
+| [`COPY`](features/sharding/cross-shard-queries/copy.md) | :material-check-circle-outline: | Sharding key must be specified in the statement and the data. Supports text, CSV, and binary formats only. |
 | Multi-statement queries | :material-calendar-check: | e.g.: `SELECT 1; SELECT 2;`. First query is used for routing only, entire request sent to the same shard(s). [#395](https://github.com/pgdogdev/pgdog/issues/395). |
 
 
 #### Aggregates
 
-Support for aggregate functions in [cross-shard](features/sharding/cross-shard.md) queries.
+Support for aggregate functions in [cross-shard](features/sharding/cross-shard-queries/index.md) queries.
 
 | Aggregate function | Status | Notes |
 |-----------|--------|-------|
@@ -71,7 +71,7 @@ Support for aggregate functions in [cross-shard](features/sharding/cross-shard.m
 
 #### Sorting
 
-Support for sorting rows in [cross-shard](features/sharding/cross-shard.md) queries.
+Support for sorting rows in [cross-shard](features/sharding/cross-shard-queries/index.md) queries.
 
 | Sorting function | Status | Notes |
 |-|-|-|

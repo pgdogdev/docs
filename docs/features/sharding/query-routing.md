@@ -40,7 +40,7 @@ The `SELECT` query can express complex filtering logic and not all of it is curr
 | Column equals to a value | `payments.user_id = $1` |
 | Column matches against a list | `payments.user_id IN ($1, $2, $3)`
 
-All other variations will be ignored and the query will be sent to [all shards](cross-shard.md).
+All other variations will be ignored and the query will be sent to [all shards](cross-shard-queries/index.md).
 
 !!! note "Query router improvements"
     This is an area of constant improvement. Check back here for updates or [create an issue](https://github.com/pgdogdev/pgdog/issues/new) to request
@@ -48,7 +48,7 @@ All other variations will be ignored and the query will be sent to [all shards](
 
 If the query has multiple sharding key filters, all of them will be extracted and converged to a set of unique shard numbers.
 
-For example, when filtering by a list of values, e.g., `WHERE user_id IN ($1, $2, $3)`, if all of them map to a single shard, the query will be sent to that shard only. If they map to two or more shards, it will be sent to all corresponding shards [concurrently](cross-shard.md).
+For example, when filtering by a list of values, e.g., `WHERE user_id IN ($1, $2, $3)`, if all of them map to a single shard, the query will be sent to that shard only. If they map to two or more shards, it will be sent to all corresponding shards [concurrently](cross-shard-queries/index.md).
 
 ## INSERT
 
@@ -77,7 +77,7 @@ VALUES ($1, $2), ($3, $4) -- More than one tuple.
 
 Both `UPDATE` and `DELETE` queries work identically to [`SELECT`](#select) queries. The query router looks inside the `WHERE` clause for sharding keys, and routes the query to the corresponding shard.
 
-If no `WHERE` clause is present, or it's filtering on a column not used for sharding, the query is sent to all shards [concurrently](cross-shard.md), for example:
+If no `WHERE` clause is present, or it's filtering on a column not used for sharding, the query is sent to all shards [concurrently](cross-shard-queries/index.md), for example:
 
 ```postgresql
 UPDATE users SET banned = true;
@@ -144,5 +144,5 @@ The latter will match queries referring to the `users.id` column only. Together 
 
 ## Read more
 
-- [Cross-shard queries](cross-shard.md)
+- [Cross-shard queries](cross-shard-queries/index.md)
 - [Manual routing](manual-routing.md)

@@ -1,0 +1,8 @@
+title: Cross-shard queries
+nav:
+    - 'index.md'
+    - 'select.md'
+    - 'insert.md'
+    - 'update.md'
+    - 'ddl.md'
+    - '...'

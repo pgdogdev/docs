@@ -31,7 +31,7 @@ ALTER SYSTEM SET max_prepared_transactions TO 1000;
 Alternatively, if you're running on managed Postgres (e.g., AWS RDS), this parameter can usually be set through your cloud admin panel.
 
 !!! note
-     This parameter can only be enabled on server start. Once you change it, make sure to restart your Postgres servers.
+     Changes to this parameter require a server restart to take effect.
 
 Once prepared transactions are enabled in Postgres, two-phase commit can be enabled in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
 
@@ -104,4 +104,4 @@ Two-phase commit is used for writes only. Read transactions are finished using n
 ## Read more
 
 - [Omnisharded tables](omnishards.md)
-- [Cross-shard queries](cross-shard.md)
+- [Cross-shard queries](cross-shard-queries/index.md)

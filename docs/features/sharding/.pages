@@ -1,11 +1,11 @@
 nav:
   - 'index.md'
   - 'basics.md'
+  - 'supported-queries.md'
   - 'query-routing.md'
   - 'manual-routing.md'
-  - 'cross-shard.md'
+  - 'cross-shard-queries'
   - 'sharding-functions.md'
-  - 'copy.md'
   - '...'
   - 'resharding'
   - 'internals'

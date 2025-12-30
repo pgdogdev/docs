@@ -1,6 +1,7 @@
 nav:
   - 'index.md'
   - 'basics.md'
+  - 'supported-queries.md'
   - 'query-routing.md'
   - 'manual-routing.md'
   - 'cross-shard-queries'

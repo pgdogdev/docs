@@ -4,7 +4,7 @@ icon: material/table-plus
 
 # Cross-shard INSERT
 
-If the `INSERT` statement specifies only one sharding key, it's [routed directly](../query-routing.md#insert) to one of the shards. Otherwise, it becomes a cross-shard `INSERT` statement.
+If an `INSERT` statement specifies only one sharding key, it's sent [directly](../query-routing.md#insert) to one of the shards. Otherwise, it becomes a cross-shard `INSERT` statement.
 
 ## How it works
 
@@ -27,7 +27,7 @@ VALUES
     ($1, $2, $3, $4)
 ```
 
-A row will be created on each shard. Each shard can then use joins to fetch this data with [direct-to-shard](../query-routing.md#select) queries.
+An identical row will be created on each shard. [Direct-to-shard](../query-routing.md#select) queries can then either fetch them directly or join with other sharded or omnisharded tables.
 
 ### Consistency
 
@@ -80,10 +80,6 @@ Each call to `pgdog.unique_id()` generates a unique value, so it's possible to u
 
 This function can be used with any tables, not just omnisharded ones, or independently of any tables at all.
 
-Statements that target sharded tables but don't specify the sharding key are sent to one of the shards only. Which shard receives the statement is controlled by the round robin load balancing algorithm, ensuring all shards serve an equal number of statements.
-
-Finally, if the `INSERT` statement has more than one tuple, the statement is automatically rewritten to create one row at a time, and each row is sent to the matching shard.
-
 ## Sharded tables
 
 `INSERT` statements targetting sharded tables will commonly provide the sharding key. A notable exception to this rule is tables that shard on the primary key, which is often database-generated, e.g., using a sequence.
@@ -120,7 +116,7 @@ VALUES
     ($4, $5, $6);
 ```
 
-In sharded databases, however, the individual tuples are likley to belong on different shards. To make this work, PgDog can automatically rewrite the statement and send each tuple to the right shard. Using the example above, the result of that operation produces two single-tuple statements:
+In sharded databases, however, the individual tuples are likely to belong on different shards. To make this work, PgDog can automatically rewrite the statement and send each tuple to the right shard. Using the example above, the result of that operation produces two single-tuple statements:
 
 === "Statement 1"
       ```postgresql
@@ -157,7 +153,7 @@ INSERT INTO users (email, created_at) VALUES ($1, $2), ($3, $4);
 COMMIT; -- or ROLLBACK;
 ```
 
-If a transaction isn't started and a multi-tuple statement is sent by the application, PgDog will return an error and abort the request.
+If a transaction isn't started and a multi-tuple statement are sent by the application, PgDog will return an error and abort the request.
 
 Requiring transactions ensures that if one of the `INSERT` statements fails, e.g., because of a unique constraint violation, the transaction can be rolled back, leaving the database in a consistent state.
 

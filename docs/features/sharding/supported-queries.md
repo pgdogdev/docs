@@ -7,11 +7,11 @@ icon: material/check-bold
 
 Postgres has 3 kinds of queries, each handled a little bit differently in a sharded context:
 
-1. CRUD statements (`INSERT`, `UPDATE`, `SELECT`, `DELETE`, `COPY`) are parsed for sharding keys and routed to one or more shards
+1. DML statements (`INSERT`, `UPDATE`, `SELECT`, `DELETE`, `COPY`) are parsed for sharding keys and routed to one or more shards
 2. DDL statements (e.g., `CREATE TABLE`, `BEGIN`, `ROLLBACK`, etc.) are sent to all shards in parallel
 3. `SET` statements are intercepted and client state is updated to keep track of session variables
 
-## CRUD
+## DML
 
 ### `SELECT`
 
@@ -23,39 +23,42 @@ Postgres has 3 kinds of queries, each handled a little bit differently in a shar
 #### Examples
 
 ```postgresql
--- Sharding key equals a single value
+-- Sharding key equals a single value.
 SELECT * FROM users WHERE user_id = $1;
 
--- Sharding keys IN tuple
+-- Sharding keys in a tuple.
 SELECT * FROM users WHERE id IN ($1, $2, $3);
 ```
 
-Queries that don't match this pattern will currently be routed to all shards. We are continuously adding support for more complex patterns.
-
-#### `SELECT` queries that write
-
-Some `SELECT` queries can perform writes, like inside a CTE, for example:
+The sharding key can be present anywhere in the query, including a join, a subquery, or a CTE. For example:
 
 ```postgresql
-WITH t AS (
-  INSERT INTO users (id, email) VALUES (1, 'test@test.com') RETURNING *
-)
-SELECT * FROM t;
+--- Join.
+SELECT * FROM users
+INNER JOIN orders ON users.id = $1 AND orders.user_id = users.id;
+
+--- Subquery.
+SELECT * FROM users WHERE id IN (
+    SELECT user_id FROM orders WHERE user_id = $1
+);
+
+--- CTE.
+WITH user AS (
+    SELECT * FROM users WHERE id = $1
+) SELECT * FROM user;
 ```
 
-PgDog handles this automatically by scanning CTEs and redirecting the entire statement to the primary database. Currently, the sharding key is not extracted from CTEs, so this query will be routed to all shards.
+Queries that don't specify a sharding key or specify more than one will be routed to all shards.
 
 ### `UPDATE` and `DELETE`
 
-Both `UPDATE` and `DELETE` queries work the same way as `SELECT` queries. The `WHERE` clause is checked for a sharding key using one of the 2 supported patterns and if a key is found, the query is routed to the right shard. Statements without a key are sent to all shards, in parallel.
+Both `UPDATE` and `DELETE` queries work the same way as `SELECT` queries. The `WHERE` clause and any CTEs are checked for a sharding key, using any of the supported patterns and if a key is found, the query is routed to directly to one shard. Statements without a key are sent to all shards, in parallel.
 
 #### Examples
 
 ```postgresql
--- UPDATE query
 UPDATE users SET admin = true WHERE id = $1;
 
--- DELETE query
 DELETE FROM users WHERE id IN ($1, $2, $3);
 ```
 
@@ -67,12 +70,12 @@ DELETE FROM users WHERE id IN ($1, $2, $3);
 INSERT INTO users (id, email) VALUES ($1, $2);
 ```
 
-Currently, PgDog only supports `INSERT` statements with one tuple in the `VALUES` clause. In the future, statements with multiple tuples will be rewritten and sent separately to each matching shard.
+Statements with multiple tuples can be [rewritten automatically](cross-shard-queries/insert.md#multiple-tuples) to write each row to its corresponding shard.
 
 ### `COPY`
 
-`COPY` statements are automatically sharded between all shards. See [COPY](cross-shard-queries/copy.md) for more details.
+`COPY` statements are [automatically sharded](cross-shard-queries/copy.md) between all shards.
 
 ## DDL
 
-DDL statements (e.g., `CREATE TABLE`) are sent to all shards in parallel. If [two-phase commit](2pc.md) is enabled, DDL statements have a high chance to be atomic.
+[DDL statements](cross-shard-queries/ddl.md) (e.g., `CREATE TABLE`) are sent to all shards in parallel. If [two-phase commit](2pc.md) is enabled, these statements have a high chance to be atomic.

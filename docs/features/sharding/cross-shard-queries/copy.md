@@ -3,7 +3,7 @@ icon: material/upload
 ---
 # COPY
 
-`COPY` is a special PostgreSQL command that ingests a file directly into a specified database table. This allows for writing data faster than by using individual `INSERT` queries.
+`COPY` is a special PostgreSQL command that can ingest a file directly into a specified database table. This allows for writing data faster than by using individual `INSERT` queries.
 
 PgDog supports parsing the `COPY` command, splitting the input data stream automatically, and sending the rows to each shard in parallel.
 
@@ -35,6 +35,18 @@ The columns should be specified in the statement, in the same order as they appe
 By using _N_ nodes in a sharded database cluster, the performance of `COPY` increases by a factor of _N_. Data sent through `COPY` is ingested into the data nodes in parallel. This makes the performance of `COPY` as fast as the shards can write data to disk, and the network can send & receive messages.
 
 The cost of parsing and sharding the CSV stream in PgDog is negligibly small.
+
+## COPY out
+
+All `COPY [...] TO STDOUT` statements are treated as cross-shard and are executed on all shards concurrently. The rows are streamed directly, without buffering or sorting, which allows to read large amounts of data from all shards quickly.
+
+PgDog doesn't currently support routing `COPY` statements based on its query. For example, the following statement will be sent to all shards even if it contains a sharding key:
+
+```postgresql
+COPY (SELECT * FROM users WHERE id IN ($1, $2, $3)) TO STDOUT;
+```
+
+If the query fetches rows from more than one shard, PgDog will also ignore any `ORDER BY` predicates and return rows in whatever order they arrive from the shards.
 
 ## Read more
 

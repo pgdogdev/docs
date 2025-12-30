@@ -43,9 +43,9 @@ SELECT * FROM users WHERE id IN (
 );
 
 --- CTE.
-WITH user AS (
+WITH my_user AS (
     SELECT * FROM users WHERE id = $1
-) SELECT * FROM user;
+) SELECT * FROM my_user;
 ```
 
 Queries that don't specify a sharding key or specify more than one will be routed to all shards.

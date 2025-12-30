@@ -393,7 +393,22 @@ Default: **`50_000`**
 
 ### `query_parser_enabled`
 
+!!! warning "Deprecated setting"
+    This setting is deprecated. Use [`query_parser`](#query_parser) instead.
+
 Force-enable query parsing to take advantage of its features in non-sharded databases, like [advisory locks](../../features/transaction-mode.md#advisory-locks) or managing [session state](../../features/transaction-mode.md#session-state).
+
+### `query_parser`
+
+Toggle the query parser to enable/disable query parsing and all of its benefits. By default, the query parser is turned on automatically, so only disable it if you know what you're doing.
+
+Available options:
+
+- `on` (enabled)
+- `off` (disabled)
+- `auto` (automatically enabled or disabled, depending on database configuration)
+
+Default: **`auto`**
 
 ## Logging
 

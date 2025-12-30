@@ -8,7 +8,7 @@ Sharding splits a PostgreSQL database and all its tables and indices between mul
 
 ## Intro to sharding
 
-If you're not familiar with database sharding fundamentals, take a look at the [sharding basics](basics.md). Even if you're a seasoned database expert, it's good to have a refresher to confirm your understanding matches with our implementation.
+If you're not familiar with database sharding fundamentals, take a look at the [sharding basics](basics.md). Even if you're a seasoned database expert, it's good to have a refresher to confirm your understanding matches our implementation.
 
 [**→ Sharding basics**](basics.md)
 
@@ -41,6 +41,6 @@ Resharding takes a database cluster with _N_ shards (where _N_ can be 1, for uns
 
 ### Schema management
 
-PgDog makes sure that database schema is identical on all shards. It also has support for in-database primary key generation.
+PgDog makes sure that the database schema is identical on all shards. It also has support for in-database primary key generation.
 
 [**→ Schema management**](schema_management/index.md)

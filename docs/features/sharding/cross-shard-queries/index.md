@@ -21,7 +21,7 @@ Just like with [direct-to-shard](../query-routing.md) queries, each SQL command 
 - [`SELECT`](select.md)
 - [`INSERT`](insert.md)
 - [`UPDATE`, `DELETE`](update.md)
-- [`CREATE`, `ALTER`, `DROP`](ddl.md)(and other DDL statements)
+- [`CREATE`, `ALTER`, `DROP`](ddl.md) (and other DDL statements)
 - [`COPY`](copy.md)
 
 
@@ -62,7 +62,7 @@ If you don't want PgDog to route cross-shard queries, e.g., because you have a [
 cross_shard_disabled = true
 ```
 
-If this feature is enabled, and a query doesn't have a sharding key, instead of executing the query, PgDog will return an error and abort the transaction.
+When this setting is enabled and a query doesn't have a sharding key, instead of executing the query, PgDog will return an error and abort the transaction.
 
 ## Read more
 

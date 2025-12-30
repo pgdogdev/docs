@@ -10,15 +10,15 @@ If an `INSERT` statement specifies only one sharding key, it's sent [directly](.
 
 Cross-shard `INSERT` statements fall into one of three categories, each one handled differently:
 
-1. `INSERT` targetting [omnisharded tables](#omnisharded-tables)
-2. `INSERT` targetting a [sharded table](#sharded-insert), with no sharding key specified
+1. `INSERT` targeting [omnisharded tables](#omnisharded-tables)
+2. `INSERT` targeting a [sharded table](#sharded-tables), with no sharding key specified
 3. `INSERT` with [multiple tuples](#multiple-tuples), each destined for a different shard
 
 By design, applications using PgDog don't need to concern themselves with this and can use the database normally. However, there are some trade-offs when using cross-shard queries, documented below.
 
 ## Omnisharded tables
 
-Queries that target [omnisharded](../omnishards.md) tables, the statement is sent to all shards concurrently. This ensures that the data is identical on all shards, for example:
+For queries that target [omnisharded](../omnishards.md) tables, the statement is sent to all shards concurrently. This ensures that the data is identical on all shards, for example:
 
 ```postgresql
 INSERT INTO request_logs
@@ -43,7 +43,7 @@ VALUES
 COMMIT;
 ```
 
-This gives you a much higher chance of recording rows on all shards, since you will know if your statement violated some contstraint (e.g., unique index or `NOT NULL` check) before committing the transaction.
+This gives you a much higher chance of recording rows on all shards, since you will know if your statement violated some constraint (e.g., unique index or `NOT NULL` check) before committing the transaction.
 
 ### Primary keys
 
@@ -57,7 +57,7 @@ To use unique IDs as primary keys (or in any other column) in omnisharded tables
 INSERT INTO ip_logs
     (id, client_ip, created_at)
 VALUES
-    (pgdog.unqiue_id(), $1, now());
+    (pgdog.unique_id(), $1, now());
 ```
 
 The function is evaluated inside PgDog which places the value it returns directly into the query. This works for all queries, including prepared statements.
@@ -82,7 +82,7 @@ This function can be used with any tables, not just omnisharded ones, or indepen
 
 ## Sharded tables
 
-`INSERT` statements targetting sharded tables will commonly provide the sharding key. A notable exception to this rule is tables that shard on the primary key, which is often database-generated, e.g., using a sequence.
+`INSERT` statements targeting sharded tables will commonly provide the sharding key. A notable exception to this rule is tables that shard on the primary key, which is often database-generated, e.g., using a sequence.
 
 The simplest way to work around this is to use the `pgdog.unique_id()` function to create a unique identifier on the fly, for example:
 
@@ -90,13 +90,13 @@ The simplest way to work around this is to use the `pgdog.unique_id()` function 
 INSERT INTO users
     (id, email, created_at)
 VALUES
-    (pgdog.unqiue_id(), $1, $2)
+    (pgdog.unique_id(), $1, $2)
 RETURNING *;
 ```
 
-If however, you prefer to use sequences instead, you can rely on [database-generated](../schema_management/primary_keys.md) primary keys.
+However, if you prefer to use sequences instead, you can rely on [database-generated](../schema_management/primary_keys.md) primary keys.
 
-Statements that don't include the primary key in the `INSERT` tuple will be sent to one of the shards, using same round robin algorithm used for [omnisharded](#omnisharded-tables) tables. The shard will then generate the primary key value using PgDog's [sharded sequences](../schema_management/primary_keys.md#pgdognext_id_seq).
+Statements that don't include the primary key in the `INSERT` tuple will be sent to one of the shards, using the same round robin algorithm used for [omnisharded](#omnisharded-tables) tables. The shard will then generate the primary key value using PgDog's [sharded sequences](../schema_management/primary_keys.md#pgdognext_id_seq).
 
 For example, assuming the table `users` is sharded on the primary key `id`, omitting it from the `INSERT` statement will send it to only one of the shards:
 
@@ -153,7 +153,7 @@ INSERT INTO users (email, created_at) VALUES ($1, $2), ($3, $4);
 COMMIT; -- or ROLLBACK;
 ```
 
-If a transaction isn't started and a multi-tuple statement are sent by the application, PgDog will return an error and abort the request.
+If a transaction isn't started and a multi-tuple statement is sent by the application, PgDog will return an error and abort the request.
 
 Requiring transactions ensures that if one of the `INSERT` statements fails, e.g., because of a unique constraint violation, the transaction can be rolled back, leaving the database in a consistent state.
 

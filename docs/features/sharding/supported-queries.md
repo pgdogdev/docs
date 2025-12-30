@@ -3,7 +3,7 @@ icon: material/check-bold
 ---
 # Supported queries
 
-[Automatic routing](query-routing.md) in PgDog works by parsing queries and extracting the sharding key. SQL is a complex language and we are aiming to support as many queries as possible. As the development moves forward, this page will be updated with latest features.
+[Automatic routing](query-routing.md) in PgDog works by parsing queries and extracting the sharding key. SQL is a complex language and we are aiming to support as many queries as possible. As the development moves forward, this page will be updated with the latest features.
 
 Postgres has 3 kinds of queries, each handled a little bit differently in a sharded context:
 
@@ -52,7 +52,7 @@ Queries that don't specify a sharding key or specify more than one will be route
 
 ### `UPDATE` and `DELETE`
 
-Both `UPDATE` and `DELETE` queries work the same way as `SELECT` queries. The `WHERE` clause and any CTEs are checked for a sharding key, using any of the supported patterns and if a key is found, the query is routed to directly to one shard. Statements without a key are sent to all shards, in parallel.
+Both `UPDATE` and `DELETE` queries work the same way as `SELECT` queries. The `WHERE` clause and any CTEs are checked for a sharding key, using any of the supported patterns, and if a key is found, the query is routed directly to one shard. Statements without a key are sent to all shards, in parallel.
 
 #### Examples
 

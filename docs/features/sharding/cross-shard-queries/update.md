@@ -41,7 +41,7 @@ When a client sends such a statement, PgDog will rewrite it into three statement
 
 1. `SELECT` statement to fetch the row from the database
 2. `INSERT` statement to create that row on the new shard, with updated values
-2. `DELETE` statement to remove the now stale row from the old shard
+3. `DELETE` statement to remove the now stale row from the old shard
 
 The entire exchange looks like this:
 
@@ -49,11 +49,11 @@ The entire exchange looks like this:
 -- Old `id` value.
 SELECT * FROM users WHERE id = $1;
 
- -- New `id` value, with columns retrieved by the previous query.
+-- New `id` value, with columns retrieved by the previous query.
 INSERT INTO users (id, email, created_at)
 VALUES ($1, $2, $3);
 
- -- Old `id` value.
+-- Old `id` value.
 DELETE FROM users WHERE id = $1;
 ```
 
@@ -81,13 +81,13 @@ shard_key = "rewrite"
 
 ### Updating multiple rows
 
-While multi-row updates are supported, changing multiple rows' sharding keys is not. If the `UPDATE` statement `WHERE` clause returns more than one row, PgDog will abort the transaction and return an error.
+While multi-row updates are supported, changing multiple rows' sharding keys is not. If the `UPDATE` statement's `WHERE` clause matches more than one row, PgDog will abort the transaction and return an error.
 
 This check happens early in the transaction and will not create partial updates to the database.
 
 ### Efficiency
 
-It's common practice for ORMs, like ActiveRecord or SQLAlchemy to mutate entire rows when saving records. Take the following example:
+It's common practice for ORMs, like ActiveRecord or SQLAlchemy, to mutate entire rows when saving records. Take the following example:
 
 === "ActiveRecord"
     ```ruby
@@ -106,6 +106,7 @@ It's common practice for ORMs, like ActiveRecord or SQLAlchemy to mutate entire 
 While the sharding key (`id`) is technically updated in the query, its value doesn't change. To avoid unnecessary overhead, PgDog performs multiple checks on the new row before performing the [three statement](#how-it-works) sharding key update flow:
 
 1. If the value of the sharding key parameter (`SET id = $1`) is the same as it is in the `WHERE` clause (`WHERE id = $1`), the query is routed directly to the shard without modifications.
-2. If the values are different, or the `WHERE` clause doesn't specify the sharding key, PgDog will check the value of the key returned by the first `SELECT` statement in the flow. If both keys map to the _same_ shard, will send the query directly to that shard, without modifications.
+2. If the values are different, or the `WHERE` clause doesn't specify the sharding key, PgDog will check the value of the key returned by the first `SELECT` statement in the flow. If both keys map to the _same_ shard, PgDog will send the query directly to that shard, without modifications.
 
- Updating the sharding key isn't a frequent operation and both of these mechanisms ensure that the more expensive algorithm isn't triggered unnecessarily.
+
+Updating the sharding key isn't a frequent operation and both of these mechanisms ensure that the more expensive algorithm isn't triggered unnecessarily.

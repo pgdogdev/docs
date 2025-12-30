@@ -38,7 +38,7 @@ The cost of parsing and sharding the CSV stream in PgDog is negligibly small.
 
 ## COPY out
 
-All `COPY [...] TO STDOUT` statements are treated as cross-shard and are executed on all shards concurrently. The rows are streamed directly, without buffering or sorting, which allows to read large amounts of data from all shards quickly.
+All `COPY [...] TO STDOUT` statements are treated as cross-shard and are executed on all shards concurrently. The rows are streamed directly, without buffering or sorting, which allows reading large amounts of data from all shards quickly.
 
 PgDog doesn't currently support routing `COPY` statements based on its query. For example, the following statement will be sent to all shards even if it contains a sharding key:
 

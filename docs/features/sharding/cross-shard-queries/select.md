@@ -13,7 +13,7 @@ When PgDog receives a `SELECT` query with no (or multiple) sharding keys, it con
 If the result needs post-processing, e.g., to support [sorting](#sorting) or [aggregation](#aggregates), it will buffer the rows in memory and perform the necessary operations. Otherwise, PgDog will stream the rows directly to the client.
 
 !!! note "Predicate push-down"
-    PgDog pushes all filtering, sorting and aggregation statements to the database. If the query is correctly constructed, the shards will return very few rows, allowing to search vast quantities of data without causing out-of-memory errors or latency issues in the proxy.
+    PgDog pushes all filtering, sorting and aggregation statements to the database. If the query is correctly constructed, the shards will return very few rows, allowing searches of vast quantities of data without causing out-of-memory errors or latency issues in the proxy.
 
 ## Supported features
 
@@ -25,9 +25,9 @@ The SQL language allows for powerful data filtration and manipulation. While we 
 | `ORDER BY` | :material-check: | Columns must be part of the returned tuples. See [sorting](#sorting). |
 | `DISTINCT` / `DISTINCT BY`| :material-check: | Columns must be part of the returned tuples. |
 | `GROUP BY` | :material-wrench: | Columns must be part of the returned tuples. See [aggregates](#aggregates). |
-| CTEs | :material-wrench: | CTE must refer to data located on the same shard. See [CTEs](#ctes) |
+| CTEs | :material-wrench: | CTE must refer to data located on the same shard. |
 | Window functions | :material-close: | Not currently supported. |
-| Subqueries | :material-wrench: | Subqueries must refer to data located on the same shard. See [subqueries](#subqueries). |
+| Subqueries | :material-wrench: | Subqueries must refer to data located on the same shard. |
 
 ## Sorting
 
@@ -38,7 +38,7 @@ Currently, two forms of the `ORDER BY` SQL syntax are supported:
 | Syntax |  Example | Notes |
 |-|-|-|
 | Order by column name |  `ORDER BY id, email` | The column must be present in the returned tuples. |
-| Order by column position  | `ORDER BY 1, 2` |  The column is refernced by its position in the returned tuples. |
+| Order by column position  | `ORDER BY 1, 2` |  The column is referenced by its position in the returned tuples. |
 
 Sorting by multiple columns is supported, including opposing sorting directions, for example:
 
@@ -85,7 +85,7 @@ FROM users ORDER BY
 
 ORMs like SQLAlchemy or ActiveRecord, more often than not, will write queries that work with PgDog out of the box. This is because they tend to fetch entire rows and use fully-qualified names in all parts of the statement, including the `ORDER BY` clause.
 
-For example, this is how a [`first`](https://apidock.com/rails/ActiveRecord/FinderMethods/first) Rails/ActiveRecord query looks like:
+For example, this is what a [`first`](https://apidock.com/rails/ActiveRecord/FinderMethods/first) Rails/ActiveRecord query looks like:
 
 ```postgresql
 SELECT * FROM users ORDER BY users.id LIMIT 1
@@ -104,7 +104,7 @@ If an aggregate function is supported (see list of supported functions below), t
 | `count`, `count(*)` | :material-check: | Works for most [data types](#supported-data-types). |
 | `max`, `min`, `avg`, `sum` | :material-check: | Works for most [data types](#supported-data-types). |
 | `stddev`, `variance` | :material-check: | Works for most [data types](#supported-data-types).|
-| `percentile_disc`, `percentile_cont` | :material-close: | Doesn't work currently and very expensive to calculate on large datasets. |
+| `percentile_disc`, `percentile_cont` | :material-close: | Not currently supported and very expensive to calculate on large datasets. |
 | `*_agg` | :material-close: | Not currently supported. |
 | `json_*` | :material-close: | Not currently supported.  |
 
@@ -126,7 +126,7 @@ The `HAVING` clause requires additional filtering of the results and is not curr
 
 For some aggregate functions to work as expected, each shard may need to return columns and intermediate calculations not present in the original query.
 
-For example, to get an average of a column, we need to fetch the row `count`, multiply it by the `avg` the column on each shard, and divide it by the total `count` of rows on all shards.
+For example, to get an average of a column, we need to fetch the row `count`, multiply it by the `avg` of the column on each shard, and divide it by the total `count` of rows on all shards.
 
 If the `count` function isn't present in the query, PgDog will automatically rewrite the query to add it. This allows queries, like the following example, to just work without modifications:
 

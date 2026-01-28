@@ -44,14 +44,14 @@ Query engine provides a uniform view over multiple shards. Clients can use regul
 | Feature  | Status | Notes |
 |----------|--------|-------|
 | [Direct-to-shard reads](features/sharding/query-routing.md#select) | :material-check-circle-outline: | Sharding key must be specified in the query. |
-| [Direct-to-shard writes](features/sharding/query-routing.md#insert) | :material-wrench: | Sharding key must be specified in the query. Multi-tuple `INSERT`s not supported yet. |
+| [Direct-to-shard writes](features/sharding/query-routing.md#insert) | :material-check-circle-outline: | Sharding key must be specified in the query. Multi-tuple `INSERT`s are supported and sent to their respective shards automatically with a cross-shard query. Sharding key updates are supported for one row at a time. |
 | [Cross-shard queries](features/sharding/cross-shard-queries/index.md) | :material-wrench: | Partial [aggregates](#aggregates) and [sorting](#sorting) support. CTEs & subqueries not supported yet. |
 | Cross-shard CTEs | :material-calendar-check: | [#380](https://github.com/pgdogdev/pgdog/issues/380) |
 | Cross-shard subqueries | :material-calendar-check: | [#381](https://github.com/pgdogdev/pgdog/issues/381) |
 | Cross-shard joins | :material-calendar-check: | [#94](https://github.com/pgdogdev/pgdog/issues/94) |
 | [Cross-shard transactions](features/sharding/2pc.md) | :material-wrench: | Supports [two-phase commit](features/sharding/2pc.md). Not benchmarked yet. |
 | [Omnisharded tables](features/sharding/omnishards.md) | :material-wrench: | Unsharded tables with identical data on all shards. |
-| Rewrite queries | :material-calendar-check: | Alter queries to support aggregate/sorting by rows not returned in result set. |
+| Rewrite queries | :material-wrench: | Alter queries to support aggregate/sorting by rows not returned in result set. |
 | [`COPY`](features/sharding/cross-shard-queries/copy.md) | :material-check-circle-outline: | Sharding key must be specified in the statement and the data. Supports text, CSV, and binary formats only. |
 | Multi-statement queries | :material-calendar-check: | e.g.: `SELECT 1; SELECT 2;`. First query is used for routing only, entire request sent to the same shard(s). [#395](https://github.com/pgdogdev/pgdog/issues/395). |
 
@@ -66,7 +66,9 @@ Support for aggregate functions in [cross-shard](features/sharding/cross-shard-q
 | `COUNT` | :material-check-circle-outline: | 〃 |
 | `MIN` | :material-check-circle-outline: | 〃 |
 | `MAX` | :material-check-circle-outline: | 〃 |
-| `AVG` | :material-calendar-check: | [#434](https://github.com/pgdogdev/pgdog/issues/434) |
+| `AVG` | :material-wrench: | Works in top level statement, but not in subqueries or CTEs. |
+| `STDDEV` | :material-wrench: | 〃 |
+| `VARIANCE` | :material-wrench: | 〃 |
 | Percentile distributions | :material-close: | Could be expensive to calculate, need spill to disk. |
 
 #### Sorting
@@ -87,8 +89,8 @@ Support for sorting rows in [cross-shard](features/sharding/cross-shard-queries/
 
 | Feature | Status | Notes |
 |-|-|-|
-| [Data sync](features/sharding/resharding/hash.md) | :material-wrench: | Sync table data with logical replication. Not benchmarked yet. |
-| [Schema sync](features/sharding/resharding/schema.md) | :material-wrench: | Sync table, index and constraint definitions. Not benchmarked yet. |
+| [Data sync](features/sharding/resharding/hash.md) | :material-wrench: | Sync table data with logical replication. |
+| [Schema sync](features/sharding/resharding/schema.md) | :material-wrench: | Sync table, index and constraint definitions. |
 | Online rebalancing | :material-calendar-check: | Not automated yet, requires manual orchestration. |
 
 ### Schema & data integrity

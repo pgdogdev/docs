@@ -410,6 +410,12 @@ Available options:
 
 Default: **`auto`**
 
+### `system_catalogs_omnisharded`
+
+Enables sticky routing for system catalog tables and treats them as [omnisharded](../../features/sharding/omnishards.md) tables. This makes tools like `psql` work out of the box.
+
+Default: **`true`** (enabled)
+
 ## Logging
 
 ### `log_connections`

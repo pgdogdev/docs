@@ -33,16 +33,16 @@ SELECT * FROM users WHERE id IN ($1, $2, $3);
 The sharding key can be present anywhere in the query, including a join, a subquery, or a CTE. For example:
 
 ```postgresql
---- Join.
+-- Join.
 SELECT * FROM users
 INNER JOIN orders ON users.id = $1 AND orders.user_id = users.id;
 
---- Subquery.
+-- Subquery.
 SELECT * FROM users WHERE id IN (
     SELECT user_id FROM orders WHERE user_id = $1
 );
 
---- CTE.
+-- CTE.
 WITH my_user AS (
     SELECT * FROM users WHERE id = $1
 ) SELECT * FROM my_user;
@@ -64,10 +64,11 @@ DELETE FROM users WHERE id IN ($1, $2, $3);
 
 ### `INSERT`
 
-`INSERT` queries need to specify the column names in order for PgDog to be able to extract the sharding key from the tuple:
+`INSERT` queries can take two forms: specifying column names explicitly or implicitly. PgDog is able to detect the sharding key in both cases (using its [schema cache](schema_management/cache.md)) and route the query correctly:
 
 ```postgresql
 INSERT INTO users (id, email) VALUES ($1, $2);
+INSERT INTO users VALUES ($1, $2);
 ```
 
 Statements with multiple tuples can be [rewritten automatically](cross-shard-queries/insert.md#multiple-tuples) to write each row to its corresponding shard.

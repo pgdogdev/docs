@@ -5,6 +5,12 @@ icon: material/database
 
 Schemas in sharded databases require additional tooling and maintenance to work correctly. Most aspects of this are handled by PgDog automatically and documented below.
 
+## Schema cache
+
+If your database is sharded, PgDog will automatically load the schema from all shards on startup and use it to detect sharded and omnisharded tables.
+
+[**→ Schema cache**](cache.md)
+
 ### Schema manager
 
 Tooling and automation for managing tables, indexes, primary keys, and other schema entities.

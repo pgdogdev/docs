@@ -83,6 +83,9 @@ omnisharded_sticky = true
 The following system catalogs are using sticky routing by default:
 
 ```toml
+[[omnisharded_tables]]
+database = "prod"
+sticky = true
 tables = [
     "pg_class",
     "pg_attribute",

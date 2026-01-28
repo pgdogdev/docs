@@ -83,10 +83,16 @@ The data type of the column. Currently supported options are:
 
 [Omnisharded](../../features/sharding/omnishards.md) tables are tables that have the same data on all shards. They typically are small and contain metadata, e.g., list of countries, cities, etc., and are used in joins. PgDog allows to read from these tables directly and load balances traffic evenly across all shards.
 
-#### Example
+By default, all tables unless otherwise configured as sharded, are considered omnisharded.
+
+#### Sticky routing
+
+Sticky routing disables round robin for omnisharded tables and sends the queries touching those tables to the same shard, guaranteeing consistent results for the duration of a client's connection:
+
 ```toml
 [[omnisharded_tables]]
 database = "prod"
+sticky = true
 tables = [
     "settings",
     "cities",

@@ -59,7 +59,7 @@ This is performed efficiently, and server parameters are updated only if they di
     1. The database has a primary and replica(s)
     2. The database has more than one shard
     3. [`prepared_statements`](../configuration/pgdog.toml/general.md#prepared_statements) is set to `"full"`
-    4. [`query_parser_enabled`](../configuration/pgdog.toml/general.md#query_parser_enabled) is set to `true`
+    4. [`query_parser`](../configuration/pgdog.toml/general.md#query_parser_enabled) is set to `"on"`
 
     This is to avoid unnecessary overhead of using `pg_query` (however small), when we don't absolutely have to.
 

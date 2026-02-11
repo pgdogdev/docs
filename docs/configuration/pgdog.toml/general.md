@@ -141,6 +141,28 @@ Delay running idle healthchecks at PgDog startup to give databases (and pools) t
 
 Default: **`5_000`** (5s)
 
+### `connection_recovery`
+
+Controls if server connections are recovered or dropped if a client abruptly disconnects.
+
+Available options:
+
+- `recover` (default)
+- `rollback_only`
+- `drop`
+
+`rollback_only` will only attempt to `ROLLBACK` any unfinished transactions but won't attempt to resynchronize connections. `drop` will close connections, without attempting recovery.
+
+### `client_connection_recovery`
+
+Controls whether to disconnect clients upon encountering connection pool errors (e.g., checkout timeout). Set this to `drop` if your clients are async / use pipelining mode.
+
+Available options:
+
+- `recover` (default)
+- `drop`
+
+
 ## Timeouts
 
 These settings control how long PgDog waits for maintenance tasks to complete. These timeouts make sure PgDog can recover
@@ -261,21 +283,6 @@ Enable load balancer [HTTP health checks](../../features/load-balancer/healthche
 
 Default: **none** (disabled)
 
-## Service discovery
-
-### `broadcast_address`
-
-Send multicast packets to this address on the local network. Configuring this setting enables
-mutual service discovery. Instances of PgDog running on the same network will be able to see
-each other.
-
-Default: **none** (disabled)
-
-### `broadcast_port`
-
-The port used for sending and receiving broadcast messages.
-
-Default: **`6433`**
 
 ## Monitoring
 
@@ -410,11 +417,41 @@ Available options:
 
 Default: **`auto`**
 
-### `system_catalogs_omnisharded`
+### `system_catalogs`
 
-Enables sticky routing for system catalog tables and treats them as [omnisharded](../../features/sharding/omnishards.md) tables. This makes tools like `psql` work out of the box.
+Changes how system catalog tables (like `pg_database`, `pg_class`, etc.) are treated by the query router. Default behavior is to assume they are the same on all shards and send queries referencing them to a random shard. This makes tools like `psql` work out of the box.
 
-Default: **`true`** (enabled)
+Available options:
+
+- `omnisharded`
+- `omnisharded_sticky` (default)
+- `sharded`
+
+Default: **`omnisharded_sticky`** (enabled)
+
+### `omnisharded_sticky`
+
+If turned on, queries touching [omnisharded](../../features/sharding/omnishards.md) tables are always sent to the same shard for any given client connection. The shard is determined at random on connection creation.
+
+Default: **`false`**
+
+### `resharding_copy_format`
+
+Which format to use for `COPY` statements during [resharding](../../features/sharding/resharding/index.md).
+
+Available options:
+
+- `binary` (default)
+- `text`
+
+`text` format is required when migrating from `INTEGER` to `BIGINT` primary keys during resharding.
+
+### `reload_schema_on_ddl`
+
+!!! warning
+    This setting is intended for local development / CI / single node PgDog deployments.
+    
+Automatically reload the schema cache used by PgDog to route queries upon detecting DDL statements (e.g., `CREATE TABLE`, `ALTER TABLE`, etc.).
 
 ## Logging
 

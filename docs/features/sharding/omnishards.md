@@ -106,11 +106,11 @@ tables = [
 ]
 ```
 
-This is configurable with the `system_catalogs_omnisharded` setting in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#system_catalogs_omnisharded):
+This is configurable with the `system_catalogs` setting in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#system_catalogs_omnisharded):
 
 ```toml
 [general]
-system_catalogs_omnisharded = true
+system_catalogs = "omnisharded_sticky"
 ```
 
-If enabled (it is by default), commands like `\d`, `\d+` and others sent from `psql` will start to return correct results.
+If enabled (it is by default), commands like `\d`, `\d+` and others sent from `psql` will return correct results.

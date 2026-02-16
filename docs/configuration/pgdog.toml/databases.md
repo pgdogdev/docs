@@ -105,3 +105,7 @@ Overrides the [`idle_timeout`](general.md#idle_timeout) setting. Idle server con
 ### `read_only`
 
 Sets the `default_transaction_read_only` connection parameter to `on` on all server connections to this database. Clients can still override it with `SET`.
+
+### `server_lifetime`
+
+Overrides the [`server_lifetime`](general.md#server_lifetime) setting. Server connections older than this will be closed when returned to the pool.

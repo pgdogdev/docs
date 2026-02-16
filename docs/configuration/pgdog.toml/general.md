@@ -141,6 +141,12 @@ Delay running idle healthchecks at PgDog startup to give databases (and pools) t
 
 Default: **`5_000`** (5s)
 
+### `healthcheck_timeout`
+
+Maximum amount of time to wait for a healthcheck query to complete.
+
+Default: **`5_000`** (5s)
+
 ### `connection_recovery`
 
 Controls if server connections are recovered or dropped if a client abruptly disconnects.
@@ -237,6 +243,12 @@ Close client connections that have been idle, i.e., haven't sent any queries, fo
 
 Default: **`none`** (disabled)
 
+### `client_idle_in_transaction_timeout`
+
+Close client connections that have been idle inside a transaction for this amount of time. This prevents clients from holding server connections indefinitely while in a transaction.
+
+Default: **`none`** (disabled)
+
 ### `client_login_timeout`
 
 Maximum amount of time new clients have to complete authentication. Clients that don't will be disconnected.
@@ -260,6 +272,17 @@ Which strategy to use for load balancing read queries. See [load balancer](../..
 * `round_robin`
 
 Default: **`random`**
+
+### `read_write_strategy`
+
+How aggressive the query parser should be in determining read vs. write queries.
+
+Available options:
+
+- `conservative` (default): transactions are writes, standalone `SELECT` are reads
+- `aggressive`: use first statement inside a transaction for determining query route
+
+Default: **`conservative`**
 
 ### `read_write_split`
 
@@ -449,9 +472,24 @@ Available options:
 ### `reload_schema_on_ddl`
 
 !!! warning
-    This setting is intended for local development / CI / single node PgDog deployments.
-    
+    This setting requires [PgDog Enterprise Edition](../../enterprise_edition/index.md) to work as expected. If using the open source edition,
+    it will only work with single-node PgDog deployments, e.g., in local development or CI.
+
 Automatically reload the schema cache used by PgDog to route queries upon detecting DDL statements (e.g., `CREATE TABLE`, `ALTER TABLE`, etc.).
+
+Default: **`true`** (enabled)
+
+### `load_schema`
+
+Controls whether PgDog loads the database schema at startup for query routing.
+
+Available options:
+
+- `on`: always load schema on startup
+- `off`:  disable loading schema
+- `auto` (default): load schema if number of database shards is greater than 1
+
+Default: **`auto`**
 
 ## Logging
 

@@ -57,14 +57,15 @@ Currently, PgDog supports sharding `BIGINT` (and `BIGSERIAL`), `UUID`, `VARCHAR`
 
 The name of the database in [`[[databases]]`](databases.md) section in which the table is located. PgDog supports sharding thousands of databases and tables in the same configuration file.
 
-### `table`
+### `schema`
+
+The name of the PostgreSQL schema where the sharded table is located. This is optional. If not set, all schemas will be sharded.
+
+### `name`
 
 The name of the PostgreSQL table. Only columns explicitly referencing that table will be sharded.
 
 The name must not contain the schema name, just the table name.
-
-!!! note "Postgres schemas"
-    Disambiguating tables in different schemas isn't currently supported and all of them will be sharded.
 
 ### `column`
 
@@ -78,6 +79,25 @@ The data type of the column. Currently supported options are:
 - `uuid`
 - `varchar`
 - `vector`
+
+### `hasher`
+
+The hash function to use for sharding. Available options:
+
+- `postgres` (default) - PostgreSQL's native hash function
+- `sha1` - SHA-1 hash function
+
+### `centroids`
+
+For vector sharding, specify the centroid vectors directly in the configuration. This is useful for small centroid sets.
+
+### `centroids_path`
+
+Path to a JSON file containing centroid vectors. This is useful when centroids are large (1000+ dimensions) and impractical to embed in `pgdog.toml`.
+
+### `centroid_probes`
+
+Number of centroids to probe during vector similarity search. If not specified, defaults to the square root of the number of centroids.
 
 ## Omnisharded tables
 
@@ -113,9 +133,56 @@ By default, PgDog uses hash-based sharding, with data evenly split between shard
 
 To configure either one, you need to specify the value-to-shard mapping in the configuration.
 
+## Mapping fields
+
+!!! note
+    The `column`, `table`, and `schema` fields must match a corresponding `[[sharded_tables]]` entry.
+
+### `database`
+
+The name of the database in [`[[databases]]`](databases.md) section.
+
+### `column`
+
+The name of the column to match for routing. Must match a `column` in `[[sharded_tables]]`.
+
+### `table`
+
+The name of the table to match. Must match a `name` in `[[sharded_tables]]` if specified there. This is optional.
+
+### `schema`
+
+The name of the PostgreSQL schema to match. Must match a `schema` in `[[sharded_tables]]` if specified there. This is optional.
+
+### `kind`
+
+The type of mapping. Available options:
+
+- `list`: match specific values (i.e., `PARTITION BY LIST`)
+- `range`: match a range of values (i.e., `PARTITION BY RANGE`)
+- `default`: fallback for unmatched values (list-based sharding only)
+
+### `values`
+
+For `list` mappings, the set of values that route to this shard.
+
+### `start`
+
+For `range` mappings, the starting value (inclusive).
+
+### `end`
+
+For `range` mappings, the ending value (exclusive).
+
+### `shard`
+
+The target shard number for matched queries.
+
+## Mapping examples
+
 ### Lists
 
-Lists are defined as a list of values and a corresponding shard number. Just like sharded tables, the mapping is database and column (and optionally, table) specific:
+Lists are defined as a list of values and a corresponding shard number. Just like sharded tables, the mapping is database and column (and optionally, table and schema) specific:
 
 ```toml
 [[sharded_mappings]]
@@ -153,3 +220,20 @@ shard = 0
 UPDATE users SET deleted_at = NOW()
 WHERE tenant_id IN (1, 2, 5, 10, 56)
 ```
+
+### Default
+
+The `default` kind specifies a fallback shard for values that don't match any list mapping:
+
+```toml
+[[sharded_mappings]]
+database = "prod"
+column = "tenant_id"
+kind = "default"
+shard = 2
+```
+
+Any sharding key value that doesn't match an explicit list mapping will be routed to the default shard.
+
+!!! note
+    The `default` kind only works with list-based sharding, not range-based sharding.

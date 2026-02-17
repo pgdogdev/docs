@@ -29,10 +29,10 @@ Inside your project's `Cargo.toml`, add the following settings and dependencies:
 
 ```toml
 [lib]
-crate-type = ["rlib", "cdylib"]
+crate-type = ["cdylib"]
 
 [dependencies]
-pgdog-plugin = "0.1.6"
+pgdog-plugin = "0.2.0" # make sure to use the version compatible with your PgDog version
 ```
 
 This turns the crate into a shared library, exposing its functions using the C ABI, which PgDog will call at runtime.
@@ -60,7 +60,7 @@ macros::plugin!();
 This ensures the following requirements are followed:
 
 1. The plugin is compiled with the same version of the Rust compiler as PgDog itself
-2. It is using the same version of `pg_query`
+2. It is using the same version of `pgdog-plugin`
 
 See [Safety](#safety) section for more info.
 
@@ -106,6 +106,18 @@ The [`Context`](https://docsrs.pgdog.dev/pgdog_plugin/context/struct.Context.htm
 - Does the cluster have replicas?
 - The Abstract Syntax Tree (AST) of the statement, parsed by `pg_query`
 - Parameter values, if the statement is prepared
+
+##### `pg_query` types
+
+For getting the AST types from `pg_query`, use the one of the following imports from the `pgdog_plugin` crates:
+
+```rust
+// Manually use the exported primitives.
+use pgdog_plugin::pg_query;
+
+// Automatically import them.
+use pgdog_plugin::prelude::*;
+```
 
 
 #### Outputs
@@ -182,17 +194,15 @@ Whatever Rust compiler version is used to build PgDog itself needs to be used to
 PgDog provides the compiler version used to build it at startup:
 
 ```
-INFO: 🐕 PgDog vd4e9bc6 (rustc 1.89.0 (29483883e 2025-08-04))
+INFO pgdog: 🐕 PgDog v0.1.29 [main@ff3fe3e, pgdog-plugin 0.2.0, rustc 1.93.0 (254b59607 2026-01-19)]
 ```
 
-#### `pg_query` version
+#### `pgdog-plugin` compatibility
 
-Since we're passing the AST itself down to the plugins, we need to make sure that the versions of the `pg_query` library used by PgDog and the plugin are the same. This is done automatically if you're using the primitives exported by the `pgdog-plugin` crate:
+To ensure your plugin works correctly with PgDog, the `pgdog-plugin` version used to build the plugin must be the same as the version used by PgDog. This compatibility is checked at startup, and incompatible plugins will not be loaded.
 
-```rust
-// Manually use the exported primitives.
-use pgdog_plugin::pg_query;
+You can verify the `pgdog-plugin` version of your plugin by checking the PgDog startup logs:
 
-// Automatically import them.
-use pgdog_plugin::prelude::*;
+```
+INFO pgdog: 🐕 PgDog v0.1.29 [main@ff3fe3e, pgdog-plugin 0.2.0, rustc 1.93.0 (254b59607 2026-01-19)]
 ```

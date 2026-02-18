@@ -9,7 +9,7 @@ All databases load balanced by PgDog are regularly checked with health checks. A
 If a replica database fails a health check, it's temporarily removed from the load balancer, preventing it from serving queries for a configurable period of time.
 
 <center>
-  <img src="/images/healthchecks.png" width="95%" alt="Healthchecks"/>
+  <img src="/images/healthchecks.png" width="80%" alt="Healthchecks"/>
 </center>
 
 ## How it works

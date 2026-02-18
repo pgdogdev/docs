@@ -125,4 +125,6 @@ The replication delay between the two database clusters is measured in bytes. Wh
 
 ## Next steps
 
-- [Traffic cutover](cutover.md)
+{{ next_steps_links([
+    ("Traffic cutover", "cutover.md", "Switch live traffic to the new shard configuration."),
+]) }}

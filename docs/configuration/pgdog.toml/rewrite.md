@@ -39,5 +39,7 @@ The setting changes are applied immediately. These overrides allow canary testin
 
 ### Read more
 
-- [Cross-shard INSERT](../../features/sharding/cross-shard-queries/insert.md#multiple-tuples)
-- [Cross-shard UPDATE](../../features/sharding/cross-shard-queries/update.md#sharding-key-updates)
+{{ next_steps_links([
+    ("Cross-shard INSERT", "../../features/sharding/cross-shard-queries/insert.md#multiple-tuples", "Insert rows with multiple tuples across shards."),
+    ("Cross-shard UPDATE", "../../features/sharding/cross-shard-queries/update.md#sharding-key-updates", "Update rows that require sharding key changes."),
+]) }}

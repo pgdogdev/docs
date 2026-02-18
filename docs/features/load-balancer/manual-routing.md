@@ -123,7 +123,7 @@ The PostgreSQL protocol supports changing connection parameters using the `SET` 
 For example, to make sure all subsequent queries are sent to the primary, you can execute the following statement:
 
 ```postgresql
-SET pgdog.role TO "primary";
+SET "pgdog"."role" TO "primary";
 ```
 
 The parameter is persisted on the connection until it's closed or the value is changed with another `SET` statement. Before routing a query, the load balancer will check the value of this parameter, so setting it early on during connection creation ensures all transactions are executed on the right database.
@@ -134,7 +134,7 @@ It's possible to set routing hints for the lifetime of a single transaction, by 
 
 ```postgresql
 BEGIN;
-SET LOCAL pgdog.role TO "primary";
+SET LOCAL "pgdog"."role" TO "primary";
 ```
 
 In this example, all transaction statements (including the `BEGIN` statement) will be sent to the primary database. Whether the transaction is committed or reverted, the value of `pgdog.role` will be reset to its previous value.

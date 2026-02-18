@@ -24,4 +24,6 @@ If you are operating multiple Postgres databases on the same database server, th
 
 ## Next steps
 
-- [Schema sync](schema.md)
+{{ next_steps_links([
+    ("Schema sync", "schema.md", "Synchronize schema across new shards before moving data."),
+]) }}

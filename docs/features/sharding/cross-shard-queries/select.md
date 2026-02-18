@@ -25,6 +25,8 @@ The SQL language allows for powerful data filtration and manipulation. While we 
 | `ORDER BY` | :material-check: | Columns must be part of the returned tuples. See [sorting](#sorting). |
 | `DISTINCT` / `DISTINCT BY`| :material-check: | Columns must be part of the returned tuples. |
 | `GROUP BY` | :material-wrench: | Columns must be part of the returned tuples. See [aggregates](#aggregates). |
+| `LIMIT` | :material-check: | None. |
+| `OFFSET` | :material-check: | Rows are filtered in-memory, so paginating becomes linearly more expensive with the number of pages. |
 | CTEs | :material-wrench: | CTE must refer to data located on the same shard. |
 | Window functions | :material-close: | Not currently supported. |
 | Subqueries | :material-wrench: | Subqueries must refer to data located on the same shard. |

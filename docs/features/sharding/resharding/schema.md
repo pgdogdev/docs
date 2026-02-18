@@ -95,6 +95,8 @@ This steps is performed during the cutover stage once both schema sync and data 
 
 This step will calculate the `MAX(column) + 1` values for all table sequences and set them on the respective columns.
 
-## Read more
+## Next steps
 
-- [Move data](hash.md)
+{{ next_steps_links([
+    ("Move data", "hash.md", "Redistribute data across shards using hash-based resharding."),
+]) }}

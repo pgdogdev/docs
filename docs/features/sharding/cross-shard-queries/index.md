@@ -7,7 +7,7 @@ icon: material/multicast
 If a client can't or doesn't specify a sharding key in the query, PgDog will send that query to all shards in parallel, and combine the results automatically. To the client, this looks like the query was executed by a single database.
 
 <center style="margin-top: 2rem;">
-    <img src="/images/cross-shard.png" width="95%" alt="Cross-shard queries" />
+    <img src="/images/cross-shard.png" width="80%" alt="Cross-shard queries" />
 </center>
 
 ## How it works
@@ -66,9 +66,11 @@ When this setting is enabled and a query doesn't have a sharding key, instead of
 
 ## Read more
 
-- [Sharding functions](../sharding-functions.md)
-- [Cross-shard `SELECT`](select.md)
-- [Cross-shard `INSERT`](insert.md)
-- [Cross-shard `UPDATE` and `DELETE`](update.md)
-- [DDL, e.g., `CREATE TABLE`](ddl.md)
-- [`COPY` command](copy.md)
+{{ next_steps_links([
+    ("Sharding functions", "../sharding-functions.md", "Control how rows are distributed across shards."),
+    ("Cross-shard SELECT", "select.md", "Query data across all shards with automatic merging."),
+    ("Cross-shard INSERT", "insert.md", "Insert rows that get routed to the correct shard."),
+    ("Cross-shard UPDATE and DELETE", "update.md", "Modify or remove rows in tables spanning multiple shards."),
+    ("DDL, e.g. CREATE TABLE", "ddl.md", "Run schema changes across all shards at once."),
+    ("COPY command", "copy.md", "Bulk load data across shards with the COPY protocol."),
+]) }}

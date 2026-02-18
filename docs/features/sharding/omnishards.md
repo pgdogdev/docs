@@ -106,7 +106,7 @@ tables = [
 ]
 ```
 
-This is configurable with the `system_catalogs` setting in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#system_catalogs_omnisharded):
+This is configurable with the `system_catalogs` setting in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#system_catalogs):
 
 ```toml
 [general]

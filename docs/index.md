@@ -1,3 +1,6 @@
+---
+icon: material/home
+---
 
 # Introduction to PgDog
 
@@ -30,21 +33,9 @@ This documentation provides a detailed overview of all PgDog features, along wit
 
 ## Read more
 
-<div class="grid">
-    <div>
-        <h4><a href="/features/">Features</a></h4>
-        <p>Read more about PgDog features like load balancing, supported authentication mechanisms, TLS, health checks, and more.</p>
-    </div>
-    <div>
-        <h4><a href="/administration/">Administration</a></h4>
-        <p>Learn how to operate PgDog in production, like fetching real-time statistics from the admin database or updating configuration.</p>
-    </div>
-    <div>
-        <h4><a href="/installation/">Installation</a></h4>
-        <p>Install PgDog on your Linux server or on your Linux/Mac/Windows machine for local development.</p>
-    </div>
-    <div>
-        <h4><a href="/configuration/">Configuration</a></h4>
-        <p>Reference for PgDog configuration like maximum server connections, number of shards, and more.</p>
-    </div>
-</div>
+{{ next_steps_links([
+    ("Features", "/features/", "Read more about PgDog features like load balancing, supported authentication mechanisms, TLS, health checks, and more."),
+    ("Administration", "/administration/", "Learn how to operate PgDog in production, like fetching real-time statistics from the admin database or updating configuration."),
+    ("Installation", "/installation/", "Install PgDog on your Linux server or on your Linux/Mac/Windows machine for local development."),
+    ("Configuration", "/configuration/", "Reference for PgDog configuration like maximum server connections, number of shards, and more."),
+]) }}

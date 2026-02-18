@@ -1,3 +1,7 @@
+---
+icon: material/content-copy
+---
+
 # Replication
 
 PgDog provides a real time view into PostgreSQL replication for the purposes of monitoring [replication delay](../features/load-balancer/replication-failover.md#replication) and performing query traffic [failover](../features/load-balancer/replication-failover.md#failover).

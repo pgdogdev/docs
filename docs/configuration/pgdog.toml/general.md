@@ -10,7 +10,7 @@ General settings are relevant to the operations of the pooler itself, or apply t
 
 The IP address of the local network interface PgDog will bind to listen for connections.
 
-!!! note
+!!! note "Requires restart"
     This setting cannot be changed at runtime.
 
 Default: **`0.0.0.0`** (all interfaces)
@@ -21,7 +21,7 @@ The TCP port PgDog will bind to listen for connections.
 
 Default: **`6432`**
 
-!!! note
+!!! note "Requires restart"
     This setting cannot be changed at runtime.
 
 ### `workers`
@@ -31,7 +31,7 @@ virtual CPU. The value `0` means to spawn no threads and use the current thread 
 
 Default: **`2`**
 
-!!! note
+!!! note "Requires restart"
     This setting cannot be changed at runtime.
 
 ### `default_pool_size`
@@ -74,17 +74,11 @@ Path to the TLS certificate PgDog will use to setup TLS connections with clients
 
 Default: **none**
 
-!!! note
-    This setting cannot be changed at runtime.
-
 ### `tls_private_key`
 
 Path to the TLS private key PgDog will use to setup TLS connections with clients. If none is provided, TLS will be disabled.
 
 Default: **none**
-
-!!! note
-    This setting cannot be changed at runtime.
 
 ### `tls_client_required`
 
@@ -105,15 +99,9 @@ Available options are:
 * `verify_ca` (validate certificate only)
 * `verify_full` (validate certificate _and_ matching hostname)
 
-!!! note
-    This setting cannot be changed at runtime.
-
 ### `tls_server_ca_certificate`
 
 Path to a certificate bundle used to validate the server certificate on TLS connection creation. Used in conjunction with `verify_ca` or `verify_full` in [`tls_verify`](#tls_verify).
-
-!!! note
-    This setting cannot be changed at runtime.
 
 
 ## Healthchecks

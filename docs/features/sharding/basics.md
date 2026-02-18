@@ -36,5 +36,7 @@ Alternatively, a sharding function can map the sharding keys directly to a shard
 
 ## Read more
 
-- [Sharding functions](sharding-functions.md)
-- [Direct-to-shard queries](query-routing.md)
+{{ next_steps_links([
+    ("Sharding functions", "sharding-functions.md", "Control how rows are distributed across shards."),
+    ("Direct-to-shard queries", "query-routing.md", "Route queries directly to the correct shard."),
+]) }}

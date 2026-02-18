@@ -1,3 +1,7 @@
+---
+icon: material/pool
+---
+
 # Connection pools
 
 PgDog provides real time statistics and information on its connection pools. You can view them by connecting to the [admin database](index.md) and running the `SHOW POOLS` command:

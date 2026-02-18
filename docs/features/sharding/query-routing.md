@@ -64,13 +64,19 @@ Just like for `SELECT` queries, both [prepared statements](../prepared-statement
 
 ### Supported syntax
 
-To correctly identify the sharding key in the `VALUES` clause, the `INSERT` statement must explicitly name the columns in the tuple. Additionally, statements must create one row at a time. Multi-tuple `INSERT`s are not currently supported.
-
-For example:
+PgDog can automatically detect the sharding key in an `INSERT` statement, whether it specifies column names or not. It can also split multi-tuple inserts, by sending each tuple to their respective shard, for example:
 
 ```postgresql
-INSERT INTO payments -- Missing column names.
-VALUES ($1, $2), ($3, $4) -- More than one tuple.
+-- user_id is the sharding key ($1)
+INSERT INTO payments (user_id, amount) VALUES ($1, $2);
+
+-- user_id is automatically detected as parameter $1
+-- using schema inference
+INSERT INTO payments VALUES ($1, $2);
+
+-- Statement is rewritten into two inserts, and each is sent
+-- to different shards
+INSERT INTO payments VALUES ($1, $2), ($3, $4);
 ```
 
 ## UPDATE and DELETE
@@ -144,5 +150,7 @@ The latter will match queries referring to the `users.id` column only. Together 
 
 ## Read more
 
-- [Cross-shard queries](cross-shard-queries/index.md)
-- [Manual routing](manual-routing.md)
+{{ next_steps_links([
+    ("Cross-shard queries", "cross-shard-queries/index.md", "Run queries that span multiple shards transparently."),
+    ("Manual routing", "manual-routing.md", "Explicitly control which shard handles a query."),
+]) }}

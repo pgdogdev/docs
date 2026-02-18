@@ -1,12 +1,214 @@
-table {
-    table-layout: fixed !important;
-    display: table !important;
+/* ===== Custom Properties ===== */
+:root {
+  --card-border-radius: 8px;
+  --card-padding: 1.2rem;
+  --transition-speed: 0.2s;
 }
 
+/* ===== Header ===== */
 .md-header {
-    --md-primary-fg-color: rgb(7, 81, 207);
+  --md-primary-fg-color: rgb(7, 81, 207);
+  backdrop-filter: blur(8px);
 }
 
+[data-md-color-scheme="slate"] .md-header {
+  --md-primary-fg-color: rgb(30, 58, 138);
+  background-color: hsla(230, 15%, 14%, 0.85);
+}
+
+/* ===== Tables ===== */
+table {
+  table-layout: fixed !important;
+  display: table !important;
+}
+
+.md-typeset table:not([class]) {
+  border-radius: var(--card-border-radius);
+  overflow: hidden;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  font-size: 0.75rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-default-fg-color--lightest);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+}
+
+/* ===== Screenshots ===== */
 .screenshot {
-    border-radius: 8px;
+  border-radius: var(--card-border-radius);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Card Grid ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.grid > div {
+  padding: var(--card-padding);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: var(--card-border-radius);
+  transition: all var(--transition-speed) ease;
+  background: var(--md-default-bg-color);
+}
+
+.grid > div:hover {
+  border-color: var(--md-primary-fg-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.grid > div h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.grid > div h4 a {
+  color: var(--md-primary-fg-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.grid > div p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--md-default-fg-color--light);
+  line-height: 1.5;
+}
+
+/* ===== Code Blocks ===== */
+.md-typeset pre > code {
+  border-radius: var(--card-border-radius);
+}
+
+.md-typeset code {
+  border-radius: 4px;
+  font-size: 0.82em;
+}
+
+.md-typeset .highlight {
+  border-radius: var(--card-border-radius);
+  overflow: hidden;
+}
+
+/* ===== Inline Code ===== */
+.md-typeset :not(pre) > code {
+  padding: 0.1em 0.4em;
+  background-color: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* ===== Admonitions ===== */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: var(--card-border-radius);
+  border-width: 0 0 0 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== Navigation ===== */
+.md-nav__item .md-nav__link--active {
+  font-weight: 600;
+}
+
+/* ===== Content Width ===== */
+.md-grid {
+  max-width: 1400px;
+}
+
+/* ===== Footer ===== */
+.md-footer {
+  margin-top: 2rem;
+}
+
+/* ===== Hero Section (homepage) ===== */
+.hero {
+  text-align: center;
+  padding: 2rem 0 1rem;
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: var(--md-default-fg-color--light);
+  max-width: 640px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+.hero .hero-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.hero .hero-buttons a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: all var(--transition-speed) ease;
+}
+
+.hero .hero-buttons .btn-primary {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+.hero .hero-buttons .btn-primary:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hero .hero-buttons .btn-secondary {
+  border: 1px solid var(--md-default-fg-color--lighter);
+  color: var(--md-default-fg-color);
+}
+
+.hero .hero-buttons .btn-secondary:hover {
+  border-color: var(--md-primary-fg-color);
+  color: var(--md-primary-fg-color);
+}
+
+/* ===== Feature Cards (icons) ===== */
+.grid > div .card-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* ===== Tabs ===== */
+.md-typeset .tabbed-labels > label {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ===== Responsive ===== */
+@media screen and (max-width: 76.25em) {
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+  }
 }

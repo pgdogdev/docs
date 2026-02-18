@@ -1,3 +1,7 @@
+---
+icon: material/cog
+---
+
 # Configuration
 
 PgDog provides real time access to its current configuration values. They can be accessed by connecting to the [admin database](index.md) and running the `SHOW CONFIG` command:
@@ -12,8 +16,6 @@ The following configuration parameters are available and their current values:
 |------|---------|
 | `auth_type` [:material-link:](../configuration/pgdog.toml/general.md#auth_type) | `scram` |
 | `ban_timeout` [:material-link:](../configuration/pgdog.toml/general.md#ban_timeout) | `5m` |
-| `broadcast_address` [:material-link:](../configuration/pgdog.toml/general.md#broadcast_address) | `default` |
-| `broadcast_port` [:material-link:](../configuration/pgdog.toml/general.md#broadcast_port) | `6433` |
 | `checkout_timeout` [:material-link:](../configuration/pgdog.toml/general.md#checkout_timeout) | `1s` |
 | `client_idle_timeout` [:material-link:](../configuration/pgdog.toml/general.md#client_idle_timeout) | `18446744073709551615ms` |
 | `connect_attempt_delay` [:material-link:](../configuration/pgdog.toml/general.md#connect_attempt_delay) | `0ms` |

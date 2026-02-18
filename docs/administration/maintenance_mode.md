@@ -1,3 +1,7 @@
+---
+icon: material/wrench
+---
+
 # Maintenance mode
 
 Maintenance mode pauses queries from all clients so you can synchronize configuration changes across multiple instances of PgDog. This is useful if you're changing the [sharding](../features/sharding/index.md) options.

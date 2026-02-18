@@ -1,3 +1,7 @@
+---
+icon: material/cube-outline
+---
+
 # Architecture overview
 
 PgDog is written in the [Rust](https://rust-lang.org) programming language. It is also asynchronous, powered by the [Tokio](https://tokio.rs) runtime. This allows PgDog to serve hundreds of thousands of connections on one machine and to take advantage of multiple CPUs.

@@ -4,10 +4,6 @@ icon: material/chart-timeline-variant
 
 # Replication and failover
 
-!!! note "Experimental feature"
-    This feature is new and experimental. Make sure to test it before deploying
-    to production.
-
 PgDog has built-in functionality for monitoring the state of Postgres replica databases. If configured, it can also automatically detect when a replica is promoted and redirect write queries to the new primary.
 
 ## Replication

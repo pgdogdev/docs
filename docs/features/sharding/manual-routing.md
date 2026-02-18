@@ -69,7 +69,7 @@ The `SET` command comes from the PostgreSQL query language and is used to change
 
     ```postgresql
     BEGIN;
-    SET pgdog.shard TO 0;
+    SET LOCAL pgdog.shard TO 0;
     CREATE INDEX users_id_idx USING btree(id);
     COMMIT;
     ```
@@ -78,21 +78,14 @@ The `SET` command comes from the PostgreSQL query language and is used to change
 
     ```postgresql
     BEGIN;
-    SET pgdog.sharding_key TO 'us-east-1';
+    SET LOCAL pgdog.sharding_key TO 'us-east-1';
     SELECT * FROM users WHERE is_admin = true;
     COMMIT;
     ```
 
 ### Limitations
 
-Since `SET` changes session variables, we want to avoid leaking this state between transactions. For this reason, routing hints provided using this method are only supported inside transactions. For example:
-
-```postgresql
-BEGIN;
-SET pgdog.sharding_key TO 'us-east-1';
-SELECT * FROM users WHERE is_admin = true;
-COMMIT;
-```
+Sharding hints provided using `SET` follow the same semantics as regular `SET` variables. For this reason, it's always best to use them inside transactions with `SET LOCAL`. Using `SET` will persist the query routing hint until the parameter is set again.
 
 ### Latency
 
@@ -140,5 +133,7 @@ You can read more about this in [our blog](https://pgdog.dev/blog/sharding-a-rea
 
 ## Read more
 
-- [Cross-shard queries](cross-shard-queries/index.md)
-- [Sharding functions](sharding-functions.md)
+{{ next_steps_links([
+    ("Cross-shard queries", "cross-shard-queries/index.md", "Run queries that span multiple shards transparently."),
+    ("Sharding functions", "sharding-functions.md", "Control how rows are distributed across shards."),
+]) }}

@@ -1,3 +1,7 @@
+---
+icon: material/monitor-dashboard
+---
+
 # Administration overview
 
 PgDog keeps track of clients, servers and connection pools. It provides real time statistics on its internal operations for system

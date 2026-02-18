@@ -11,7 +11,7 @@ Database mirroring replicates traffic, byte for byte, from one database to anoth
 Mirroring in PgDog is asynchronous and should have minimal impact on production databases: transactions are sent to a background task, which in turn forwards them to one or more mirror databases. If any statement fails, the error is ignored and the next one is executed.
 
 <center>
-  <img src="/images/mirroring.png" width="90%" height="auto" alt="Mirroring">
+  <img src="/images/mirroring.png" width="80%" height="auto" alt="Mirroring">
 </center>
 
 ## Configuration

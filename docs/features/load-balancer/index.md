@@ -18,7 +18,7 @@ Applications can connect to a single PgDog [endpoint](#single-endpoint), without
 When a query is received by PgDog, it will inspect it using the native Postgres SQL parser. If the query is a `SELECT` and the [configuration](../../configuration/pgdog.toml/databases.md) contains both primary and replica databases, PgDog will send it to one of the replicas. For all other queries, PgDog will send them to the primary.
 
 <center>
-  <img src="/images/replicas.png" width="95%" alt="Load balancer" />
+  <img src="/images/replicas.png" width="80%" alt="Load balancer" />
 </center>
 
 Applications don't have to manually route queries between databases or maintain several connection pools internally.

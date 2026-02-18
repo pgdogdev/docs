@@ -30,7 +30,18 @@ By default, PgDog looks for both configuration files in the current working dire
 
 ## Hot reload
 
-Most settings can be reloaded without restarting PgDog. This allows you to tweak them at runtime without breaking client or server connections. For settings that require a restart, a note is added to the documentation.
+Most settings can be reloaded without restarting PgDog. This allows to tweak PgDog at runtime without breaking client or server connections. For settings that require a restart, a note is added to the documentation.
+
+Hot reload can be triggered by sending `SIGHUP` to the `pgdog` process or by connecting to the [admin database](../administration/index.md) and running the `RELOAD` command.
+
+=== "Process signal"
+    ```bash
+    kill -HUP pgdog
+    ```
+=== "Admin database"
+    ```bash
+    PGPASSWORD=admin psql -h 127.0.0.1 -p 6432 -U admin admin -c 'RELOAD'
+    ```
 
 ## Units
 

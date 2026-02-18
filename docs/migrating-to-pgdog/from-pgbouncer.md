@@ -314,5 +314,7 @@ pooler_mode = "session"
 
 ## Read more
 
-- [`pgdog.toml`](../configuration/pgdog.toml/general.md)
-- [`users.toml`](../configuration/users.toml/users.md)
+{{ next_steps_links([
+    ("pgdog.toml", "../configuration/pgdog.toml/general.md", "Main configuration file for PgDog settings, databases, and sharding."),
+    ("users.toml", "../configuration/users.toml/users.md", "Configure user authentication and per-user pool settings."),
+]) }}

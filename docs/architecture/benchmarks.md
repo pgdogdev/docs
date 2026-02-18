@@ -1,3 +1,7 @@
+---
+icon: material/chart-bar
+---
+
 # Benchmarks
 
 PgDog does its best to minimize its impact on database performance. Great care is taken to make sure as few operations as possible are performed

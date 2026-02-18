@@ -1,3 +1,7 @@
+---
+icon: material/server
+---
+
 # Server connections
 
 PgDog provides real time statistics and information on all connections to PostgreSQL databases. They can be accessed by connecting to the [admin database](index.md) and running the `SHOW SERVERS` command:

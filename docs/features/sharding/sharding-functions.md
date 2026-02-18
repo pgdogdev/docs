@@ -182,5 +182,7 @@ This will send all queries that don't specify a schema or use a schema without a
 
 ## Read more
 
-- [COPY command](cross-shard-queries/copy.md)
-- [Two-phase commit](2pc.md)
+{{ next_steps_links([
+    ("COPY command", "cross-shard-queries/copy.md", "Bulk load data across shards with the COPY protocol."),
+    ("Two-phase commit", "2pc.md", "Atomic transactions spanning multiple shards."),
+]) }}

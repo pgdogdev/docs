@@ -22,11 +22,18 @@ docker run ghcr.io/pgdogdev/pgdog:main
 
 ### SemVer
 
-PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run v0.1.6 like so:
+PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run `v0.1.29` like so:
 
 ```
-docker run ghcr.io/pgdogdev/pgdog:v0.1.6
+docker run ghcr.io/pgdogdev/pgdog:v0.1.29
 ```
+
+### AWS ECS
+
+!!! note "New feature"
+    This is a new feature. Please report any issues you may encounter.
+
+ We recently added a [Terraform module](https://github.com/pgdogdev/pgdog-ecs-terraform) to deploy PgDog on AWS ECS. It works with the same Docker image as our Helm chart, so the experience should be familiar.
 
 ## From source
 
@@ -139,21 +146,9 @@ password = "hunter2"
 
 ## Next steps
 
-<div class="grid">
-    <div>
-        <h4><a href="/features/">Features</a></h4>
-        <p>Read more about PgDog features like load balancing, supported authentication mechanisms, TLS, health checks, and more.</p>
-    </div>
-    <div>
-        <h4><a href="/administration/">Administration</a></h4>
-        <p>Learn how to operate PgDog in production, like fetching real-time statistics from the admin database or updating configuration.</p>
-    </div>
-    <div>
-        <h4><a href="/architecture/">Architecture</a></h4>
-        <p>Read about PgDog internals and how it works under the hood.</p>
-    </div>
-    <div>
-        <h4><a href="/configuration/">Configuration</a></h4>
-        <p>Reference for PgDog configuration like maximum server connections, number of shards, and more.</p>
-    </div>
-</div>
+{{ next_steps_links([
+    ("Features", "/features/", "Read more about PgDog features like load balancing, supported authentication mechanisms, TLS, health checks, and more."),
+    ("Administration", "/administration/", "Learn how to operate PgDog in production, like fetching real-time statistics from the admin database or updating configuration."),
+    ("Architecture", "/architecture/", "Read about PgDog internals and how it works under the hood."),
+    ("Configuration", "/configuration/", "Reference for PgDog configuration like maximum server connections, number of shards, and more."),
+]) }}

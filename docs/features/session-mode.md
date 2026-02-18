@@ -47,6 +47,6 @@ when a client disconnects, the PostgreSQL server connection remains intact and c
 
 #### Lazy connections
 Until a client issues their first query, PgDog doesn't attach it to a server connection. This allows one set of clients to connect before the previous set disconnects,
-which is common when using zero-downtime deployment strategies like blue-green [^1].
+which is common when using zero-downtime deployment strategies like blue/green [^1].
 
 [^1]: [https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/bluegreen-deployments.html](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/bluegreen-deployments.html)

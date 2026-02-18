@@ -1,43 +1,53 @@
 site_name: PgDog
 repo_url: "https://github.com/pgdogdev/pgdog"
+repo_name: pgdogdev/pgdog
 site_url: "https://docs.pgdog.dev"
+site_description: "PgDog - PostgreSQL query router, pooler, load balancer, and sharding proxy."
+
 extra_css:
   - style.css
-site_description: "PgDog - PostgreSQL query router, pooler, load balancer, and sharding proxy."
+
 theme:
+  name: material
   logo: /images/logo-64x64.png
   favicon: /images/logo-64x64.png
-  name: material
+
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      note: octicons/tag-16
+      tip: octicons/squirrel-16
+      warning: octicons/alert-16
+      danger: octicons/zap-16
+      example: octicons/beaker-16
+
   features:
     - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
     - search.suggest
+    - search.highlight
     - search.share
+    - toc.follow
+
   font:
     text: Inter
-    code: Source Code Pro
+    code: JetBrains Mono
+
   palette:
-    # Palette toggle for automatic mode
-    - media: "(prefers-color-scheme)"
-      toggle:
-        icon: material/brightness-auto
-        name: Switch to light mode
+    scheme: slate
+    primary: indigo
+    accent: indigo
 
-    # Palette toggle for light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: blue
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-
-    # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: blue
-      toggle:
-        icon: material/brightness-4
-        name: Switch to system preference
 docs_dir: docs
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
@@ -46,17 +56,26 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.mark
+  - pymdownx.keys
   - footnotes
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
   - md_in_html
   - attr_list
+  - def_list
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
 plugins:
   - search
   - awesome-pages
@@ -67,3 +86,9 @@ plugins:
         'features/sharding/migrations.md': 'features/sharding/schema_management/migrations.md'
         'features/sharding/primary-keys.md': 'features/sharding/schema_management/primary_keys.md'
         'features/sharding/cross-shard/index.md': 'features/sharding/cross-shard-queries/index.md'
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/pgdogdev/pgdog
+  generator: false

@@ -103,5 +103,7 @@ Two-phase commit is used for writes only. Read transactions are finished using n
 
 ## Read more
 
-- [Omnisharded tables](omnishards.md)
-- [Cross-shard queries](cross-shard-queries/index.md)
+{{ next_steps_links([
+    ("Omnisharded tables", "omnishards.md", "Tables replicated to every shard for fast local joins."),
+    ("Cross-shard queries", "cross-shard-queries/index.md", "Run queries that span multiple shards transparently."),
+]) }}

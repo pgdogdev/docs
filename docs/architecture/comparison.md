@@ -1,3 +1,7 @@
+---
+icon: material/scale-balance
+---
+
 # Comparison to other poolers
 
 PgDog aims to be the de facto PostgreSQL proxy and pooler. Below is a feature comparison between PgDog and a few popular alternatives.

@@ -54,6 +54,16 @@ checkout_timeout = 5_000
 
 !!! note "TOML syntax"
     Since PgDog uses TOML, both `5000` and `5_000` are valid numbers. Configuration will fail to load if non-integer values are used, e.g. "5s" or "53.5".
+    
+## Overrides
+
+When reading the configuration files, PgDog will apply settings in the following order:
+
+1. Values in [`[[users]]`](users.toml/users.md) section take the highest priority
+2. Values in [`[[databases]]`](pgdog.toml/databases.md) are read next
+3. Values in [`[general]`](pgdog.toml/general.md) are used by default
+
+For example, if `pool_size` is set on a user, it will be used over the same setting on the database. If none is set on the user, but it is set on a database, that will take priority over `default_pool_size` configured in general settings.
 
 ## Overview
 

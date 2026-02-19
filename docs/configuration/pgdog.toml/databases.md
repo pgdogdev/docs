@@ -76,8 +76,8 @@ The shard number for this database. Only required if your database contains more
 
 Default: **`0`**
 
-!!! note
-    All settings below take priority over values in [`[general]`](general.md) and [`[[users]]`](../users.toml/users.md) config sections.
+!!! note "Settings priority"
+    All settings below take priority over values in [`[general]`](general.md).
 
 ### `pool_size`
 

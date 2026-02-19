@@ -36,6 +36,9 @@ The password for the user. Clients will need to provide this when connecting to 
 
 Default: **none** (required)
 
+!!! note "Settings priority"
+    All settings below take priority over values in [`[general]`](../pgdog.toml/general.md) and [`[[databases]]`](../pgdog.toml/databases.md).
+
 ### `pool_size`
 
 Overrides [`default_pool_size`](../pgdog.toml/general.md) for this user. No more than this many server connections will be open at any given time to serve requests for this connection pool.

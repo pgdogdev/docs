@@ -32,15 +32,15 @@ PgDog performs the traffic cutover automatically, as the last step in the [resha
 |-|-|
 | [Pause queries](#pause-queries) | Stop the source cluster from serving traffic. |
 | [Synchronize databases](#synchronize-databases) | Allow the logical replication stream to drain into the destination database. |
-| [Swap the configuration](#flip-the-configuration) | Swap the source and destination databases in [`pgdog.toml`](../../../configuration/pgdog.toml/general.md) and [`users.toml`](../../../configuration/users.toml/users.md). |
-| [Reverse replication](#reverse-replication) | Setup a logical replication stream from destination database into source. |
+| [Swap the configuration](#swap-the-configuration) | Swap the source and destination databases in [`pgdog.toml`](../../../configuration/pgdog.toml/general.md) and [`users.toml`](../../../configuration/users.toml/users.md). |
+| [Reverse replication](#reverse-replication) | Set up a logical replication stream from destination database into source. |
 | [Resume queries](#resume-queries) | Resume traffic, with all queries going to the sharded cluster. |
 
 
 
 ### Pause queries
 
-In order for the traffic to be safely moved to the new, sharded database, it must contain the same data as the source. However, the source continues to serve write queries, so in order for the two to synchronize, PgDog needs to suspend traffic the source database for a brief moment, allowing the replication stream to catch up.
+In order for the traffic to be safely moved to the new, sharded database, it must contain the same data as the source. However, the source continues to serve write queries, so in order for the two to synchronize, PgDog needs to suspend traffic to the source database for a brief moment, allowing the replication stream to catch up.
 
 To suspend traffic, PgDog turns on [maintenance mode](../../../administration/maintenance_mode.md). This pauses all queries for all databases in the configuration until the maintenance mode is turned off. Clients will wait, with their queries buffered in their respective TCP connection streams. To the clients, it looks like the PgDog deployment is frozen and not responsive.
 
@@ -54,7 +54,7 @@ If something goes wrong after the traffic is moved to the new (destination) data
 
 For this to work, the original database must remain in the [configuration files](../../../configuration/index.md), so PgDog performs a swap: source becomes destination and destination becomes the source database. This is the equivalent of running `sed s/source/destination/g` (and vice versa) on both `pgdog.toml` and `users.toml` files, making sure the clients don't know the databases have been changed.
 
-The configuration swap happens in memory, but PgDog has the ability to write the new configuration files to disk as well. This is disabled by default, by can be enabled with a setting:
+The configuration swap happens in memory, but PgDog has the ability to write the new configuration files to disk as well. This is disabled by default, but can be enabled with a setting:
 
 ```toml
 [general]
@@ -68,6 +68,14 @@ When enabled, PgDog will backup both configuration files, `pgdog.toml` as `pgdog
 
 ### Reverse replication
 
-To allow for rollbacks in case of any issues, prior to allowing queries on the new database, PgDog creates logical replication streams from the new database back to the original database. This synchronizes any writes made to the new database back to the source, keeping the two databases in-sync until the operator is satisfied that the new database is performing adequately.
+To allow for rollbacks in case of any issues, prior to allowing queries on the new database, PgDog creates logical replication streams from the new database back to the original database. This replicates any writes made to the new database back to the source, keeping the two databases in-sync until the operator is satisfied that the new database is performing adequately.
+
+<center>
+    <img src="/images/reverse-replication.png" width="60%" alt="Cross-shard queries" />
+</center>
 
 The reverse replication is created while the queries to both databases are paused, so it doesn't require any additional data copying or synchronization.
+
+### Resume queries
+
+With the reverse replication setup, it is now safe to move traffic to the destination (now source) database. PgDog does this by turning off [maintenance mode](../../../administration/maintenance_mode.md), and this step concludes the cutover. The entire process takes less than a second, typically, and allows PgDog to reshard Postgres databases without downtime.

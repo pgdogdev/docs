@@ -4,6 +4,10 @@ icon: material/set-right
 
 # Traffic cutover
 
+!!! note "Experimental feature"
+    This is a new and experimental feature. Please make sure to test it before deploying to production
+    and report any issues you find.
+
 Traffic cutover involves moving application traffic (read and write queries) to the destination database. This happens when the source and destination databases are in sync: all source data is copied, and resharded with [logical replication](hash.md).
 
 ## Performing the cutover

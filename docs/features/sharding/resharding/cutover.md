@@ -48,6 +48,15 @@ In order for the traffic to be safely moved to the new, sharded database, it mus
 
 To suspend traffic, PgDog turns on [maintenance mode](../../../administration/maintenance_mode.md). This pauses all queries for all databases in the configuration until the maintenance mode is turned off. Clients will wait, with their queries buffered in their respective TCP connection streams. To the clients, it looks like the PgDog deployment is frozen and not responsive.
 
+The replication lag threshold at which PgDog will pause traffic automatically is configurable in [`pgdog.toml`](../../../configuration/pgdog.toml/general.md#cutover_traffic_stop_threshold):
+
+```toml
+[general]
+cutover_traffic_stop_threshold = 1_000_000 # 1 MiB
+```
+
+By default, it's set to 1MB, which is low enough that when traffic is paused, the two databases will synchronize very quickly.
+
 ### Synchronize databases
 
 With the traffic paused, the logical replication stream will drain any remaining transactions into the destination database, bringing the replication lag down to zero. At this point in the cutover process, the two databases are byte-for-byte identical and traffic can be safely moved to the destination database.
@@ -69,17 +78,46 @@ When enabled, PgDog will backup both configuration files, `pgdog.toml` as `pgdog
 
 !!! note "Multi-node deployments"
     If you're running more than one PgDog node, you should consider deploying our [Enterprise Edition](../../../enterprise_edition/index.md), which has support for saving the configuration files on multiple PgDog nodes at the same time.
+    
+#### Thresholds
+
+Before swapping the configuration, PgDog waits for the two databases to be completely identical. These thresholds are configurable as follows:
+
+```toml
+[general]
+cutover_replication_lag_threshold = 0 # 0 bytes
+cutover_last_transaction_delay = 1_000 # 1 second
+```
+
+Due to vacuum activity and transactions affecting other tables not in the publication, the replication lag between the two databases may never reach zero. For this reason, PgDog provides two triggers for the configuration swap:
+
+1. Replication lag, set to 0 bytes by default
+2. Time since last transaction executed on any table in the publication
+
+The latter is computed from messages received via the replication stream and is a reliable metric of database activity for the tables in the publication.
+
+##### Timeout
+
+If these thresholds are not hit within a reasonable amount of time, PgDog will abort the cutover and resume traffic on the source database. This behavior is configurable:
+
+```toml
+[general]
+cutover_timeout = 30_000 # 30 seconds
+cutover_timeout_action = "abort" # or "cutover"
+```
+
+If `cutover_timeout_action` is set to `"cutover"` instead, PgDog will flip the traffic to the destination database. This is an acceptable course of action in environments where data integrity is not paramount or the operator is absolutely certain that both databases are identical.
 
 ### Reverse replication
 
 To allow for rollbacks in case of any issues, prior to allowing queries on the new database, PgDog creates logical replication streams from the new database back to the original database. This replicates any writes made to the new database back to the source, keeping the two databases in-sync until the operator is satisfied that the new database is performing adequately.
 
 <center>
-    <img src="/images/reverse-replication.png" width="60%" alt="Cross-shard queries" />
+    <img src="/images/reverse-replication.png" width="60%" alt="Reverse replication" />
 </center>
 
 The reverse replication is created while the queries to both databases are paused, so it doesn't require any additional data copying or synchronization.
 
 ### Resume queries
 
-With the reverse replication setup, it is now safe to move traffic to the destination (now source) database. PgDog does this by turning off [maintenance mode](../../../administration/maintenance_mode.md), and this step concludes the cutover. The entire process takes less than a second, typically, and allows PgDog to reshard Postgres databases without downtime.
+With the reverse replication set up, it is now safe to move traffic to the destination (now source) database. PgDog does this by turning off [maintenance mode](../../../administration/maintenance_mode.md), and this step concludes the cutover. The entire process takes less than a second, typically, and allows PgDog to reshard Postgres databases without downtime.

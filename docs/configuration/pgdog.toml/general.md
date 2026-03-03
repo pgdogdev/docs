@@ -479,6 +479,47 @@ Available options:
 
 Default: **`auto`**
 
+### `cutover_traffic_stop_threshold`
+
+Replication lag threshold (in bytes) at which PgDog will pause traffic automatically during a [traffic cutover](../../features/sharding/resharding/cutover.md#pause-queries).
+
+Default: **`1_000_000`** (1 MiB)
+
+### `cutover_save_config`
+
+Save the swapped configuration to disk after a [traffic cutover](../../features/sharding/resharding/cutover.md#swap-the-configuration). When enabled, PgDog will backup both configuration files as `pgdog.bak.toml` and `users.bak.toml`, and write the new configuration to `pgdog.toml` and `users.toml`.
+
+Default: **`false`** (disabled)
+
+### `cutover_replication_lag_threshold`
+
+Replication lag (in bytes) that must be reached before PgDog will [swap the configuration](../../features/sharding/resharding/cutover.md#swap-the-configuration) during a cutover.
+
+Default: **`0`** (0 bytes)
+
+### `cutover_last_transaction_delay`
+
+Time (in milliseconds) since the last transaction on any table in the publication before PgDog will [swap the configuration](../../features/sharding/resharding/cutover.md#swap-the-configuration) during a cutover.
+
+Default: **`1_000`** (1s)
+
+### `cutover_timeout`
+
+Maximum amount of time (in milliseconds) to wait for the [cutover thresholds](../../features/sharding/resharding/cutover.md#thresholds) to be met. If exceeded, PgDog will take the action specified by [`cutover_timeout_action`](#cutover_timeout_action).
+
+Default: **`30_000`** (30s)
+
+### `cutover_timeout_action`
+
+Action to take when [`cutover_timeout`](#cutover_timeout) is exceeded.
+
+Available options:
+
+- `abort` (default): abort the cutover and resume traffic on the source database
+- `cutover`: proceed with the cutover to the destination database
+
+Default: **`abort`**
+
 ## Logging
 
 ### `log_connections`

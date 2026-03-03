@@ -17,8 +17,9 @@ PgDog implements a subset of authentication methods supported by Postgres. We're
 | `scram-sha-256` | :material-check-circle-outline: | :material-check-circle-outline: |
 | `scram-sha-256-plus` | No | No |
 | `md5` | :material-check-circle-outline: | :material-check-circle-outline: |
-| `plain` | Only for [passthrough](#passthrough-authentication) | :material-check-circle-outline: |
+| `plain` | :material-check-circle-outline: | :material-check-circle-outline: |
 | `trust` | :material-check-circle-outline: | :material-check-circle-outline: |
+| [AWS IAM](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html) | No | :material-check-circle-outline: |
 
 ### Client authentication
 
@@ -33,16 +34,41 @@ Available options currently are:
 
 - `scram` (SCRAM-SHA-256)
 - `md5`
+- `plain`
 - `trust` (No authentication)
+
+!!! note "SCRAM overhead"
+    The SCRAM-SHA-256 algorithm is computationally expensive and will use a considerable amount of CPU time. This is by design, in order to make it difficult to brute-force. However, if your application is frequently creating new connections to the database, like serverless apps running on Vercel or Cloudflare workers, this could also have a latency impact.
+    
+    If your application is affected by this, consider enabling [TLS](tls.md) and `plain` authentication method instead. Modern CPUs implement TLS algorithms in hardware which makes them pretty efficient and fast.
 
 ### Server authentication
 
 Server authentication method is controlled by PostgreSQL. PgDog will use whatever method Postgres requests during connection creation, which is configurable in [`pg_hba.conf`](https://www.postgresql.org/docs/current/auth-pg-hba-conf.html).
 
+PgDog currently supports two authentication methods for server connections:
+
+1. Password authentication, using any of the [client authentication](#client-authentication) methods
+2. AWS RDS IAM authentication
+
+
+#### RDS IAM authentication
+
+!!! note "Experimental feature"
+    This feature is new and experimental. Please report any issues you may encounter.
+
+PgDog supports authenticating to RDS PostgreSQL (and Aurora) databases using [IAM](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html). This is configurable on a user-per-user basis, for example:
+
+```toml
+[[users]]
+name = "pgdog"
+database = "prod"
+server_auth = "rds_iam"
+```
 
 ## Add users
 
-`users.toml` follows a simple TOML list structure. To add users, simply add another `[[users]]` section, e.g.:
+[`users.toml`](../configuration/users.toml/users.md) follows a simple TOML list structure. To add users, simply add another `[[users]]` section, e.g.:
 
 ```toml
 [[users]]

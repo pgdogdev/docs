@@ -41,6 +41,26 @@ The following information is available in this view:
 | `user` | The name of the user running the query. |
 | `age` | How long ago the plan was fetched from Postgres (in ms). |
 
+### Configuration
+
+Which queries are planned and how frequently is configurable in [`pgdog.toml`](../configuration/pgdog.toml/general.md):
+
+```toml
+[query_stats]
+enabled = true
+query_plan_threshold = 250 # 250 ms
+query_plans_cache = 100
+query_plans_sample_rate = 0.0
+query_plan_max_age = 15_000
+```
+
+| Setting | Description |
+|-|-|
+| `query_plan_threshold` | Minimum query execution duration (in ms), as recorded by PgDog in [query statistics](statistics.md) which will trigger a plan collection. |
+| `query_plans_cache` | How many plans to keep in the cache to avoid planning the same queries multiple times. |
+| `query_plans_sample_rate` | Percentage of queries (0.0 - 1.0) to collect plans for irrespective of their execution duration. |
+| `query_plan_max_age` | For how long (in ms) to keep plans in the cache before they are considered stale and require a new plan. |
+
 ### Dashboard
 
 The query plans are automatically attached to running queries and sent to the Dashboard via a dedicated connection. They can be viewed in real-time in the [Activity](active_queries.md#dashboard) tab.

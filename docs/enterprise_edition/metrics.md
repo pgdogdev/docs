@@ -1,7 +1,7 @@
 ---
 icon: material/speedometer
 ---
-# Metrics
+# Real-time metrics
 
 PgDog Enterprise collects and trasmits its own metrics to the [control plane](control_plane.md), at a configurable interval (1s, by default). This provides a real-time view into PgDog internals, without a delay that's typically present in other monitoring solutions.
 

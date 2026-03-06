@@ -11,12 +11,13 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-            - name: Checkout another public repo
+            - name: Checkout pgdog-enterprise
               uses: actions/checkout@v4
               with:
-                  repository: pgdogdev/pgdog
-                  ref: main
+                  repository: pgdogdev/pgdog-enterprise
+                  ref: main-ent
                   path: pgdog-source
+                  token: ${{ secrets.PGDOG_ENTERPRISE_TOKEN }}
             - uses: actions-rs/toolchain@v1
               with:
                   toolchain: stable

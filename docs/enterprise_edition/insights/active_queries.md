@@ -1,9 +1,10 @@
 ---
 icon: material/play-circle
 ---
-# Running queries
 
-PgDog EE provides a real-time view into queries currently executing on PostgreSQL connections. It is accessible in two places:
+# Active queries
+
+PgDog Enterprise provides a real-time view into queries currently executing on its PostgreSQL connections. This is accessible in two places:
 
 1. [`SHOW ACTIVE_QUERIES`](#admin-database) admin command
 2. [Activity](#dashboard) view in the dashboard

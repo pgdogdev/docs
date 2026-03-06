@@ -6,13 +6,13 @@ icon: material/office-building
 
 PgDog **E**nterprise **E**dition is a version of PgDog that contains additional features for at scale monitoring and deployment of sharded (and unsharded) PostgreSQL databases.
 
-Unlike PgDog itself, PgDog EE is closed source and available upon the purchase of a license. It comes with a hosted management dashboard which provides real-time visibility into PgDog's operations.
+Unlike PgDog itself, PgDog EE is closed source and available upon the purchase of a license. It comes with a hosted management dashboard which provides real-time visibility into PgDog's operations and enterprise features.
 
 ## Features
 
 | Feature | Description |
 |-|-|
-| [Running queries](active_queries.md) | Instant view into queries running through PgDog. |
+| [Active queries](active_queries.md) | Real-time view into queries running through PgDog. |
 | [Query plans](query_plans.md) | Root cause slow queries in seconds with automatic PostgreSQL query plans. |
 | [Real-time metrics](metrics.md) | All PgDog metrics, delivered with second-precision through a dedicated link. |
 | Query blocker | Terminate all instances of a slow query with a button click and prevent them from running again. |

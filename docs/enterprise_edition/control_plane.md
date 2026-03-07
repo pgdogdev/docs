@@ -59,7 +59,7 @@ PgDog transmits the following information to the control plane:
 | [Query statistics](insights/statistics.md) | Real-time statistics on each query executed through PgDog, like duration, idle-in-transaction time, and more. |
 | [Errors](insights/errors.md) | Recent errors encountered by clients, e.g. query syntax issues. |
 | [Query plans](insights/query_plans.md) | Output of `EXPLAIN` for slow and sampled queries, collected by PgDog in the background. |
-| [Configuration](configuration.md) | Current PgDog settings and database schema. |
+| Configuration | Current PgDog settings and database schema. |
 
 #### High availability
 

@@ -82,7 +82,7 @@ The following information is available in the query statistics view:
 
 ### Configuration
 
-Query statistics collection can be enabled/disabled and tweaked via configuration in [`pgdog.toml`](../configuration/pgdog.toml/general.md):
+Query statistics collection can be enabled/disabled and tweaked via configuration in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
 
 ```toml
 [query_stats]

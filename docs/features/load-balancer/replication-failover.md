@@ -4,7 +4,7 @@ icon: material/chart-timeline-variant
 
 # Replication and failover
 
-PgDog has built-in functionality for monitoring the state of Postgres replica databases. If configured, it can also automatically detect when a replica is promoted and redirect write queries to the new primary.
+PgDog has built-in functionality for monitoring the state of Postgres replica databases. If configured, it can also automatically detect when a replica is promoted and redirect write queries to the new primary, and ban replicas from serving traffic if they have fallen far behind in the replication stream.
 
 ## Replication
 
@@ -56,6 +56,30 @@ lsn_check_interval = 1_000
 Decreasing the value of `lsn_check_interval` will produce more accurate statistics, at the cost of running additional queries through the same connection pool used by normal client connections.
 
 It's common for PgDog deployments to be serving upwards of 30,000-50,000 queries per second per pooler process, so you can run the LSN check query quite frequently without noticeable impact on system latency.
+
+### Replica lag ban
+
+!!! note "Experimental feature"
+    This feature is new and experimental. Please report any issues you encounter.
+
+If a replica has fallen far behind the primary, it may start serving stale data to the application. This can cause hard to debug issues, so it's often best to remove this replica from the load balancer until it's able to catch up.
+
+PgDog supports this with configurable banning thresholds:
+
+```toml
+[general]
+ban_replica_lag = 60_000 # 1 minute
+ban_replica_lag_bytes = 25_000_000 # 25 MiB
+```
+
+| Setting | Description |
+|-|-|
+| `ban_replica_lag` | How far behind in [transaction time](#replication-lag) (ms) can the replica fall before it gets removed from the load balancer. |
+| `ban_replica_lag_bytes` | Same as above, except the lag is measured in bytes. |
+
+The load balancer will use the lowest threshold to make its determination. By default, both settings are set to the maximum integer value, effectively **disabling** this feature.
+
+Unlike [health check-triggered](healthchecks.md) bans, replica lag ban is not cleared after hitting the [`ban_timeout`](../../configuration/pgdog.toml/general.md#ban_timeout) threshold and will remain in place until the replica lag falls below the configured amount(s). Incidentally, by removing traffic from the replica database, it has a better chance of catching up to the primary, since most causes of replication lag in PostgreSQL are related to query load.
 
 ## Failover
 

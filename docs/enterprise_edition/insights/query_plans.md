@@ -43,7 +43,7 @@ The following information is available in this view:
 
 ### Configuration
 
-Which queries are planned and how frequently is configurable in [`pgdog.toml`](../configuration/pgdog.toml/general.md):
+Which queries are planned and how frequently is configurable in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
 
 ```toml
 [query_stats]

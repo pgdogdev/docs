@@ -35,7 +35,7 @@ The following information is available in the errors view:
 
 ## Configuration
 
-Errors are collected automatically if query statistics are enabled. The in-memory view is periodically purged of old errors, configurable in [`pgdog.toml`](../configuration/pgdog.toml/general.md):
+Errors are collected automatically if query statistics are enabled. The in-memory view is periodically purged of old errors, configurable in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
 
 ```toml
 [query_stats]

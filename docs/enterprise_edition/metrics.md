@@ -3,13 +3,13 @@ icon: material/speedometer
 ---
 # Real-time metrics
 
-PgDog Enterprise collects and trasmits its own metrics to the [control plane](control_plane.md), at a configurable interval (1s, by default). This provides a real-time view into PgDog internals, without a delay that's typically present in other monitoring solutions.
+PgDog Enterprise collects and transmits its own metrics to the [control plane](control_plane/index.md), at a configurable interval (1s, by default). This provides a real-time view into PgDog internals, without a delay that's typically present in other monitoring solutions.
 
 ## How it works
 
 Real-time metrics are available in both Open Source and Enterprise versions of PgDog. The [open source metrics](../features/metrics.md) are accessible via an OpenMetrics endpoint or via the admin database.
 
-In PgDog EE, the same metrics are collected and sent via a dedicated connection to the control plane. Since metrics are just numbers, they can be serialized and sent quickly. To deliver second-precision metrics, PgDog EE requires less than 1KB/second of bandwidth and little to no additional CPU or memory.
+In PgDog Enterprise, the same metrics are collected and sent via a dedicated connection to the control plane. Since metrics are just numbers, they can be serialized and sent quickly. To deliver second-precision metrics, PgDog requires less than 1KB/second of bandwidth and little to no additional CPU or memory.
 
 ### Configuration
 

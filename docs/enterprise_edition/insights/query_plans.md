@@ -3,14 +3,14 @@ icon: material/chart-timeline
 ---
 # Query plans
 
-For any [running query](active_queries.md) exceeding a configurable time threshold, PgDog EE will ask Postgres for a query plan. The query plans are stored in their own view, accessible via two methods:
+For any [running query](active_queries.md) exceeding a configurable time threshold, PgDog will ask Postgres for a query plan. The query plans are stored in their own view, accessible via two methods:
 
 1. [`SHOW QUERY_PLANS`](#admin-database) admin command
 2. [Activity](active_queries.md#dashboard) view in the dashboard
 
 ## How it works
 
-When a [running query](active_queries.md) exceeds a configurable threshold, PgDog EE will ask Postgres for its query plan by sending an `EXPLAIN` command via a dedicated connection. For prepared statements, PgDog automatically provides the parameters sent with the statement by the client.
+When a [running query](active_queries.md) exceeds a configurable threshold, PgDog will ask Postgres for its query plan by sending an `EXPLAIN` command via a dedicated connection. For prepared statements, PgDog automatically provides the parameters sent with the statement by the client.
 
 Since `EXPLAIN` itself is very quick, fetching and storing query plans is efficient and doesn't impact database performance. Nonetheless, to avoid planning queries unnecessarily, the plans are stored in an in-memory cache. Old plans are evicted automatically and recomputed.
 

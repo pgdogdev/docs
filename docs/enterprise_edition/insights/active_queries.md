@@ -7,7 +7,7 @@ icon: material/play-circle
 PgDog Enterprise provides a real-time view into queries currently executing on its PostgreSQL connections. This is accessible in two places:
 
 1. [`SHOW ACTIVE_QUERIES`](#admin-database) admin command
-2. [Activity](#dashboard) view in the dashboard
+2. [Activity](#web-ui) view in the dashboard
 
 ## How it works
 
@@ -46,7 +46,7 @@ The following information is available in the running queries view:
 
 ### Web UI
 
-If you're running multiple instances of PgDog, active queries from all instances are aggregated and sent to the [control plane](../control_plane.md). They are then made available in the Activity tab, in real-time, with query plans automatically attached for slow queries.
+If you're running multiple instances of PgDog, active queries from all instances are aggregated and sent to the [control plane](../control_plane/index.md). They are then made available in the Activity tab, in real-time, with query plans automatically attached for slow queries.
 
 <center>
   <img src="/images/ee/activity.png" width="100%" alt="How PgDog works" class="screenshot" />

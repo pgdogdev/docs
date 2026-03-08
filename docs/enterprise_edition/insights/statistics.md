@@ -13,7 +13,7 @@ All queries are normalized (parameters replaced with `$1`, `$2`, etc.) and group
 This data is accessible via two mediums:
 
 1. [Admin database](#admin-database)
-2. The Insights page in the web UI of the [control plane](../control_plane.md)
+2. The Insights page in the web UI of the [control plane](../control_plane/index.md)
 
 ### Admin database
 

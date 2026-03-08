@@ -44,4 +44,4 @@ max_errors = 100
 max_error_age = 300_000 # 5 minutes
 ```
 
-By default, PgDog will keep up to 100 distinct errors for a maximum of 5 minutes. This data is periodically sent to the [control plane](../control_plane.md), so the history of seen errors is available in the web UI.
+By default, PgDog will keep up to 100 distinct errors for a maximum of 5 minutes. This data is periodically sent to the [control plane](../control_plane/index.md), so the history of seen errors is available in the web UI.

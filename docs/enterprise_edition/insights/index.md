@@ -17,4 +17,4 @@ PgDog Enterprise collects the following telemetry:
 | [Query statistics](statistics.md) | real time | Query duration, number of rows returned, idle-in-transaction time, errors, and more. |
 | [Errors](errors.md) | real time | View into recently encountered query errors, like syntax errors or lock timeouts. |
 
-This data is transmitted to the [control plane](../control_plane.md) in real-time, which makes it available via its web dashboard and HTTP API.
+This data is transmitted to the [control plane](../control_plane/index.md) in real-time, which makes it available via its web dashboard and HTTP API.

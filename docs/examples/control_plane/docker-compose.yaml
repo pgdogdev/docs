@@ -1,0 +1,108 @@
+x-control-env: &control-env
+  DATABASE_URL: postgres://pgdog_control:pgdog_control@postgres:5432/pgdog_control
+  REDIS_URL: redis://redis:6379
+  SESSION_KEY: xEouatJSd9RWX4GDZvIFwvWn7Nywv/jh0UkrwnGJdfL6CVsIyUyegVTQY66l7RUR6ZCamqiPHgVlW0HL8PZ+0A==
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: pgdog_control
+      POSTGRES_PASSWORD: pgdog_control
+      POSTGRES_DB: pgdog_control
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgdog_control"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+
+  migrate:
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:87a6bcae
+    environment:
+      <<: *control-env
+    command: control migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  init:
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:87a6bcae
+    environment:
+      <<: *control-env
+    command: control onboard --email demo@pgdog.dev --password demopass --token 644b527c-b9d6-4fb2-9861-703bad871ec0 --name Demo
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  control:
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:87a6bcae
+    ports:
+      - "8099:8080"
+    environment:
+      <<: *control-env
+      DATABASE_URL: postgres://pgdog_control:pgdog_control@pgdog:6432/pgdog_control
+      FRONTEND_URL: http://localhost:8099
+      RUST_LOG: info
+    depends_on:
+      pgdog:
+        condition: service_started
+
+  pgdog:
+    image: ghcr.io/pgdogdev/pgdog-enterprise:87a6bcae
+    command: ["pgdog", "--config", "/etc/pgdog/pgdog.toml", "--users", "/etc/secrets/pgdog/users.toml"]
+    ports:
+      - "6432:6432"
+    configs:
+      - source: pgdog_config
+        target: /etc/pgdog/pgdog.toml
+      - source: pgdog_users
+        target: /etc/secrets/pgdog/users.toml
+    depends_on:
+      postgres:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+
+configs:
+  pgdog_config:
+    content: |
+      [general]
+      port = 6432
+      load_schema = "on"
+
+      [[databases]]
+      name = "pgdog_control"
+      host = "postgres"
+      port = 5432
+      database_name = "pgdog_control"
+      user = "pgdog_control"
+      password = "pgdog_control"
+
+      [control]
+      endpoint = "http://control:8080"
+      token = "644b527c-b9d6-4fb2-9861-703bad871ec0"
+
+      [admin]
+      user = "pgdog"
+      password = "pgdog"
+
+      [query_stats]
+      enabled = true
+
+  pgdog_users:
+    content: |
+      [[users]]
+      name = "pgdog_control"
+      password = "pgdog_control"
+      database = "pgdog_control"
+
+volumes:
+  postgres_data:
+  redis_data:

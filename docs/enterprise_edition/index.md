@@ -24,7 +24,7 @@ You can run a demo version of PgDog Enterprise locally with Docker Compose:
 
 ```bash
 curl -sSL \
-    https://docs.pgdog.dev/examples/control_plane/docker-compose.yml \
+    https://docs.pgdog.dev/examples/control_plane/docker-compose.yaml \
     -o docker-compose.yaml \
     && docker-compose up
 ```

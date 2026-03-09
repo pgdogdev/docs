@@ -78,7 +78,7 @@ Each call to `pgdog.unique_id()` generates a unique value, so it's possible to u
     (1 row)
     ```
 
-This function can be used with any tables, not just omnisharded ones, or independently of any tables at all.
+This function can be used with any tables, not just omnisharded ones, or independently of any tables at all. PgDog can also [automatically inject](#primary-key-injection) the function call into insert queries so this feature works with ORMs like ActiveRecord out of the box.
 
 ## Sharded tables
 
@@ -104,6 +104,31 @@ For example, assuming the table `users` is sharded on the primary key `id`, omit
 INSERT INTO users (email, created_at) VALUES ($1, $2) RETURNING *;
 ```
 
+## Primary key injection
+
+It's common for ORMs to not specify the primary key during inserts at all, or use a `DEFAULT` placeholder, for example:
+
+```postgresql
+INSERT INTO "users" ("email", "created_at") VALUES ($1, $2)
+```
+
+This presents a problem to sharded databases because the underlying sequence cannot be used reliably. PgDog can automatically inject the `"id"` column (or any other `PRIMARY KEY` column) into the query generated with its [unique ID](../unique-ids.md) generator, rewriting the query to:
+
+```postgresql
+INSERT INTO "users" ("id", "email", "created_at") VALUES (pgdog.unique_id(), $1, $2)
+```
+
+This works for regular queries and prepared statements alike. This feature is **disabled** by default and can be enabled in [`pgdog.toml`](../../../configuration/pgdog.toml/rewrite.md):
+
+```toml
+[rewrite]
+enabled = true
+primary_key = "rewrite"
+```
+
+### Composite primary keys
+
+Primary key injection only works for `BIGINT` primary key columns. Composite primary keys or other data types are not currently supported, but are on the [roadmap](../../../roadmap.md).
 ## Multiple tuples
 
 In order to create multiple rows at once, the PostgreSQL query syntax supports sending multiple tuples in one statement. For example:

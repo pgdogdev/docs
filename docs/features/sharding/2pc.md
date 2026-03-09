@@ -3,9 +3,6 @@ icon: material/check-all
 ---
 # Two-phase commit
 
-!!! note
-     This feature is new and experimental. Please [report](https://github.com/pgdogdev/pgdog/issues) any issues you may run into.
-
 Two-phase commit takes advantage of [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html) in Postgres to provide eventually consistent cross-shard writes. When enabled, transactions spanning multiple shards have a very high chance of being atomic.
 
 This feature is also known as **2pc** or **2-phase** transactions.

@@ -3,9 +3,6 @@ icon: material/identifier
 ---
 # Unique IDs
 
-!!! note "Experimental feature"
-    This feature is new and experimental. Please [report](https://github.com/pgdogdev/pgdog/issues) any issues you encounter.
-
 To generate unique identifiers, regular PostgreSQL databases use [sequences](https://www.postgresql.org/docs/current/sql-createsequence.html). For example, `BIGSERIAL` and `SERIAL` columns get their values by calling:
 
 ```postgresql

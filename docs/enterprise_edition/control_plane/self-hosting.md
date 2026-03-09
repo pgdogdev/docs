@@ -34,7 +34,7 @@ The following values should be set in `values.yaml`:
 |-|-|
 | `image.tag` | The Docker tag for the control plane image. |
 | `ingress.host` | The DNS host for the control plane, e.g., `pgdog.database.internal`. |
-| `env` | A key/value mapping of [environment varialbes](#configuration) passed to the control plane application. |
+| `env` | A key/value mapping of [environment variables](#configuration) passed to the control plane application. |
 
 For example:
 
@@ -44,26 +44,26 @@ image:
 ingress:
   host: pgdog.database.internal
 env:
-  SESSION_KEY: 1b80a3cc1640a3[...]
+  DATABASE_URL: postgres://user:password@[...]
 ```
 
 ### Configuration
 
 The control plane is configured via environment variables. The following variables are required for it to work correctly:
 
-| Environment variable | Description |
-|-|-|
-| `DATABASE_URL` | URL pointing to the Postgres database used for storing control plane data. |
-| `SESSION_KEY` | Secret key used to encrypt user session cookies. Can be any value, as long as it's at least 64 bytes. |
-| `REDIS_URL` | URL pointing to the Redis database used for synchronization. |
-| `FRONTEND_URL` | The URL where the frontend application is hosted. This defaults to `ingress.host` if you're using the Helm chart. |
+| Environment variable | Description | Example |
+|-|-|-|
+| `DATABASE_URL` | URL pointing to the Postgres database used for storing control plane data. | `postgres://user:password@host:5432/db` |
+| `SESSION_KEY` | Secret key used to encrypt user session cookies. Can be any value, as long as it's at least 64 bytes. | `abcsf32a[...]` |
+| `REDIS_URL` | URL pointing to the Redis database used for synchronization. | `redis://127.0.0.1/0` |
+| `FRONTEND_URL` | The URL where the frontend application is hosted. This defaults to `ingress.host` if you're using the Helm chart. | `http://pgdog.internal` |
 
 !!! note "Helm chart"
-    If you're using the [Helm chart](#kubernetes), these are generated from settings in `values.yaml` and don't need to be configured manually.
+    If you're using the [Helm chart](#kubernetes), all variables except `DATABASE_URL` are generated from settings in `values.yaml` and don't need to be configured manually.
 
 #### Session key
 
-The control plane requires a 64 bytes randomly generated session key to encrypt user session cookies. You can generate one with just one line of Python:
+The control plane requires a 64 bytes randomly generated session key to encrypt user session cookies. If you're not using our Helm chart, you can generate one with just one line of Python:
 
 === "Command"
     ```bash
@@ -76,14 +76,14 @@ The control plane requires a 64 bytes randomly generated session key to encrypt 
 
 ### Authentication
 
-The control plane web UI suppors two authentication methods:
+The control plane web UI supports two authentication methods:
 
 1. Email and password
 2. OAuth2
 
 Password authentication works out of the box and requires no additional setup beyond creating users via the [CLI](cli.md).
 
-For OAuth2, you need to configure each provider, and depending on which provider you choose, different environment variables need to be set as well:
+For OAuth2, you need to configure each provider, and depending on which provider you choose, different environment variables need to be set:
 
 === "Google"
     | Environment variable | Description |
@@ -98,3 +98,10 @@ For OAuth2, you need to configure each provider, and depending on which provider
     | `GITHUB_CLIENT_ID` | GitHub OAuth2 client identifier. You can obtain one by creating an OAuth application in the [Developer Settings](https://github.com/settings/developers) in your GitHub account. |
     | `GITHUB_CLIENT_SECRET` | GitHub OAuth2 client secret. |
     | `GITHUB_REDIRECT_URL` | OAuth redirect URL. It should be set to the following: `${FRONTEND_URL}/github/oauth/callback`. |
+
+!!! note "OAuth2 redirect"
+     The redirect URL (e.g., `GOOGLE_REDIRECT_URL`) is set automatically by the Helm chart. You only need to set it if you're self-hosting using a different orchestration mechanism.
+
+#### Creating users
+
+You can create a user using the [CLI](cli.md) [`onboard`](cli.md#onboarding) command. It works for both password-based and OAuth2 authentication mechanisms.

@@ -153,8 +153,8 @@ Controls whether to disconnect clients upon encountering connection pool errors 
 
 Available options:
 
-- `recover` (default)
-- `drop`
+- `recover`
+- `drop` (default)
 
 
 ## Timeouts
@@ -198,7 +198,7 @@ Default: **disabled**
 
 Maximum amount of time to allow for PgDog to create a connection to Postgres.
 
-Default: **`300`** (5s)
+Default: **`5_000`** (5s)
 
 ### `connect_attempts`
 
@@ -217,7 +217,7 @@ Default: **`0`** (0ms)
 
 Maximum amount of time a client is allowed to wait for a connection from the pool.
 
-Default: **`300`** (5s)
+Default: **`5_000`** (5s)
 
 ### `idle_timeout`
 

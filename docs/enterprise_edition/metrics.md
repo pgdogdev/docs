@@ -29,5 +29,5 @@ The default value is **1 second**, which should be sufficient to debug most prod
 Once the metrics reach the control plane, they are pushed down to the web dashboard via a real-time connection. Per-minute aggregates are computed in the background and stored in a separate PostgreSQL database, which provides a historical view into overall database performance.
 
 <center>
-  <img src="/images/ee/metrics.png" width="100%" alt="How PgDog works" class="screenshot" />
+  <img src="/images/ee/metrics.png" width="100%" alt="PgDog Real-time Metrics" class="screenshot" />
 </center>

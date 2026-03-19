@@ -75,7 +75,7 @@ The following metrics are exported via the OpenMetrics endpoint:
 | `sv_active` | Servers currently serving client requests. | `gauge` |
 | `sv_idle` | Servers available for clients to use. | `gauge` |
 | `sv_idle_xact` | Servers currently idle in transaction. | `gauge` |
-| `maxwait` | How long clients have been waiting for a connection (in seconds). | `gauge` |
+| `maxwait` | How long the first (oldest) client in the queue has waited (in seconds). | `gauge` |
 | `errors` | Errors that connections in the pool have experienced. | `counter` |
 | `out_of_sync` | Connections that have been returned to the pool in a broken state. | `counter` |
 | `total_xact_count` | Total number of executed transactions. | `counter` |

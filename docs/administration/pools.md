@@ -26,8 +26,8 @@ The following information is returned for each connection pool (user/database pa
 | `sv_active` | Number of checked out (used) server connections in the pool. | `12` |
 | `sv_idle_xact` | Number of idle-in-transaction server connections in the pool. | `0` |
 | `sv_total` | Total number of server connections in the pool. | `20` |
-| `maxwait` | Maximum wait time for connections. | `30` |
-| `maxwait_us` | Maximum wait time for connections in microseconds. | `30000000` |
+| `maxwait` | How long the first (oldest) client in the queue has waited, in seconds. | `30` |
+| `maxwait_us` | Microsecond part of the `maxwait` value. | `30000000` |
 | `pool_mode` | Connection pooling mode. | `transaction` |
 | `paused` | The pool is paused and won't issue connections until resumed. | `f` |
 | `banned` | The pool is blocked from serving more clients. | `f` |

@@ -65,8 +65,7 @@ If you're using our [Helm chart](../installation.md#kubernetes), you just need t
 ```yaml
 image:
   repository: ghcr.io/pgdogdev/pgdog-enterprise
-  tag: 87a6bcae
-```
+  tag: v2026-03-19
 
 For deploying the [control plane](control_plane/index.md), you have two options:
 

@@ -17,11 +17,11 @@ The control plane has two dependencies:
 1. A PostgreSQL database used to store historical metrics, query statistics, users and other metadata
 2. A Redis database, used for synchronization and real-time metrics
 
-If you're using our [Helm chart](#kubernetes), both are provided automatically.
+If you're using our [Helm chart](#kubernetes), Redis is deployed automatically, while the PostgreSQL database has to be created manually.
 
 ### Kubernetes
 
-If you're running PgDog in Kubernetes using our [Helm chart](../../installation.md#kubernetes), you can deploy the control plane into the same cluster using our Enterprise Helm chart:
+If you're already running PgDog in Kubernetes using our [Helm chart](../../installation.md#kubernetes), you can deploy the control plane into the same cluster using our Enterprise Helm chart:
 
 ```
 helm repo add pgdogdev-ee https://helm-ee.pgdog.dev
@@ -49,6 +49,9 @@ env:
 
 ### Configuration
 
+!!! note "Helm chart"
+    If you're using the [Helm chart](#kubernetes), all variables except `DATABASE_URL` are generated from settings in `values.yaml` and don't need to be configured manually.
+
 The control plane is configured via environment variables. The following variables are required for it to work correctly:
 
 | Environment variable | Description | Example |
@@ -58,8 +61,7 @@ The control plane is configured via environment variables. The following variabl
 | `REDIS_URL` | URL pointing to the Redis database used for synchronization. | `redis://127.0.0.1/0` |
 | `FRONTEND_URL` | The URL where the frontend application is hosted. This defaults to `ingress.host` if you're using the Helm chart. | `http://pgdog.internal` |
 
-!!! note "Helm chart"
-    If you're using the [Helm chart](#kubernetes), all variables except `DATABASE_URL` are generated from settings in `values.yaml` and don't need to be configured manually.
+
 
 #### Session key
 

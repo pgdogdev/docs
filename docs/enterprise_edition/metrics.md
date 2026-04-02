@@ -40,68 +40,69 @@ Dashboard metrics are distinct from the [OpenMetrics endpoint](../features/metri
 
 | Metric | Description |
 |--------|-------------|
-| Clients | Total number of clients connected to PgDog. |
+| Clients | Total number of connected clients. |
 | Server Connections | Total server connections open across all pools. |
-| Connection Rate (cps) | New server connections established from PgDog to PostgreSQL per second. |
-| Waiting | Clients currently queued waiting for a server connection. |
-| Max Wait (ms) | Age of the oldest client currently waiting for a connection. Resets to zero when the queue drains. Useful for spotting individual outlier waits. |
-| Idle Connections | Server connections open and available for use. |
-| Idle in Transaction Connections | Server connections currently idle inside an open transaction. Historical chart data for this metric is not currently tracked and will show zero. |
-| Checked Out | Server connections currently serving an active client request. |
+| Connection Rate (cps) | Average number of connections established to servers per second. |
+| Waiting | Clients waiting for a connection from a pool. |
+| Max Wait (ms) | How long the first (oldest) client in the queue has waited, in milliseconds. |
+| Idle Connections | Servers available for clients to use. |
+| Idle in Transaction Connections | Servers currently idle in transaction. |
+| Checked Out | Servers currently serving client requests. |
 | Instances | Number of PgDog instances currently connected to the control plane. |
 
 ### Errors
 
 | Metric | Description |
 |--------|-------------|
-| Errors | Client-facing errors per second across all pools. |
-| Server Errors | Errors reported by upstream PostgreSQL servers per second. |
+| Errors | Errors that connections in the pool have experienced. |
+| Server Errors | Errors returned by server connections. |
 
 ### Query throughput
 
 | Metric | Description |
 |--------|-------------|
-| Queries | Queries executed through PgDog per second. |
-| Transactions | Transactions completed per second. |
-| Transaction Rate (tps) | Rolling average transactions per second. |
-| Query Rate (qps) | Rolling average queries per second. |
-| Blocked Queries | Queries blocked by lock contention per second. |
+| Queries | Total number of executed queries. |
+| Transactions | Total number of executed transactions. |
+| Transaction Rate (tps) | Average number of executed transactions per statistics period. |
+| Query Rate (qps) | Average number of executed queries per statistics period. |
+| Blocked Queries | Queries blocked by lock contention. |
 
 ### Timing and latency
 
 | Metric | Description |
 |--------|-------------|
-| Query Time (ms) | Total query execution time per second. Does not include connection wait. |
-| Transaction Time (ms) | Total transaction execution time per second. Includes idle-in-transaction time; does not include connection wait. |
-| Idle in Transaction Time (ms) | Time per second spent idle inside open transactions. Elevated values indicate clients holding transactions open without executing queries. |
-| Wait Time (ms) | Total time all clients spent waiting for a server connection per second. Unlike Max Wait, this stays elevated when many clients are waiting briefly. |
-| Query Response Time (ms) | Full client-observed query latency per second, including connection wait time. |
-| Transaction Response Time (ms) | Full client-observed transaction latency per second, including connection wait time. |
+| Query Time (ms) | Total time spent executing queries. |
+| Transaction Time (ms) | Total time spent executing transactions. |
+| Idle in Transaction Time (ms) | Total time spent idling inside transactions. |
+| Wait Time (ms) | Total time clients spent waiting for a server connection. |
+| Query Response Time (ms) | Total client-observed query latency, including connection wait time. |
+| Transaction Response Time (ms) | Total client-observed transaction latency, including connection wait time. |
 
 !!! note "Max Wait vs Wait Time"
-    **Max Wait** captures the worst single waiter at one instant — it drops to zero the moment that client is served.
-    **Wait Time** measures total queuing burden per second across all clients — it stays elevated when many clients are waiting briefly.
+    **Max Wait** captures the worst single waiter at one instant. It drops to zero the moment that client is served.
+
+    **Wait Time** measures total queuing burden across all clients. It stays elevated when many clients are waiting briefly.
     Use both together: high Max Wait with low Wait Time points to a single slow client; high Wait Time with low Max Wait indicates widespread shallow queuing.
 
 ### Network throughput
 
 | Metric | Description |
 |--------|-------------|
-| Bytes Received (MB) | Megabytes received from PostgreSQL servers per second. |
-| Bytes Sent (MB) | Megabytes sent to PostgreSQL servers per second. |
+| Bytes Received (MB) | Total number of bytes received. |
+| Bytes Sent (MB) | Total number of bytes sent. |
 
 ### Memory and caching
 
 | Metric | Description |
 |--------|-------------|
-| Prepared Statements | Number of prepared statements in the PgDog global cache. |
-| Prepared Statements Memory (MB) | Memory consumed by the prepared statements cache. |
-| Query Cache Size | Number of parsed queries stored in the query cache. |
-| Query Cache Hits | AST query cache hits per second. |
-| Query Cache Misses | AST query cache misses per second. |
+| Prepared Statements | Number of prepared statements in the cache. |
+| Prepared Statements Memory (MB) | Number of bytes used for the prepared statements cache. |
+| Query Cache Size | Number of queries in the cache. |
+| Query Cache Hits | Queries already present in the query cache. |
+| Query Cache Misses | New queries added to the query cache. |
 | Query Cache Hit Rate (%) | Percentage of queries served from the query cache. |
-| Direct Shard Queries | Queries routed to a single shard per second. |
-| Cross-Shard Queries | Queries broadcast to multiple shards per second. |
+| Direct Shard Queries | Queries sent directly to a single shard. |
+| Cross-Shard Queries | Queries sent to multiple or all shards. |
 | Direct Shard Hit Rate (%) | Percentage of queries that avoided a cross-shard fanout. |
 
 ### Query stats

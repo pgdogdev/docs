@@ -407,7 +407,7 @@ Default: **`true`** (enabled)
 
 Limit on the number of statements saved in the statement cache used to accelerate query parsing. The saved statements are visible by running the `SHOW QUERY_CACHE` in the [admin database](../../administration/index.md).
 
-Default: **`50_000`**
+Default: **`1_000`**
 
 ### `query_parser_enabled`
 

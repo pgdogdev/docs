@@ -4,7 +4,7 @@ icon: material/chart-bar
 
 # Query statistics
 
-PgDog Enterprise collects detailed per-query statistics, similar to PostgreSQL's `pg_stat_statements`, with extra information useful for debugging application performance.
+PgDog collects detailed per-query statistics, similar to PostgreSQL's `pg_stat_statements`, with extra information useful for debugging application performance. These are viewable and searchable in the [control plane UI](../control_plane/index.md) and in the [admin database](#admin-database).
 
 ## How it works
 

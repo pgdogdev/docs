@@ -4,7 +4,7 @@ icon: material/alert-circle
 
 # Errors
 
-PgDog Enterprise tracks query errors returned by PostgreSQL, providing a real-time view into recently encountered issues like syntax errors, missing columns, or lock timeouts.
+PgDog tracks query errors returned by PostgreSQL, providing a real-time view into recently encountered issues like syntax errors, missing columns, or lock timeouts.
 
 ## Admin database
 

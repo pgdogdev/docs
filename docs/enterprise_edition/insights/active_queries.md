@@ -4,7 +4,7 @@ icon: material/play-circle
 
 # Active queries
 
-PgDog Enterprise provides a real-time view into queries currently executing on its PostgreSQL connections. This is accessible in two places:
+PgDog provides a real-time view into queries currently executing on its PostgreSQL connections. This is accessible in two places:
 
 1. [`SHOW ACTIVE_QUERIES`](#admin-database) admin command
 2. [Activity](#web-ui) view in the dashboard
@@ -54,6 +54,6 @@ If you're running multiple instances of PgDog, active queries from all instances
 
 ### Parameters
 
-If your application is using prepared statements (or just placeholders in queries), the parameters for these queries are not shown and will not be sent to the control plane. 
+If your application is using prepared statements (or just placeholders in queries), the parameters for these queries are not shown and will not be sent to the control plane.
 
 If your application is using simple statements (parameters in query text), PgDog will normalize the queries, removing values and replacing them with parameter symbols (e.g., `$1`). This is to make sure no sensitive data leaves the database network.

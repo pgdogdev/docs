@@ -4,11 +4,11 @@ icon: material/lightbulb-on
 
 # Query insights
 
-PgDog Enterprise provides visibility into all queries that it serves, which allows it to analyze and report how those queries perform, in real-time.
+PgDog provides visibility into all queries that it serves, which allows it to analyze and report how those queries perform, in real-time.
 
 ## Telemetry
 
-PgDog Enterprise collects the following telemetry:
+PgDog collects and displays the following telemetry:
 
 | Telemetry | Frequency | Description |
 |-|-|-|

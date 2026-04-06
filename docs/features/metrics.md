@@ -106,3 +106,23 @@ The following metrics are exported via the OpenMetrics endpoint:
 | `query_cache_size` | Number of queries in the cache. | `gauge` |
 | `prepared_statements` | Number of prepared statements in the cache. | `gauge` |
 | `prepared_statements_memory_used` | Number of bytes used for the prepared statements cache. | `gauge` |
+| `prepared_statements_limit` | Maximum number of prepared statements that can be cached. | `gauge` |
+| `max_connections` | Maximum number of allowed server connections. | `gauge` |
+| `total_connect_count` | Total number of connections established to servers. | `counter` |
+| `avg_connect_count` | Average number of connections established to servers. | `gauge` |
+| `total_connect_time` | Total time spent connecting to servers. | `counter` |
+| `avg_connect_time` | Average time spent connecting to servers. | `gauge` |
+| `total_idle_xact_time` | Total time spent idling inside transactions. | `counter` |
+| `avg_idle_xact_time` | Average time spent idling inside transactions. | `gauge` |
+| `total_reads` | Total number of read transactions. | `counter` |
+| `avg_reads` | Average number of read transactions per statistics period. | `gauge` |
+| `total_writes` | Total number of write transactions. | `counter` |
+| `avg_writes` | Average number of write transactions per statistics period. | `gauge` |
+| `total_rollbacks` | Total number of abandoned transactions that had to be rolled back automatically. | `counter` |
+| `avg_rollbacks` | Average number of abandoned transactions that had to be rolled back automatically. | `gauge` |
+| `total_server_errors` | Total number of errors returned by server connections. | `counter` |
+| `avg_server_errors` | Average number of errors returned by server connections. | `gauge` |
+| `total_cleaned` | Total number of times server connections were cleaned from client parameters. | `counter` |
+| `avg_cleaned` | Average number of times server connections were cleaned from client parameters. | `gauge` |
+| `query_cache_limit` | Maximum number of queries that can be stored in the cache. | `gauge` |
+| `query_cache_parse_time` | Time spent parsing queries due to cache misses. | `counter` |

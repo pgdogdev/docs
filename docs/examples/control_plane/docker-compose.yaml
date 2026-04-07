@@ -24,7 +24,7 @@ services:
       - redis_data:/data
 
   migrate:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-03-19
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-04-06
     environment:
       <<: *control-env
     command: control migrate
@@ -33,7 +33,7 @@ services:
         condition: service_healthy
 
   init:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-03-19
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-04-06
     environment:
       <<: *control-env
     command: control onboard --email demo@pgdog.dev --password demopass --token 644b527c-b9d6-4fb2-9861-703bad871ec0 --name Demo
@@ -42,7 +42,7 @@ services:
         condition: service_completed_successfully
 
   control:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-03-19
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-04-06
     ports:
       - "8099:8080"
     environment:
@@ -55,7 +55,7 @@ services:
         condition: service_started
 
   pgdog:
-    image: ghcr.io/pgdogdev/pgdog-enterprise:v2026-03-19
+    image: ghcr.io/pgdogdev/pgdog-enterprise:v2026-04-06
     command: ["pgdog", "--config", "/etc/pgdog/pgdog.toml", "--users", "/etc/secrets/pgdog/users.toml"]
     ports:
       - "6432:6432"
@@ -94,6 +94,9 @@ configs:
       password = "pgdog"
 
       [query_stats]
+      enabled = true
+
+      [qos]
       enabled = true
 
   pgdog_users:

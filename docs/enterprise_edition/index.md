@@ -37,7 +37,7 @@ The demo comes with the control plane, the web UI and PgDog configured as follow
 | Web UI | `http://localhost:8099` |
 | Username | `demo@pgdog.dev` |
 | Password | `demopass` |
-| PgDog | `0.0.0.0:6432` |
+| PgDog | `postgres://pgdog_control:pgdog_control@0.0.0.0:6432/pgdog_control` |
 
 For questions about the demo, PgDog Enterprise features, or pricing, [contact us](https://calendly.com/lev-pgdog/30min). PgDog can be deployed on-prem, in your cloud account, or entirely managed by us.
 
@@ -60,12 +60,12 @@ Both PgDog and the control plane are available as Docker images:
 | PgDog | `ghcr.io/pgdogdev/pgdog-enterprise` |
 | Control plane | `ghcr.io/pgdogdev/pgdog-enterprise/control` |
 
-If you're using our [Helm chart](../installation.md#kubernetes), you just need to change the `image.repository` and `image.tag` variables, for example:
+If you're using our [Helm chart](../installation.md#kubernetes), you just need to change the `image.repository` and `image.tag` variables:
 
 ```yaml
 image:
   repository: ghcr.io/pgdogdev/pgdog-enterprise
-  tag: v2026-03-19
+  tag: v2026-04-06
 ```
 
 For deploying the [control plane](control_plane/index.md), you have two options:

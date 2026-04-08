@@ -1,6 +1,7 @@
 ---
 icon: material/arrow-u-left-bottom
 ---
+
 # Schema migrations
 
 PgDog expects that all shards have, roughly, the same tables. A notable exception to this rule is partitioned tables,

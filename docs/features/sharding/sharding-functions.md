@@ -51,18 +51,27 @@ All queries referencing the `user_id` column will be automatically sent to the m
         Different integer types are treated the same by the query router. If you're using `BIGINT`, `INTEGER` or `SMALLINT` as your sharding key, you can specify `bigint` in the configuration:
 
     ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "user_id"
     data_type = "bigint"
     ```
 === "Text"
     !!! note "Text types"
         `VARCHAR`, `VARCHAR(n)`, and `TEXT` use the same encoding and are treated the same by the query router. For either one, you can specify `varchar` in the configuration:
     ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "serial_number"
     data_type = "varchar"
     ```
 === "UUID"
     !!! note "UUID types"
         Only UUIDv4 is currently supported for sharding in the query router.
     ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "unique_id"
     data_type = "uuid"
     ```
 

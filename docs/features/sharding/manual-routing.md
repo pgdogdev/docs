@@ -30,7 +30,7 @@ The PostgreSQL query language supports adding inline comments to queries. They a
     The following query will be sent to shard number zero:
 
     ```postgresql
-    /* pgdog_shard: 0 */ CREATE INDEX CONCURRENTLY users_id_idx USING btree(id);
+    /* pgdog_shard: 0 */ CREATE INDEX CONCURRENTLY users_id_idx ON users USING btree(id);
     ```
 === "Sharding key"
     This query will be sent to whichever shard maps to the key `"us-east-1"`:
@@ -70,7 +70,7 @@ The `SET` command comes from the PostgreSQL query language and is used to change
     ```postgresql
     BEGIN;
     SET LOCAL pgdog.shard TO 0;
-    CREATE INDEX users_id_idx USING btree(id);
+    CREATE INDEX users_id_idx ON users USING btree(id);
     COMMIT;
     ```
 === "Sharding key"

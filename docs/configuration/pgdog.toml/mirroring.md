@@ -41,3 +41,11 @@ Default: **none** (optional)
 The percentage of transactions to mirror, specified as a floating point number between 0.0 and 1.0. See [mirroring](../../features/mirroring.md) for more details. This overrides the [`mirror_exposure`](./general.md#mirror_exposure) setting.
 
 Default: **none** (optional)
+
+### `level`
+
+The type of statements to mirror. Available options are:
+
+- `ddl`
+- `dml`
+- `all` (default)

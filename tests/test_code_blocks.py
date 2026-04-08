@@ -30,6 +30,7 @@ def verify(binary):
             info = m.group("info").strip().lower()
             indent = m.group("indent")
             code = m.group("code")
+            original = code
             if indent:
                 # Dedent the code body so configcheck/pglast see clean text.
                 stripped_lines = []
@@ -56,7 +57,8 @@ def verify(binary):
                         if cmd in code:
                             found = True
                     if not found:
-                        print(code)
+                        print(f"Error in {file}:")
+                        print(original)
                         raise e
 
 def check_file(binary, kind, content):

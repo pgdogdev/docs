@@ -58,8 +58,8 @@ Both PgBouncer and PgDog can override the user's password used to connect to Pos
     name = "prod"
     host = "10.0.0.1"
     port = 5432
-    server_user = "postgres"
-    server_password = "hunter2"
+    user = "postgres"
+    password = "hunter2"
     pooler_mode = "transaction"
     ```
 

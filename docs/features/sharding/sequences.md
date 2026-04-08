@@ -27,14 +27,16 @@ Sharded sequences combine two Postgres primitives:
 The two are called inside a PL/pgSQL function that fetches numbers from a sequence until `satisfies_hash_partition` returns `true`, for the total number of shards in the cluster and the shard number it's being executed on:
 
 ```postgresql
-LOOP
-  SELECT nextval('normal_seq'::regclass) INTO val;
+DO $$
+BEGIN
+  LOOP
+    SELECT nextval('normal_seq'::regclass) INTO val;
 
-  IF satisfies_hash_partition(/* ... */, val) THEN
+    IF satisfies_hash_partition(/* ... */, val) THEN
       RETURN val;
-  END IF;
-
-END;
+    END IF;
+  END LOOP;
+END $$;
 ```
 
 Since fetching values from a sequence is very quick, we are able to find the correct number without introducing significant latency to row creation. The Postgres hash function is also good at producing uniform outputs, so all shards will have similar, small gaps between generated numbers.

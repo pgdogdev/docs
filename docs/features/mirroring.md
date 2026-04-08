@@ -61,7 +61,7 @@ If the mirror database(s) can't keep up with production traffic, queries will ba
     [[mirroring]]
     source_db = "source"
     destination_db = "dest"
-    queue_depth = 500
+    queue_length = 500
     ```
 
 If the queue gets full, all subsequent mirrored transactions will be dropped until there is space in the queue again.

@@ -14,7 +14,7 @@ Mirroring in PgDog is asynchronous and should have minimal impact on production 
   <img src="/images/mirroring.png" width="80%" height="auto" alt="Mirroring">
 </center>
 
-## Configuration
+### Configuration
 
 To use mirroring, first configure both the mirror and the production database in [`pgdog.toml`](../configuration/pgdog.toml/databases.md). Once both databases are running, add a `[[mirroring]]` section:
 
@@ -43,7 +43,7 @@ Each client connected to the main database has its own queue, so concurrency sca
 
 You can have as many mirror databases as you like. Queries will be sent to each one of them, in parallel. More mirrors will require more CPU and network resources, so make sure to allocate enough compute to PgDog in production.
 
-## Mirror queue
+### Mirror queue
 
 If the mirror database(s) can't keep up with production traffic, queries will back up in the queue. To make sure it doesn't overflow and cause out-of-memory errors, the size of the queue is limited:
 
@@ -69,7 +69,7 @@ If the queue gets full, all subsequent mirrored transactions will be dropped unt
 !!! note "Replication"
     Since mirror queues can drop queries, it is not a replacement for Postgres replication and should be used for testing & benchmarking purposes only.
 
-## Exposure
+### Exposure
 
 It's possible to limit how much traffic mirror databases receive. This is useful when warming up databases from a snapshot or if the mirror databases are smaller than production and can't handle as many transactions.
 
@@ -96,8 +96,51 @@ Acceptable values are between **0.0** (0%) and **1.0** (100%).
 
 This is changeable at runtime, without restarting PgDog. When adding a mirror, it's a good idea to start slow, e.g., with only 0.1% exposure (`mirror_exposure = 0.01`), and gradually increase it over time.
 
-## Realism
+### Realism
 
 We try to make mirrored traffic as realistic as possible. For each statement inside a transaction, we record the timing between that statement and the next one.
 
 When replaying traffic against a mirror, we pause between statements for the same amount of time. This helps reproduce lock contention experienced by production databases, on the mirrors.
+
+### Filtering
+
+It's possible to filter what kind of statements mirrors receive using configuration, for example:
+
+=== "pgdog.toml"
+    ```toml
+    [[mirroring]]
+    source_db = "source"
+    destination_db = "dest"
+    level = "ddl"
+    ```
+=== "Helm chart"
+    ```yaml
+    mirroring:
+      - sourceDb: source
+        destinationDb: dest
+        level: ddl
+    ```
+
+The `level` setting supports the following arguments:
+
+| Argument | Description |
+|-|-|
+| `ddl` | Mirror only DDL statements like `CREATE`, `DROP`, etc. |
+| `dml` | Mirror all statements except DDL, e.g. `INSERT`, `UPDATE`, etc. |
+| `all` | Mirror all statements. This is the default. |
+
+DDL-only mirroring is useful when maintaining long-running logical replicas, since the logical replication protocol doesn't support synchronizing schema changes.
+
+#### Query parser
+
+Filtering specific statements requires parsing queries. If your database setup doesn't have replicas or sharding, the query parser is typically disabled. Before using this feature, make sure to enable it in [`pgdog.toml`](../configuration/pgdog.toml/general.md#query_parser):
+
+=== "pgdog.toml"
+    ```toml
+    [general]
+    query_parser = "on"
+    ```
+=== "Helm chart"
+    ```yaml
+    queryParser: on
+    ```

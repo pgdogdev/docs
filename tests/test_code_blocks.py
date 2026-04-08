@@ -3,14 +3,17 @@
 import glob
 import re
 import subprocess
-from markdown_it import MarkdownIt
 import sys
 import pglast
 
-mdp = MarkdownIt()
-
+# Match fenced code blocks, including those nested inside mkdocs-material
+# `===` content tabs (which indent the fence by 4+ spaces). The leading
+# indentation is captured so it can be stripped from each code line, and the
+# closing fence must match both the indent and the opening fence marker.
 pattern = re.compile(
-    r'(?msi)^(?P<fence>[`~]{3,})[^\n]*\r?\n(?P<code>.*?)^(?P=fence)[ \t]*\r?$'
+    r'(?ms)^(?P<indent>[ \t]*)(?P<fence>`{3,}|~{3,})(?P<info>[^\n]*)\r?\n'
+    r'(?P<code>.*?)'
+    r'^(?P=indent)(?P=fence)[ \t]*\r?$'
 )
 
 replication = [
@@ -19,31 +22,42 @@ replication = [
 ]
 
 def verify(binary):
-    for file in glob.glob("docs/**/*.md",
-        recursive=True):
+    for file in glob.glob("docs/**/*.md", recursive=True):
         with open(file, "r") as f:
             content = f.read()
-            print(f"Checking {file}")
-            tokens = mdp.parse(content)
-            for token in tokens:
-                if token.type == "fence" and token.info == "toml":
-                    if "[[users]]" in token.content:
-                        check_file(binary, "users", token.content)
-                    elif "[lib]" in token.content:
-                        pass
+        print(f"Checking {file}")
+        for m in pattern.finditer(content):
+            info = m.group("info").strip().lower()
+            indent = m.group("indent")
+            code = m.group("code")
+            if indent:
+                # Dedent the code body so configcheck/pglast see clean text.
+                stripped_lines = []
+                for line in code.splitlines(keepends=True):
+                    if line.startswith(indent):
+                        stripped_lines.append(line[len(indent):])
                     else:
-                        check_file(binary, "pgdog", token.content)
-                elif token.type == "fence" and token.info == "postgresql":
-                    try:
-                        pglast.parser.parse_sql(token.content)
-                    except Exception as e:
-                        found = False
-                        for cmd in replication:
-                            if cmd in token.content:
-                                found = True
-                        if not found:
-                            print(token.content)
-                            raise e
+                        stripped_lines.append(line)
+                code = "".join(stripped_lines)
+
+            if info == "toml":
+                if "[[users]]" in code:
+                    check_file(binary, "users", code)
+                elif "[lib]" in code:
+                    pass
+                else:
+                    check_file(binary, "pgdog", code)
+            elif info == "postgresql":
+                try:
+                    pglast.parser.parse_sql(code)
+                except Exception as e:
+                    found = False
+                    for cmd in replication:
+                        if cmd in code:
+                            found = True
+                    if not found:
+                        print(code)
+                        raise e
 
 def check_file(binary, kind, content):
     tmp = f"/tmp/pgdog_config_test.toml"

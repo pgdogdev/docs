@@ -52,7 +52,7 @@ CREATE TABLE measurements (
 
 ### `pgdog.install_sharded_sequence`
 
-The `pgdog.install_sharded_sequence` function replaces the `DEFAULT` value for a table column with a call to [`pgdog.next_id_seq`](#pgdog.next_id_seq). It accepts the following arguments:
+The `pgdog.install_sharded_sequence` function replaces the `DEFAULT` value for a table column with a call to [`pgdog.next_id_seq`](#pgdognext_id_seq). It accepts the following arguments:
 
 | Argument | Data type | Description |
 |-|-|-|

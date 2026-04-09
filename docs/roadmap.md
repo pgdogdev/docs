@@ -99,7 +99,7 @@ Manage [table schema(s)](features/sharding/schema_management/index.md) and ensur
 
 | Feature | Status | Notes |
 |-|-|-|
-| [Primary keys](features/sharding/schema_management/primary_keys.md) | :material-calendar-check: | `BIGINT` and `UUID` partially supported for hash-based sharding only. [#386](https://github.com/pgdogdev/pgdog/issues/386). Other data types require cross-shard unique index support. |
+| [Primary keys](features/sharding/sequences.md) | :material-calendar-check: | `BIGINT` and `UUID` supported for hash-based sharding only. [#386](https://github.com/pgdogdev/pgdog/issues/386). Other data types require cross-shard unique index support. |
 | Unique indexes | :material-calendar-check: | Enforce uniqueness constraints across an unsharded column(s). [#439](https://github.com/pgdogdev/pgdog/issues/439). |
 | `CHECK` constraints | :material-close: | They are generally arbitrary SQL checks and need to be executed prior to row updates. |
 | Schema validator | :material-calendar-check: | Check that all shards have identical tables, indexes, etc. |

@@ -29,4 +29,4 @@ DDL statements to all shards concurrently, ensuring table and index definitions 
 Primary keys are typically generated automatically by Postgres. We provide pl/PgSQL functions
 to make this work in sharded databases as well.
 
-[**→ Primary keys**](primary_keys.md)
+[**→ Sharded sequences**](../sequences.md)

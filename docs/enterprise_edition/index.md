@@ -86,4 +86,3 @@ PgDog Enterprise is new and in active development. A lot of the features we want
 | QoS | Quality of service guarantees, incl. throttling on a per-user/database/query level. |
 | AWS RDS integration | Deploy PgDog on top of AWS RDS, without the hassle of Kubernetes or manual configuration. |
 | Automatic resharding | Detect hot shards and re-shard data without operator intervention. |
-| [Durable two-phase](cross-shard-writes.md) | Rollback / commit abandoned two-phase transactions. |

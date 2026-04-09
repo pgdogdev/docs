@@ -6,7 +6,7 @@ icon: material/chart-timeline
 For any [running query](active_queries.md) exceeding a configurable time threshold, PgDog will ask Postgres for a query plan. The query plans are stored in their own view, accessible via two methods:
 
 1. [`SHOW QUERY_PLANS`](#admin-database) admin command
-2. [Activity](active_queries.md#dashboard) view in the dashboard
+2. [Activity](active_queries.md#web-ui) view in the dashboard
 
 ## How it works
 
@@ -63,4 +63,4 @@ query_plan_max_age = 15_000
 
 ### Dashboard
 
-The query plans are automatically attached to running queries and sent to the Dashboard via a dedicated connection. They can be viewed in real-time in the [Activity](active_queries.md#dashboard) tab.
+The query plans are automatically attached to running queries and sent to the Dashboard via a dedicated connection. They can be viewed in real-time in the [Activity](active_queries.md#web-ui) tab.

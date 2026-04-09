@@ -83,7 +83,8 @@ plugins:
       redirect_maps:
         'features/healthchecks.md': 'features/load-balancer/healthchecks.md'
         'features/sharding/migrations.md': 'features/sharding/schema_management/migrations.md'
-        'features/sharding/primary-keys.md': 'features/sharding/schema_management/primary_keys.md'
+        'features/sharding/primary-keys.md': 'features/sharding/sequences.md'
+        'features/sharding/schema_management/primary_keys.md': 'features/sharding/sequences.md'
         'features/sharding/cross-shard/index.md': 'features/sharding/cross-shard-queries/index.md'
 
 extra:

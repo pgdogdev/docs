@@ -94,9 +94,9 @@ VALUES
 RETURNING *;
 ```
 
-However, if you prefer to use sequences instead, you can rely on [database-generated](../schema_management/primary_keys.md) primary keys.
+However, if you prefer to use sequences instead, you can rely on [database-generated](../sequences.md) primary keys.
 
-Statements that don't include the primary key in the `INSERT` tuple will be sent to one of the shards, using the same round robin algorithm used for [omnisharded](#omnisharded-tables) tables. The shard will then generate the primary key value using PgDog's [sharded sequences](../schema_management/primary_keys.md#pgdognext_id_seq).
+Statements that don't include the primary key in the `INSERT` tuple will be sent to one of the shards, using the same round robin algorithm used for [omnisharded](#omnisharded-tables) tables. The shard will then generate the primary key value using PgDog's [sharded sequences](../schema_management/functions.md#pgdognext_id_seq).
 
 For example, assuming the table `users` is sharded on the primary key `id`, omitting it from the `INSERT` statement will send it to only one of the shards:
 

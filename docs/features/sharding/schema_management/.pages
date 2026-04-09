@@ -4,4 +4,3 @@ nav:
   - 'index.md'
   - 'cache.md'
   - 'migrations.md'
-  - 'primary_keys.md'

@@ -27,6 +27,7 @@ Some drivers have known compatibility or performance issues, [documented below](
 | `lib/pq` (Go) |  :material-check-circle-outline: | Needs [additional configuration](#libpq) for prepared statements to work correctly. |
 | `sqlx` (Go) | :material-check-circle-outline:  | Uses `pgx` under the hood, no limitations. |
 | `libpq` (C/C++) | :material-check-circle-outline: | None. |
+| JDBC (Java) | :material-check-circle-outline: | [Manual routing](features/load-balancer/manual-routing.md) requires a bit of [tweaking](#jdbc). |
 
 ## Known issues
 

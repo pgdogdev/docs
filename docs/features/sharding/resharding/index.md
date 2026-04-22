@@ -24,7 +24,7 @@ The resharding process is composed of four independent operations. The first one
 |-|-|
 | [Create new cluster](databases.md) | Create a new set of empty databases that will be used for storing data in the new, sharded cluster. |
 | [Schema synchronization](schema.md) | Replicate table and index definitions to the new shards, making sure the new cluster has the same schema as the old one. |
-| [Move & reshard data](hash.md) | Copy data using logical replication, while redistributing rows in-flight between new shards. |
+| [Move & reshard data](move.md) | Copy data using logical replication, while redistributing rows in-flight between new shards. |
 | [Cutover traffic](cutover.md) | Make the new cluster service both reads and writes from the application, without taking downtime. |
 
 While each step can be executed separately by the operator, PgDog provides an [admin database](../../../administration/index.md) command to perform online resharding and traffic cutover steps in a completely automated fashion:
@@ -50,5 +50,5 @@ The `<source>` and `<destination>` parameters accept the name of the source and 
 
 {{ next_steps_links([
     ("Schema sync", "schema.md", "Synchronize table, index and other schema entities between the source and destination databases."),
-    ("Move data", "hash.md", "Redistribute data between shards using the configured sharding function. This happens without downtime and keeps the shards up-to-date with the source database until traffic cutover."),
+    ("Move data", "move.md", "Redistribute data between shards using the configured sharding function. This happens without downtime and keeps the shards up-to-date with the source database until traffic cutover."),
 ]) }}

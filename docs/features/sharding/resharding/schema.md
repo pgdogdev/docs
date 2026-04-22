@@ -12,7 +12,7 @@ The schema synchronization process is composed of 4 distinct steps, all of which
 | Phase | Description |
 |-|-|
 | [Pre-data](#pre-data-phase) | Create identical tables on all shards along with the primary key constraint and index (when present). Secondary indexes are _not_ created yet. |
-| [Post-data](#post-data-phase) | Create secondary indexes on all tables and shards. This is done after [moving data](hash.md), as a separate step, because it's considerably faster to create indexes on whole tables than while inserting individual rows. |
+| [Post-data](#post-data-phase) | Create secondary indexes on all tables and shards. This is done after [moving data](move.md), as a separate step, because it's considerably faster to create indexes on whole tables than while inserting individual rows. |
 | [Cutover](#cutover) | This step is executed during traffic cutover, while application queries are blocked from executing on the database. |
 | Post-cutover | This step makes sure the rollback database cluster can handle reverse logical replication. |
 
@@ -110,7 +110,7 @@ This will make sure all tables and schemas in your database are copied and resha
 
 ## Post-data phase
 
-The post-data phase is performed after the [data copy](hash.md) is complete and tables have been synchronized with logical replication. Its job is to create all secondary indexes (e.g., `CREATE INDEX`).
+The post-data phase is performed after the [data copy](move.md) is complete and tables have been synchronized with logical replication. Its job is to create all secondary indexes (e.g., `CREATE INDEX`).
 
 This step is performed after copying data because it makes the copy process considerably faster: Postgres doesn't need to update several indexes while writing rows into the tables.
 
@@ -189,5 +189,5 @@ pg_dump_path = "/path/to/pg_dump"
 ## Next steps
 
 {{ next_steps_links([
-    ("Move data", "hash.md", "Redistribute data between shards using the configured sharding function. This happens without downtime and keeps the shards up-to-date with the source database until traffic cutover."),
+    ("Move data", "move.md", "Redistribute data between shards using the configured sharding function. This happens without downtime and keeps the shards up-to-date with the source database until traffic cutover."),
 ]) }}

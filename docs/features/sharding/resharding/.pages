@@ -3,5 +3,5 @@ nav:
   - 'databases.md'
   - 'schema.md'
   - 'replica-identity.md'
-  - 'hash.md'
+  - 'move.md'
   - 'cutover.md'

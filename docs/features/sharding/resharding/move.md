@@ -219,14 +219,14 @@ The replication delay between the two database clusters is measured in bytes. Wh
 
 ### Shard failure during copy
 
-If a shard goes down mid-copy, PgDog retries that table with exponential backoff - up to **5 attempts**, starting at **1 second** and doubling each time.
+If a shard goes down mid-copy, PgDog retries that table with exponential backoff. By default: up to **5 attempts**, starting at **1 second** and doubling each time.
 
-The two cases behave differently:
+| Situation | Behavior |
+|-|-|
+| Destination shard down | New connection opened on the next attempt. |
+| Source shard down | `TEMPORARY` replication slot re-created from scratch. It's cleaned up automatically when the connection closes before starting new attempt. |
 
-- **Destination shard down** — PgDog opens a fresh connection on the next attempt.
-- **Source shard down** — the `TEMPORARY` slot for that table is re-created from scratch. No cleanup needed; `TEMPORARY` slots vanish when the connection closes (unlike the [permanent slot](#replication-slot) created at the start of the overall copy).
-
-To change the defaults:
+To change the defaults, configure [`resharding_copy_retry_max_attempts`](../../../configuration/pgdog.toml/general.md#resharding_copy_retry_max_attempts) and [`resharding_copy_retry_min_delay`](../../../configuration/pgdog.toml/general.md#resharding_copy_retry_min_delay) in `pgdog.toml`:
 
 ```toml
 [general]
@@ -234,11 +234,10 @@ resharding_copy_retry_max_attempts = 5    # per-table retry attempts
 resharding_copy_retry_min_delay = 1000   # base backoff in ms; doubles each attempt, max 32×
 ```
 
-### Rows remaining in destination after failure
+### Primary key violations when retrying after copy failure
 
-Most drops are clean: table copies run inside an implicit transaction, so Postgres rolls back on disconnect and the destination is left empty.
+In rare cases, if the connection drops after `COPY` commits but before PgDog records the table as done, some rows may remain in the destination. The next retry will hit primary key violations.
 
-The awkward case: the connection drops *after* `COPY` commits on some or all shards but before PgDog records it as done. The rows survive, and the next attempt hits primary key violations immediately.
 
 PgDog catches this and tells you exactly what to run:
 
@@ -247,7 +246,7 @@ data sync for "public"."orders" failed with rows remaining in destination;
 truncate manually before retrying: TRUNCATE "public"."orders_new";
 ```
 
-Run the `TRUNCATE` on the destination (the table name is literal — copy it verbatim), then re-run `COPY_DATA`.
+Run the `TRUNCATE` on the destination (you can copy the command above, but make sure to run it strictly on the destination), then re-run `COPY_DATA`.
 
 ### Binary format mismatch
 
@@ -260,9 +259,9 @@ resharding_copy_format = "text"
 
 See [Integer primary keys](#integer-primary-keys) for the other common reason to use text format.
 
-### Replication slot not dropped after abort
+### Replication slot not cleaned up after stop or crash
 
-Aborting `COPY_DATA` without restarting it leaves the **permanent** replication slot sitting on the source. Postgres won't recycle WAL until it's gone. Drop it manually:
+If `COPY_DATA` is stopped via `STOP_TASK` or PgDog exits unexpectedly, the **permanent** replication slot will remain on the source. Postgres will not recycle WAL until it is dropped. Clean it up manually:
 
 ```postgresql
 SELECT pg_drop_replication_slot('slot_name');

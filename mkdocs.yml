@@ -41,9 +41,18 @@ theme:
     code: JetBrains Mono
 
   palette:
-    scheme: slate
-    primary: custom
-    accent: custom
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
 
 docs_dir: docs
 

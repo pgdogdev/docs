@@ -3,10 +3,11 @@ icon: material/chart-line
 ---
 # Metrics
 
-PgDog exposes real-time metrics and statistics about clients, servers, connection pools, and more. They are available via two media:
+PgDog exposes real-time metrics and statistics about clients, servers, connection pools, and more. They are available via three media:
 
 1. The [admin database](../administration/index.md)
 2. OpenMetrics (e.g., Prometheus) endpoint
+3. OTEL exporter
 
 ## Admin database
 
@@ -63,6 +64,44 @@ openmetrics_namespace = "pgdog_"
 !!! note "Prefix format"
     Some OpenMetrics implementations don't support special characters in the metric name (e.g., periods, commas, etc.). In that case,
     you can use an underscore (`_`) instead.
+
+## OTEL
+
+OTEL is a standard for publishing metrics to compatible systems, like Grafana, Prometheus and other providers like Datadog. PgDog can export metrics to a configured endpoint on an interval, making metrics collection work out of the box.
+
+### Configuration
+
+OTEL export is disabled by default. To enable it, configure the collector endpoint and the necessary credentials. If you're using Datadog, you can set the API key as a separate setting:
+
+=== "pgdog.toml"
+    ```toml
+    [otel]
+    datadog_api_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    endpoint = "https://otlp.us5.datadoghq.com/v1/metrics"
+    ```
+=== "Helm chart"
+    ```yaml
+    otel:
+      datadogApiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      endpoint: "https://otlp.us5.datadoghq.com/v1/metrics"
+    ```
+
+#### Namespace
+
+All metrics by default will be pushed to the `pgdog` namespace. For example, `sv_active` will be reported as `pgdog.sv_active`. The namespace is configurable, for example:
+
+=== "pgdog.toml"
+    ```toml
+    [otel]
+    endpoint = "https://otlp.us5.datadoghq.com/v1/metrics"
+    namespace = "namespace"
+    ```
+=== "Helm chart"
+    ```yaml
+    otel:
+      endpoint: "https://otlp.us5.datadoghq.com/v1/metrics"
+      namespace: "namespace"
+    ```
 
 ## Available metrics
 

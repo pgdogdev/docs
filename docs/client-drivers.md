@@ -17,14 +17,14 @@ Some drivers have known compatibility or performance issues, [documented below](
 | `asyncpg` (Python) | :material-check-circle-outline: | None. |
 | `ruby-pg` (Ruby) | :material-check-circle-outline: | None. |
 | `node-postgres` (Node) | :material-check-circle-outline: | None. |
-| Postgres.js (Node) | :material-check-circle-outline: | Needs [additional configuration](#postgresjs) for prepared statements to work correctly. |
+| Postgres.js (Node) | :material-check-circle-outline: | None. |
 | Prisma (Node) | :material-check-circle-outline: | Generates a lot of unique prepared statements, consider limiting the [prepared statements cache](#prisma). |
 | Sequelize (Node) | :material-check-circle-outline:  | Uses `node-postgres` under the hood, no limitations. |
 | PDO (PHP) |  :material-check-circle-outline: | None. |
 | SQLx (Rust) |  :material-check-circle-outline: | None. |
 | `tokio_postgres` (Rust) |  :material-check-circle-outline: | None. |
 | `pgx` (Go) |  :material-check-circle-outline: | None. |
-| `lib/pq` (Go) |  :material-check-circle-outline: | Needs [additional configuration](#libpq) for prepared statements to work correctly. |
+| `lib/pq` (Go) |  :material-check-circle-outline: | None. |
 | `sqlx` (Go) | :material-check-circle-outline:  | Uses `pgx` under the hood, no limitations. |
 | `libpq` (C/C++) | :material-check-circle-outline: | None. |
 | JDBC (Java) | :material-check-circle-outline: | [Manual routing](features/load-balancer/manual-routing.md) requires a bit of [tweaking](#jdbc). |
@@ -57,15 +57,6 @@ query_parser_engine = "pg_query_raw"
 
 We benchmarked this to be 5 times faster than normal `pg_query` parsing, which should help.
 
-### Postgres.js
-
-`postgres` Node driver uses a combination of named and unnamed prepared statements. For [load balancing](features/load-balancer/index.md) or [sharding](features/sharding/index.md) to work correctly, PgDog needs to cache all prepared statements, including unnamed ones (we call them "anonymous"). This is not the default behavior and requires the following setting:
-
-```toml
-[general]
-prepared_statements = "extended_anonymous"
-```
-
 ### Prisma
 
 Prisma doesn't correctly use the `IN` clause with arrays, causing it to generate a very large number of unique prepared statements. This is not a big problem, but if left unchecked, can cause heavy memory usage in PgDog. Consider setting a lower prepared statements [cache limit](features/prepared-statements.md#cache-limit):
@@ -73,13 +64,4 @@ Prisma doesn't correctly use the `IN` clause with arrays, causing it to generate
 ```toml
 [general]
 prepared_statements_limit = 1_000
-```
-
-### lib/pq
-
-`lib/pq` (Go) uses unnamed prepared statements which PgDog has to cache for [load balancing](features/load-balancer/index.md) or [sharding](features/sharding/index.md) to work correctly. This is not the default behavior and requires the following setting:
-
-```toml
-[general]
-prepared_statements = "extended_anonymous"
 ```

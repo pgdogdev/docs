@@ -71,7 +71,9 @@ OTEL is a standard for publishing metrics to compatible systems, like Grafana, P
 
 ### Configuration
 
-OTEL export is disabled by default. To enable it, configure the collector endpoint and the necessary credentials. If you're using Datadog, you can set the API key as a separate setting:
+OTEL export is disabled by default. To enable it, configure the collector endpoint and the necessary credentials. If you're using Datadog, you can set the API key as a separate setting.
+
+See [`[otel]` configuration](../configuration/pgdog.toml/otel.md) for the full list of settings, including custom headers, push interval, and supported `OTEL_*` environment variables.
 
 === "pgdog.toml"
     ```toml

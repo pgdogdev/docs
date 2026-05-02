@@ -175,6 +175,18 @@ that servers don't stay blocked forever due to healthcheck false positives.
 
 Default: **`300_000`** (5 minutes)
 
+### `ban_replica_lag`
+
+Ban a replica from serving read queries if its replication lag (in milliseconds) exceeds this threshold. See [replication failover](../../features/load-balancer/replication-failover.md).
+
+Default: **disabled** (no time-based lag ban)
+
+### `ban_replica_lag_bytes`
+
+Ban a replica from serving read queries if its replication lag (in bytes) exceeds this threshold.
+
+Default: **disabled** (no byte-based lag ban)
+
 ### `shutdown_timeout`
 
 How long to wait for active clients to finish transactions when shutting down. This ensures that PgDog redeployments disrupt as few
@@ -391,6 +403,18 @@ Enable the query parser in single-shard deployments and record its decisions. Ca
 
 Default: **`false`** (disabled)
 
+### `cross_shard_disabled`
+
+Disable cross-shard queries globally. When enabled, queries touching more than one shard are rejected.
+
+Default: **`false`** (cross-shard queries allowed)
+
+### `expanded_explain`
+
+When enabled, PgDog appends its own routing annotations to `EXPLAIN` output, showing how the query was routed (e.g., which sharding key matched, which parameter supplied the value, or whether the query was broadcast to all shards).
+
+Default: **`false`** (disabled)
+
 ### `two_phase_commit`
 
 Enable [two-phase commit](../../features/sharding/2pc.md) for write, cross-shard transactions.
@@ -402,6 +426,33 @@ Default: **`false`** (disabled)
 Enable automatic conversion of single-statement write transactions to use [two-phase commit](../../features/sharding/2pc.md).
 
 Default: **`true`** (enabled)
+
+### `two_phase_commit_wal_dir`
+
+Directory where the [two-phase commit](../../features/sharding/2pc.md) write-ahead log is stored.
+
+!!! note "Requires restart"
+    This setting cannot be changed at runtime.
+
+Default: **`./pgdog_wal`**
+
+### `two_phase_commit_wal_segment_size`
+
+Maximum size, in bytes, of a single 2pc WAL segment file before it is rotated.
+
+Default: **`16_777_216`** (16 MiB)
+
+### `two_phase_commit_wal_fsync_interval`
+
+How long, in milliseconds, the 2pc WAL writer waits to coalesce concurrent appends into a single fsync. Setting this to `0` disables waiting for additional appends; records already queued in the channel when the writer wakes are still batched into one fsync. Higher values trade per-transaction commit latency for fewer fsyncs under load.
+
+Default: **`2`** (2ms)
+
+### `two_phase_commit_wal_checkpoint_interval`
+
+How often, in seconds, to write a checkpoint record to the 2pc WAL and garbage-collect old segments.
+
+Default: **`60`** (60s)
 
 ### `query_cache_limit`
 
@@ -427,6 +478,23 @@ Available options:
 - `auto` (automatically enabled or disabled, depending on database configuration)
 
 Default: **`auto`**
+
+### `query_parser_engine`
+
+Underlying parser implementation used to analyze SQL queries.
+
+Available options:
+
+- `pg_query_protobuf` (default): the standard [`pg_query`](https://github.com/pganalyze/pg_query) parser
+- `pg_query_raw` (experimental): native Rust bindings to PostgreSQL's parser, skipping the protobuf serialization layer. Requires a larger thread stack. PgDog will automatically raise [`memory.stack_size`](memory.md) to at least 32 MiB per Tokio worker when this engine is selected.
+
+Default: **`pg_query_protobuf`**
+
+### `regex_parser_limit`
+
+Maximum size, in bytes, of a query that the regex pre-parser will inspect before deferring to the full parser. Larger queries skip the regex fast path.
+
+Default: **`1_000`**
 
 ### `system_catalogs`
 
@@ -456,6 +524,24 @@ Available options:
 - `text`
 
 `text` format is required when migrating from `INTEGER` to `BIGINT` primary keys during resharding.
+
+### `resharding_parallel_copies`
+
+How many parallel `COPY` workers to launch during [resharding](../../features/sharding/resharding/index.md), irrespective of the number of available replicas.
+
+Default: **`1`**
+
+### `resharding_copy_retry_max_attempts`
+
+Maximum number of retries for a failed table copy during resharding (per-table). Retries use exponential backoff starting at [`resharding_copy_retry_min_delay`](#resharding_copy_retry_min_delay), doubling each attempt and capped at 32×.
+
+Default: **`5`**
+
+### `resharding_copy_retry_min_delay`
+
+Base delay, in milliseconds, between table copy retries during resharding. Each successive attempt doubles the delay, capped at 32×.
+
+Default: **`1_000`** (1s)
 
 ### `reload_schema_on_ddl`
 
@@ -522,6 +608,23 @@ Default: **`abort`**
 
 ## Logging
 
+### `log_format`
+
+Format to use for PgDog application logs.
+
+Available options:
+
+- `text` (default): human-readable text logs
+- `json`: structured JSON logs suitable for ECS/Datadog ingestion
+
+Default: **`text`**
+
+### `log_level`
+
+Log filter directives using the same syntax as the `RUST_LOG` environment variable (e.g. `info`, `debug`, `pgdog=debug,hyper=warn`).
+
+Default: **`info`**
+
 ### `log_connections`
 
 If enabled, log every time a user creates a new connection to PgDog.
@@ -533,6 +636,18 @@ Default: **`true`** (enabled)
 If enabled, log every time a user disconnects from PgDog.
 
 Default: **`true`** (enabled)
+
+### `log_dedup_window`
+
+Window, in milliseconds, over which to deduplicate identical log messages. Identical messages (same level, target, and body) that exceed [`log_dedup_threshold`](#log_dedup_threshold) within this window are suppressed and replaced with a single summary line at the end of the window. Set to `0` to disable throttling.
+
+Default: **`0`** (disabled)
+
+### `log_dedup_threshold`
+
+Number of identical log messages allowed within [`log_dedup_window`](#log_dedup_window) before further duplicates are suppressed. Set to `0` to disable throttling.
+
+Default: **`0`** (disabled)
 
 ## Statistics
 
@@ -569,3 +684,22 @@ Default: **`5_000`** (5s)
 Maximum amount of time allowed for the [replication delay](../../features/load-balancer/replication-failover.md) query to return a result.
 
 Default: **`5_000`** (5s)
+
+## Unique IDs
+
+### `unique_id_function`
+
+Function used by PgDog to generate unique IDs.
+
+Available options:
+
+- `standard` (default): 64-bit function using the entire 64-bit range
+- `compact`: 53-bit function whose output fits in a JavaScript-safe integer
+
+Default: **`standard`**
+
+### `unique_id_min`
+
+Minimum value returned by the unique ID generator. Useful for reserving a range of low IDs for fixtures or system rows.
+
+Default: **`0`**

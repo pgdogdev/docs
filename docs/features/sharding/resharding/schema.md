@@ -11,7 +11,7 @@ The schema synchronization process is composed of 4 distinct steps, all of which
 
 | Phase | Description |
 |-|-|
-| [Pre-data](#pre-data-phase) | Create identical tables on all shards along with the primary key constraint (and index). Secondary indexes are _not_ created yet. |
+| [Pre-data](#pre-data-phase) | Create identical tables on all shards along with the primary key constraint and index (when present). Secondary indexes are _not_ created yet. |
 | [Post-data](#post-data-phase) | Create secondary indexes on all tables and shards. This is done after [moving data](hash.md), as a separate step, because it's considerably faster to create indexes on whole tables than while inserting individual rows. |
 | [Cutover](#cutover) | This step is executed during traffic cutover, while application queries are blocked from executing on the database. |
 | Post-cutover | This step makes sure the rollback database cluster can handle reverse logical replication. |
@@ -75,12 +75,12 @@ The pre-data phase takes care of replicating the following Postgres schema entit
 2. Table definitions, with identical columns and data types (e.g., `CREATE TABLE`)
 3. Custom types and domains (e.g., `CREATE TYPE`, `CREATE DOMAIN`)
 4. Extensions (e.g., `CREATE EXTENSION pgvector`)
-5. Primary key constraints and corresponding unique indexes (e.g., `PRIMARY KEY (id)`)
+5. Primary key constraints and corresponding unique indexes, when present (e.g., `PRIMARY KEY (id)`)
 6. Table publications (e.g., `CREATE PUBLICATION`)
 
-!!! note "Primary key requirement"
-    PgDog requires that _all_ tables that are being resharded contain a **primary key** constraint. This is important for logical replication
-    and guarantees that `UPDATE` and `DELETE` statements are replicated correctly between the source database and the new shards.
+!!! note "Replica identity requirement"
+    PgDog requires that tables being resharded have one of the supported [replica identity](replica-identity.md) modes enabled. This is important for logical replication
+    and guarantees that `UPDATE` and `DELETE` statements are replicated correctly between the source database and the new shards. A primary key (`DEFAULT` mode) is the most efficient choice, but `INDEX` and `FULL` modes are also supported. See [Replica identity](replica-identity.md) for requirements and limitations.
 
 Since the pre-data phase creates only empty tables, it can be executed very quickly even for databases with a larger number of tables, extensions and custom data types.
 

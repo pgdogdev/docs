@@ -86,6 +86,12 @@ Reject clients that connect without TLS. Consider setting this to `true` when us
 
 Default: **`false`** (disabled)
 
+### `tls_client_ca_certificate`
+
+Path to a certificate bundle used for mTLS client certificate validation on TLS connection creation. If provided, clients without a valid certificate are rejected at the handshake. Set [`tls_client_required`](#tls_client_required) to additionally require TLS itself.
+
+Default: **none**
+
 ### `tls_verify`
 
 How to handle TLS connections to Postgres servers. By default, PgDog will attempt to establish TLS and will accept _any_ server certificate.

@@ -225,7 +225,7 @@ Settings that control how client and server connections use TLS.
 | [`client_tls_sslmode`](https://www.pgbouncer.org/config.html#client_tls_sslmode) | [`tls_client_required`](../configuration/pgdog.toml/general.md#tls_client_required) | Boolean setting in PgDog only. `true` forces clients to use TLS, `false` doesn't. |
 | [`client_tls_key_file`](https://www.pgbouncer.org/config.html#client_tls_key_file) | [`tls_private_key`](../configuration/pgdog.toml/general.md#tls_private_key) | - |
 | [`client_tls_cert_file`](https://www.pgbouncer.org/config.html#client_tls_cert_file) | [`tls_certificate`](../configuration/pgdog.toml/general.md#tls_certificate) | - |
-| [`client_tls_ca_file`](https://www.pgbouncer.org/config.html#client_tls_ca_file) | N/A | mTLS is not currently supported in PgDog. |
+| [`client_tls_ca_file`](https://www.pgbouncer.org/config.html#client_tls_ca_file) | [`tls_client_ca_certificate`](../configuration/pgdog.toml/general.md#tls_client_ca_certificate) | Enables mTLS for client connections. |
 | [`client_tls_protocols`](https://www.pgbouncer.org/config.html#client_tls_protocols) | N/A | Only modern and secure protocols are supported. |
 | [`client_tls_ciphers`](https://www.pgbouncer.org/config.html#client_tls_ciphers) | N/A | Same as above. |
 | [`client_tls13_ciphers`](https://www.pgbouncer.org/config.html#client_tls13_ciphers) | N/A | Same as above. |

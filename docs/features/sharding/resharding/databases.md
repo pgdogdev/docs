@@ -8,7 +8,7 @@ PgDog's strategy for resharding Postgres databases is to create a new, independe
 
 ## Requirements
 
-New databases should be **empty**: don't migrate your [table definitions](schema.md) or [data](hash.md). These will be taken care of automatically by PgDog.
+New databases should be **empty**: don't migrate your [table definitions](schema.md) or [data](move.md). These will be taken care of automatically by PgDog.
 
 ### Database users
 

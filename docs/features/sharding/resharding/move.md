@@ -121,9 +121,9 @@ PgDog will distribute the table copy load evenly between all replicas in the con
     To prevent the resharding process from impacting production queries, you can create a separate set of replicas just for resharding.
 
     Managed clouds (e.g., AWS RDS) make this especially easy, but require a warm-up period to fetch all the data from the backup snapshot, before they can read data at full speed of their storage volumes.
-    
+
     To make sure dedicated replicas are not used for read queries in production, you can configure PgDog to use them for resharding only:
-    
+
     ```toml
     [[databases]]
     name = "prod"
@@ -215,6 +215,59 @@ FROM pg_replication_slots;
 ```
 The replication delay between the two database clusters is measured in bytes. When that number reaches zero, the two databases are byte-for-byte identical, and traffic can be [cut over](cutover.md) to the destination database.
 
+## Troubleshooting
+
+### Shard failure during copy
+
+If a shard goes down mid-copy, PgDog retries that table with exponential backoff. By default: up to **5 attempts**, starting at **1 second** and doubling each time.
+
+| Situation | Behavior |
+|-|-|
+| Destination shard down | New connection opened on the next attempt. |
+| Source shard down | `TEMPORARY` replication slot re-created from scratch. It's cleaned up automatically when the connection closes before starting new attempt. |
+
+To change the defaults, configure [`resharding_copy_retry_max_attempts`](../../../configuration/pgdog.toml/general.md#resharding_copy_retry_max_attempts) and [`resharding_copy_retry_min_delay`](../../../configuration/pgdog.toml/general.md#resharding_copy_retry_min_delay) in `pgdog.toml`:
+
+```toml
+[general]
+resharding_copy_retry_max_attempts = 5    # per-table retry attempts
+resharding_copy_retry_min_delay = 1000   # base backoff in ms; doubles each attempt, max 32×
+```
+
+### Primary key violations when retrying after copy failure
+
+In rare cases, if the connection drops after `COPY` commits but before PgDog records the table as done, some rows may remain in the destination. The next retry will hit primary key violations.
+
+
+PgDog catches this and tells you exactly what to run:
+
+```
+data sync for "public"."orders" failed with rows remaining in destination;
+truncate manually before retrying: TRUNCATE "public"."orders_new";
+```
+
+Run the `TRUNCATE` on the destination (you can copy the command above, but make sure to run it strictly on the destination), then re-run `COPY_DATA`.
+
+### Binary format mismatch
+
+Different major Postgres versions can produce incompatible binary `COPY` data. PgDog surfaces this as a `BinaryFormatMismatch` error. Switch to text:
+
+```toml
+[general]
+resharding_copy_format = "text"
+```
+
+See [Integer primary keys](#integer-primary-keys) for the other common reason to use text format.
+
+### Replication slot not cleaned up after stop or crash
+
+If `COPY_DATA` is stopped via `STOP_TASK` or PgDog exits unexpectedly, the **permanent** replication slot will remain on the source. Postgres will not recycle WAL until it is dropped. Clean it up manually:
+
+```postgresql
+SELECT pg_drop_replication_slot('slot_name');
+```
+
+The slot name appears in the `COPY_DATA` startup log and in `SHOW REPLICATION_SLOTS`.
 ## Next steps
 
 {{ next_steps_links([

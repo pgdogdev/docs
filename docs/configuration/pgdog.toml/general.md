@@ -267,6 +267,12 @@ Maximum amount of time a server connection is allowed to exist. Any connections 
 
 Default: **`86400000`** (24h)
 
+### `server_lifetime_jitter`
+
+Maximum random adjustment applied to `server_lifetime` per backend connection. Each connection's effective lifetime is sampled uniformly from `[server_lifetime - jitter, server_lifetime + jitter]` once at creation, breaking up synchronized retirement of connection cohorts that opened together (e.g. during a traffic ramp).
+
+Default: **`0`** (no jitter)
+
 ## Load balancer
 
 ### `load_balancing_strategy`

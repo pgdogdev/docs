@@ -81,6 +81,16 @@ Sets the `statement_timeout` on all server connections at connection creation. T
 !!! note
     Nothing is preventing the user from manually changing this setting at runtime, e.g., by running `SET statement_timeout TO 0`;
 
+
+### `lock_timeout`
+
+Sets the `lock_timeout` on all server connections at connection creation. Aborts any statement that waits longer than the specified duration to acquire a lock. Unlike `statement_timeout`, this only counts time spent waiting for locks, not total execution time.
+
+Default: **none** (not set)
+
+!!! note
+    Nothing is preventing the user from manually changing this setting at runtime, e.g., by running `SET lock_timeout TO 0`;
+
 ### `replication_mode`
 
 Sets the `replication=database` parameter on user connections to Postgres. Allows this user to use replication commands.

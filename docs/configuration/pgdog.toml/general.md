@@ -365,15 +365,14 @@ Default: **`disabled`**
 
 ### `prepared_statements`
 
-Enables support for prepared statements. Available options are:
+Controls which prepared statement protocols PgDog rewrites for its global cache.
 
-- `disabled`
-- `extended`
-- `extended_anonymous`
-- `full`
-
-`full` enables support for rewriting prepared statements sent over the simple protocol. `extended` handles prepared statements sent normally
-using the extended protocol. `extended_anonymous` caches and rewrites unnamed prepared statements, which is useful for some legacy client drivers.
+| Setting | Extended named | Extended anonymous | Simple `PREPARE`/`EXECUTE` | Notes |
+|---|---|---|---|---|
+| `disabled` | no | no | no | Statements are forwarded as-is with no rewriting. |
+| `extended` | yes | no | no | Default. Rewrites named extended-protocol statements (`Parse`/`Bind`/`Execute`). |
+| `extended_anonymous` | yes | yes | no | Also rewrites unnamed (anonymous) extended-protocol statements. |
+| `full` | yes | no | yes | Superset of `extended`. Also rewrites simple-protocol `PREPARE`/`EXECUTE`. Requires parsing every query; higher CPU cost. |
 
 Default: **`extended`**
 

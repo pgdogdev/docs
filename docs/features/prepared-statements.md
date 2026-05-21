@@ -72,6 +72,9 @@ PREPARE __pgdog_1 AS SELECT * FROM users;
 Statements sent over the simple protocol are not checked against the global cache. Each new statement is given a unique
 global name. Since this requires PgDog to parse _each_ incoming query, and that's computationally expensive, this feature is **disabled** by default.
 
+!!! note
+    `full` extends `extended`: it rewrites named extended-protocol statements in addition to simple-protocol `PREPARE`/`EXECUTE`.
+
 You can enable it in [`pgdog.toml`](../configuration/pgdog.toml/general.md#prepared_statements):
 
 ```toml

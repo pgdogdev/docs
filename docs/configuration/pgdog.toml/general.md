@@ -371,7 +371,7 @@ Controls which prepared statement protocols PgDog rewrites for its global cache.
 |---|---|---|---|---|
 | `disabled` | no | no | no | Statements are forwarded as-is with no rewriting. |
 | `extended` | yes | no | no | Default. Rewrites named extended-protocol statements (`Parse`/`Bind`/`Execute`). |
-| `extended_anonymous` | yes | yes | no | Also rewrites unnamed (anonymous) extended-protocol statements. Useful for drivers like `go/pq`. |
+| `extended_anonymous` | yes | yes | no | Also rewrites unnamed (anonymous) extended-protocol statements. |
 | `full` | yes | no | yes | Superset of `extended`. Also rewrites simple-protocol `PREPARE`/`EXECUTE`. Requires parsing every query; higher CPU cost. |
 
 Default: **`extended`**

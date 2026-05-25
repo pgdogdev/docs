@@ -554,6 +554,18 @@ Base delay, in milliseconds, between table copy retries during resharding. Each 
 
 Default: **`1_000`** (1s)
 
+### `resharding_replication_retry_max_attempts`
+
+Maximum number of retries for a transient error during the logical replication streaming phase of resharding. `0` means retry indefinitely.
+
+Default: **`5`**
+
+### `resharding_replication_retry_min_delay`
+
+Fixed delay, in milliseconds, between replication stream retry attempts. Unlike [`resharding_copy_retry_min_delay`](#resharding_copy_retry_min_delay), this value is not subject to exponential backoff; the same delay is applied on every attempt.
+
+Default: **`1_000`** (1s)
+
 ### `reload_schema_on_ddl`
 
 !!! warning

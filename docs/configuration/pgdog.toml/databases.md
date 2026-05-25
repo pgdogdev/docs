@@ -98,6 +98,13 @@ Overrides the [`min_pool_size`](general.md#min_pool_size) setting. The connectio
 
 This setting configures the `statement_timeout` connection parameter on all connections to Postgres for this database.
 
+
+### `lock_timeout`
+
+Configures the `lock_timeout` connection parameter on all connections to Postgres for this database. Aborts any statement that waits longer than the specified duration to acquire a lock. Unlike `statement_timeout`, this only counts time spent waiting for locks, not total execution time.
+
+Default: **none** (not set)
+
 ### `idle_timeout`
 
 Overrides the [`idle_timeout`](general.md#idle_timeout) setting. Idle server connections exceeding this timeout will be closed automatically.

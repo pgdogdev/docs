@@ -234,6 +234,20 @@ resharding_copy_retry_max_attempts = 5    # per-table retry attempts
 resharding_copy_retry_min_delay = 1000   # base backoff in ms; doubles each attempt, max 32×
 ```
 
+### Transient errors during replication streaming
+
+After the initial copy completes, PgDog streams WAL changes from the source. If a transient error occurs (e.g., a dropped connection or a momentary network interruption) during streaming, PgDog retries automatically: it sleeps for the configured delay, then reconnects using the source replication slot and all destination shard connections in parallel before resuming.
+
+By default: up to **5 attempts**, with a fixed **1 second** delay between each.
+
+To change the defaults, configure [`resharding_replication_retry_max_attempts`](../../../configuration/pgdog.toml/general.md#resharding_replication_retry_max_attempts) and [`resharding_replication_retry_min_delay`](../../../configuration/pgdog.toml/general.md#resharding_replication_retry_min_delay) in `pgdog.toml`:
+
+```toml
+[general]
+resharding_replication_retry_max_attempts = 5    # 0 = retry indefinitely
+resharding_replication_retry_min_delay = 1000   # fixed delay in ms
+```
+
 ### Primary key violations when retrying after copy failure
 
 In rare cases, if the connection drops after `COPY` commits but before PgDog records the table as done, some rows may remain in the destination. The next retry will hit primary key violations.

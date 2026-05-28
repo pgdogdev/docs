@@ -1,77 +1,117 @@
-x-control-env: &control-env
-  DATABASE_URL: postgres://pgdog_control:pgdog_control@postgres:5432/pgdog_control
-  REDIS_URL: redis://redis:6379
-  SESSION_KEY: xEouatJSd9RWX4GDZvIFwvWn7Nywv/jh0UkrwnGJdfL6CVsIyUyegVTQY66l7RUR6ZCamqiPHgVlW0HL8PZ+0A==
+x-pgdog: &pgdog
+  image: ghcr.io/pgdogdev/pgdog-enterprise:v2026-05-28
+  command: ["pgdog", "--config", "/etc/pgdog/pgdog.toml", "--users", "/etc/secrets/pgdog/users.toml"]
+  mem_limit: 1g
+  environment:
+    PGPASSWORD: postgres
+  healthcheck:
+    test: ["CMD-SHELL", "psql -h 127.0.0.1 -p 6432 -U postgres -d postgres -tAc 'SELECT 1' || exit 1"]
+    interval: 5s
+    timeout: 5s
+    retries: 5
+  depends_on:
+    postgres:
+      condition: service_healthy
+    control:
+      condition: service_healthy
 
 services:
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_USER: pgdog_control
-      POSTGRES_PASSWORD: pgdog_control
-      POSTGRES_DB: pgdog_control
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pgdog_control"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7
-    volumes:
-      - redis_data:/data
-
-  migrate:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:a93701bd
-    environment:
-      <<: *control-env
-    command: control migrate
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-  init:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:a93701bd
-    environment:
-      <<: *control-env
-    command: control onboard --email demo@pgdog.dev --password demopass --token 644b527c-b9d6-4fb2-9861-703bad871ec0 --name Demo
-    depends_on:
-      migrate:
-        condition: service_completed_successfully
 
   control:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:a93701bd
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-05-28
     ports:
       - "8099:8080"
     environment:
-      <<: *control-env
-      DATABASE_URL: postgres://pgdog_control:pgdog_control@pgdog:6432/pgdog_control
-      FRONTEND_URL: http://localhost:8099
-      RUST_LOG: info
+      RUST_LOG: warn
+      CONTROL_CONFIG: /etc/pgdog-control/control.toml
+    configs:
+      - source: control_config
+        target: /etc/pgdog-control/control.toml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/healthz || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     depends_on:
-      pgdog:
+      redis:
         condition: service_started
 
   pgdog:
-    image: ghcr.io/pgdogdev/pgdog-enterprise:a93701bd
-    command: ["pgdog", "--config", "/etc/pgdog/pgdog.toml", "--users", "/etc/secrets/pgdog/users.toml"]
-    mem_limit: 1g
+    <<: *pgdog
     ports:
       - "6432:6432"
-    configs:
+    configs: &pgdog_one_configs
       - source: pgdog_config
         target: /etc/pgdog/pgdog.toml
       - source: pgdog_users
         target: /etc/secrets/pgdog/users.toml
+
+  pgdog2:
+    <<: *pgdog
+    ports:
+      - "6433:6432"
+    configs: &pgdog_two_configs
+      - source: pgdog_config2
+        target: /etc/pgdog/pgdog.toml
+      - source: pgdog_users
+        target: /etc/secrets/pgdog/users.toml
+
+  pgdog3:
+    <<: *pgdog
+    configs: *pgdog_one_configs
+
+  pgdog4:
+    <<: *pgdog
+    configs: *pgdog_two_configs
+
+  pgbench:
+    image: postgres:17
+    environment:
+      PGPORT: "6432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+    configs:
+      - source: pgbench_script
+        target: /scripts/pgbench.sql
+    command:
+      - bash
+      - -c
+      - |
+        for host in pgdog pgdog2 pgdog3 pgdog4; do
+          pgbench -h "$$host" -f /scripts/pgbench.sql -c 4 -t 1000000000 --no-vacuum &
+        done
+        wait
     depends_on:
-      postgres:
+      pgdog:
         condition: service_healthy
-      init:
-        condition: service_completed_successfully
+      pgdog2:
+        condition: service_healthy
+      pgdog3:
+        condition: service_healthy
+      pgdog4:
+        condition: service_healthy
 
 configs:
+  control_config:
+    content: |
+      [redis]
+      url = "redis://redis:6379"
+
   pgdog_config:
     content: |
       [general]
@@ -79,16 +119,38 @@ configs:
       load_schema = "on"
 
       [[databases]]
-      name = "pgdog_control"
+      name = "postgres"
       host = "postgres"
       port = 5432
-      database_name = "pgdog_control"
-      user = "pgdog_control"
-      password = "pgdog_control"
 
       [control]
       endpoint = "http://control:8080"
-      token = "644b527c-b9d6-4fb2-9861-703bad871ec0"
+      token = "pgdog-one"
+
+      [admin]
+      user = "pgdog"
+      password = "pgdog"
+
+      [query_stats]
+      enabled = true
+
+      [qos]
+      enabled = true
+
+  pgdog_config2:
+    content: |
+      [general]
+      port = 6432
+      load_schema = "on"
+
+      [[databases]]
+      name = "postgres"
+      host = "postgres"
+      port = 5432
+
+      [control]
+      endpoint = "http://control:8080"
+      token = "pgdog-two"
 
       [admin]
       user = "pgdog"
@@ -103,10 +165,13 @@ configs:
   pgdog_users:
     content: |
       [[users]]
-      name = "pgdog_control"
-      password = "pgdog_control"
-      database = "pgdog_control"
+      name = "postgres"
+      password = "postgres"
+      database = "postgres"
 
-volumes:
-  postgres_data:
-  redis_data:
+  pgbench_script:
+    content: |
+      SELECT 1;
+      SELECT 2;
+      SELECT pg_sleep(0.5);
+      SELECT 1, 2, 3, pg_sleep(1);

@@ -638,7 +638,8 @@ Format to use for PgDog application logs.
 Available options:
 
 - `text` (default): human-readable text logs
-- `json`: structured JSON logs suitable for ECS/Datadog ingestion
+- `json`: structured JSON logs suitable for ECS/Datadog ingestion (`{"timestamp":"2026-05-19T10:40:00.330523Z","level":"INFO","fields":{"message":"body", "field": "value"}}`)
+- `json_flattened`: structured JSON logs with flattened fields at the top level (`{"timestamp":"2026-05-19T11:24:44.192447Z","level":"INFO","message":"body","field":"value"}`)
 
 Default: **`text`**
 

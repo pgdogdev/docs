@@ -30,6 +30,38 @@ Name of the database cluster this user belongs to. This refers to `name` setting
 
 Default: **none** (required)
 
+### `databases`
+
+List of database clusters this user belongs to. Each entry refers to a `name` setting in [`pgdog.toml`](../pgdog.toml/databases.md), databases section. Use this instead of `database` to grant a single user access to more than one database without repeating the `[[users]]` entry.
+
+```toml
+[[users]]
+name = "alice"
+databases = ["prod", "analytics"]
+password = "hunter2"
+```
+
+Default: **none** (an empty list)
+
+!!! note
+    Specify either `database` or `databases`, not both. If both are set, `database` takes priority and `databases` is ignored.
+
+### `all_databases`
+
+Grant this user access to every database defined in [`pgdog.toml`](../pgdog.toml/databases.md). PgDog expands the entry into one user per configured database, creating a separate connection pool for each. This is a convenient way to give a user access to all databases without listing each one in `databases`.
+
+```toml
+[[users]]
+name = "alice"
+all_databases = true
+password = "hunter2"
+```
+
+Default: **`false`** (disabled)
+
+!!! note
+    `all_databases` takes priority over `database` and `databases`. If `all_databases` is set together with either of them, PgDog defaults to all databases and ignores the specific values.
+
 ### `password`
 
 The password for the user. Clients will need to provide this when connecting to PgDog.

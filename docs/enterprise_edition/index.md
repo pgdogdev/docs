@@ -4,24 +4,25 @@ icon: material/office-building
 
 # PgDog Enterprise
 
-PgDog Enterprise is a version of PgDog that contains additional features for large-scale monitoring and deployment of sharded (and unsharded) PostgreSQL databases.
+PgDog Enterprise is a version of PgDog with additional features for teams running PgDog in production.
 
-Unlike PgDog itself, PgDog Enterprise is closed source and available upon the purchase of a license. It comes with a control plane which provides real-time visibility into PgDog's operations and enterprise features and dedicated support from the team that built PgDog.
+It comes with a control plane, real-time visibility into PgDog's operations, and dedicated support from the team that built it. Unlike the open source edition, PgDog Enterprise is closed source and available upon the purchase of a license.
 
 ## Features
 
+The following features are available exclusively in the Enterprise edition:
+
 | Feature | Description |
 |-|-|
-| [Control plane](control_plane/index.md) | Synchronize and monitor multiple PgDog processes. |
-| [Schema management](schema.md) | Synchronize database schema changes between multiple PgDog nodes. |
-| [Active queries](insights/active_queries.md) | Real-time view into queries running through PgDog. |
-| [Query plans](insights/query_plans.md) | Root cause slow queries and execution anomalies with real-time Postgres query plans, collected in the background. |
-| [Real-time metrics](metrics.md) | All PgDog metrics, delivered with second-precision through a dedicated connection. |
-| [Query statistics](insights/statistics.md) | Query execution statistics, like duration, idle-in-transaction time, errors, and more. |
+| [Control plane](control_plane/index.md) (beta) | Manage multiple PgDog nodes and deployments. |
+| Queries | Monitor queries running through PgDog in real-time. |
+| Plans | Request and track Postgres query plans for slow queries. |
+| Metrics | Second-precision PgDog and resource usage metrics. |
+| [Quality of Service](qos.md) (alpha) | Track and block bad queries automatically. |
 
 ## Demo
 
-You can run a demo version of PgDog Enterprise locally with Docker Compose:
+You can run a demo of PgDog Enterprise locally with Docker Compose:
 
 ```bash
 curl -sSL \
@@ -30,48 +31,50 @@ curl -sSL \
     && docker-compose up
 ```
 
-The demo comes with the control plane, the web UI and PgDog configured as follows:
+The demo comes with the control plane, the web dashboard and PgDog configured as follows:
 
 | Setting | Value |
 |-|-|
-| Web UI | `http://localhost:8099` |
-| Username | `demo@pgdog.dev` |
-| Password | `demopass` |
-| PgDog | `postgres://pgdog_control:pgdog_control@0.0.0.0:6432/pgdog_control` |
+| Web dashboard | http://localhost:8099 |
+| PgDog | postgres://postgres:postgres@0.0.0.0:6432/postgres |
 
 For questions about the demo, PgDog Enterprise features, or pricing, [contact us](https://calendly.com/lev-pgdog/30min). PgDog can be deployed on-prem, in your cloud account, or entirely managed by us.
 
 ## Getting PgDog Enterprise
 
-The Enterprise edition is available from two sources:
+You can obtain the Enterprise edition of PgDog as follows:
 
-1. Our Docker repository
-2. From source
+1. Our [Docker repository](#docker-repository)
+2. From [source](#from-source)
 
 ### Docker repository
 
 !!! note "Enterprise license"
-    Before deploying these images to production, make sure you purchased our Enterprise Edition license. You're welcome to use these for evaluation purposes, e.g., demo deployment or in a staging environment.
+    Before deploying these images to production, make sure you purchased our Enterprise Edition license. You're welcome to use these for evaluation purposes, e.g., for an internal demo or in a staging environment.
 
 Both PgDog and the control plane are available as Docker images:
 
-| Application | Repository |
-|-|-|
-| PgDog | `ghcr.io/pgdogdev/pgdog-enterprise` |
-| Control plane | `ghcr.io/pgdogdev/pgdog-enterprise/control` |
+| Application | Repository | Latest tag |
+|-|-|-|
+| PgDog | `ghcr.io/pgdogdev/pgdog-enterprise` | `{{ enterprise_tag }}` |
+| Control plane | `ghcr.io/pgdogdev/pgdog-enterprise/control` | `{{ enterprise_tag }}` |
 
 If you're using our [Helm chart](../installation.md#kubernetes), you just need to change the `image.repository` and `image.tag` variables:
 
 ```yaml
 image:
   repository: ghcr.io/pgdogdev/pgdog-enterprise
-  tag: a93701bd
+  tag: {{ enterprise_tag }}
 ```
 
-For deploying the [control plane](control_plane/index.md), you have two options:
+#### Control plane
 
-1. Use our managed deployment ([contact us](https://calendly.com/lev-pgdog/30min))
-2. [Self-hosting](control_plane/self-hosting.md)
+The [control plane](control_plane/index.md) comes with its own [Helm chart](control_plane/installation.md). The chart has a few cluster depdendencies, which you can check using our installation script:
+
+```bash
+curl -fsSL \
+  https://raw.githubusercontent.com/pgdogdev/helm-ee/main/install.sh | bash
+```
 
 ### From source
 
@@ -79,10 +82,10 @@ If you want to manage all aspects of deploying PgDog Enterprise, [get in touch](
 
 ## Roadmap
 
-PgDog Enterprise is new and in active development. A lot of the features we want aren't built yet:
+PgDog Enterprise is new and in active development. A lot of the features we want aren't fully built yet:
 
 | Feature | Description |
 |-|-|
-| QoS | Quality of service guarantees, incl. throttling on a per-user/database/query level. |
+| [Quality of Service](qos.md) | Quality of service guarantees, incl. throttling on a per-user/database/query level. |
 | AWS RDS integration | Deploy PgDog on top of AWS RDS, without the hassle of Kubernetes or manual configuration. |
 | Automatic resharding | Detect hot shards and re-shard data without operator intervention. |

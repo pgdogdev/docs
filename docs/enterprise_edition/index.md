@@ -69,7 +69,7 @@ image:
 
 #### Control plane
 
-The [control plane](control_plane/index.md) comes with its own [Helm chart](control_plane/installation.md). The chart has a few cluster depdendencies, which you can check using our installation script:
+The [control plane](control_plane/index.md) comes with its own [Helm chart](control_plane/installation.md). The chart has a few cluster dependencies, which you can check using our installation script:
 
 ```bash
 curl -fsSL \

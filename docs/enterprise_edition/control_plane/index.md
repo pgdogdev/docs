@@ -6,7 +6,7 @@ icon: material/console
 
 Multi-node PgDog deployments require synchronization to perform certain tasks, like atomic [configuration](../../configuration/index.md) changes, toggling [maintenance mode](../../administration/maintenance_mode.md) and [resharding](../../features/sharding/resharding/index.md).
 
-To make this work, PgDog Enterprise ships with a control plane: an application deployed alongside PgDog, which provides synchronization of administative commands.
+To make this work, PgDog Enterprise ships with a control plane: an application deployed alongside PgDog, which provides synchronization of administrative commands.
 
 ## Installation
 

@@ -7,8 +7,15 @@ from mkdocs.structure.files import Files
 
 log = logging.getLogger("mkdocs.plugins.macros")
 
+# Latest released tag for the Enterprise Docker images. Update this in one
+# place; reference it in docs with {{ enterprise_tag }}. Can be overridden at
+# build time with the ENTERPRISE_TAG environment variable.
+ENTERPRISE_TAG = os.environ.get("ENTERPRISE_TAG", "v2026-06-04")
+
 
 def define_env(env):
+
+    env.variables["enterprise_tag"] = ENTERPRISE_TAG
 
     def _validate_link(href, page):
         """Check that a .md link target exists on disk."""

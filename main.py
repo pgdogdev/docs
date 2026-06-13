@@ -10,7 +10,7 @@ log = logging.getLogger("mkdocs.plugins.macros")
 # Latest released tag for the Enterprise Docker images. Update this in one
 # place; reference it in docs with {{ enterprise_tag }}. Can be overridden at
 # build time with the ENTERPRISE_TAG environment variable.
-ENTERPRISE_TAG = os.environ.get("ENTERPRISE_TAG", "v2026-06-04")
+ENTERPRISE_TAG = os.environ.get("ENTERPRISE_TAG", "v2026-06-12")
 
 
 def define_env(env):
@@ -22,12 +22,12 @@ def define_env(env):
         parsed = urlparse(href)
         path = parsed.path
 
-        if not path.endswith('.md') or path.startswith('http'):
+        if not path.endswith(".md") or path.startswith("http"):
             return
 
         page_dir = posixpath.dirname(page.file.src_path)
         resolved = posixpath.normpath(posixpath.join(page_dir, path))
-        abs_path = os.path.join(env.conf['docs_dir'], resolved)
+        abs_path = os.path.join(env.conf["docs_dir"], resolved)
 
         if not os.path.isfile(abs_path):
             log.warning(
@@ -42,7 +42,7 @@ def define_env(env):
         parsed = urlparse(href)
         path = parsed.path
 
-        if not path.endswith('.md') or path.startswith('http'):
+        if not path.endswith(".md") or path.startswith("http"):
             return href
 
         # Get the directory of the current page source
@@ -50,14 +50,14 @@ def define_env(env):
         # Resolve the relative path
         resolved = posixpath.normpath(posixpath.join(page_dir, path))
         # Convert .md to trailing slash
-        resolved = resolved.replace('.md', '/')
+        resolved = resolved.replace(".md", "/")
         # Handle index files
-        if resolved.endswith('/index/'):
-            resolved = resolved[:-len('index/')]
+        if resolved.endswith("/index/"):
+            resolved = resolved[: -len("index/")]
 
-        url = '/' + resolved
+        url = "/" + resolved
         if parsed.fragment:
-            url += '#' + parsed.fragment
+            url += "#" + parsed.fragment
         return url
 
     @env.macro
@@ -74,7 +74,7 @@ def define_env(env):
                 </div>
             """)
         rendered = "\n".join(rendered)
-        return f'''<div class="grid">{rendered}</div>'''
+        return f"""<div class="grid">{rendered}</div>"""
 
     @env.macro
     def card_grid(cards):
@@ -94,4 +94,4 @@ def define_env(env):
                 </div>
             """)
         rendered = "\n".join(rendered)
-        return f'''<div class="grid">{rendered}</div>'''
+        return f"""<div class="grid">{rendered}</div>"""

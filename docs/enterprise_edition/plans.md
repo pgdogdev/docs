@@ -55,7 +55,7 @@ The query plan cache is configurable:
       enabled: true
       queryPlansThreshold: 100
       queryPlansCache: 1000
-      queryPlanMaxAge: 15000
+      queryPlansMaxAge: 15000
     ```
 
 ### Admin database

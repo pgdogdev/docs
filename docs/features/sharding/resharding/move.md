@@ -103,17 +103,28 @@ If you are running PostgreSQL 16 or later and have configured replicas on the so
 
 To set this up, make sure to add your read replicas to [`pgdog.toml`](../../../configuration/pgdog.toml/databases.md), for example:
 
-```toml
-[[databases]]
-name = "source"
-host = "10.0.0.1"
-role = "replica"
+=== "pgdog.toml"
+    ```toml
+    [[databases]]
+    name = "source"
+    host = "10.0.0.1"
+    role = "replica"
 
-[[databases]]
-name = "source"
-host = "10.0.0.2"
-role = "replica"
-```
+    [[databases]]
+    name = "source"
+    host = "10.0.0.2"
+    role = "replica"
+    ```
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: source
+        host: 10.0.0.1
+        role: replica
+      - name: source
+        host: 10.0.0.2
+        role: replica
+    ```
 
 PgDog will distribute the table copy load evenly between all replicas in the configuration. The more replicas are available for resharding, the faster it will complete.
 
@@ -124,13 +135,22 @@ PgDog will distribute the table copy load evenly between all replicas in the con
 
     To make sure dedicated replicas are not used for read queries in production, you can configure PgDog to use them for resharding only:
 
-    ```toml
-    [[databases]]
-    name = "prod"
-    host = "10.0.0.1"
-    role = "replica"
-    resharding_only = true
-    ```
+    === "pgdog.toml"
+        ```toml
+        [[databases]]
+        name = "prod"
+        host = "10.0.0.1"
+        role = "replica"
+        resharding_only = true
+        ```
+    === "Helm chart"
+        ```yaml
+        databases:
+          - name: prod
+            host: 10.0.0.1
+            role: replica
+            reshardingOnly: true
+        ```
 
 #### Binary `COPY`
 
@@ -150,10 +170,15 @@ If your primary keys are using the `INTEGER` data type (like in older Rails vers
 
 If this is the case, the binary `COPY` will not work, and you need to use text copy protocol instead. This can be configured in [`pgdog.toml`](../../../configuration/pgdog.toml/general.md#resharding_copy_format):
 
-```toml
-[general]
-resharding_copy_format = "text"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    resharding_copy_format = "text"
+    ```
+=== "Helm chart"
+    ```yaml
+    reshardingCopyFormat: text
+    ```
 
 #### Monitoring progress
 
@@ -228,11 +253,17 @@ If a shard goes down mid-copy, PgDog retries that table with exponential backoff
 
 To change the defaults, configure [`resharding_copy_retry_max_attempts`](../../../configuration/pgdog.toml/general.md#resharding_copy_retry_max_attempts) and [`resharding_copy_retry_min_delay`](../../../configuration/pgdog.toml/general.md#resharding_copy_retry_min_delay) in `pgdog.toml`:
 
-```toml
-[general]
-resharding_copy_retry_max_attempts = 5    # per-table retry attempts
-resharding_copy_retry_min_delay = 1000   # base backoff in ms; doubles each attempt, max 32×
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    resharding_copy_retry_max_attempts = 5    # per-table retry attempts
+    resharding_copy_retry_min_delay = 1000   # base backoff in ms; doubles each attempt, max 32×
+    ```
+=== "Helm chart"
+    ```yaml
+    reshardingCopyRetryMaxAttempts: 5    # per-table retry attempts
+    reshardingCopyRetryMinDelay: 1000   # base backoff in ms; doubles each attempt, max 32×
+    ```
 
 ### Transient errors during replication streaming
 
@@ -266,10 +297,15 @@ Run the `TRUNCATE` on the destination (you can copy the command above, but make 
 
 Different major Postgres versions can produce incompatible binary `COPY` data. PgDog surfaces this as a `BinaryFormatMismatch` error. Switch to text:
 
-```toml
-[general]
-resharding_copy_format = "text"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    resharding_copy_format = "text"
+    ```
+=== "Helm chart"
+    ```yaml
+    reshardingCopyFormat: text
+    ```
 
 See [Integer primary keys](#integer-primary-keys) for the other common reason to use text format.
 

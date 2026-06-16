@@ -22,17 +22,28 @@ Physical multitenancy is a form of [sharding](sharding/index.md). To make it wor
 
 #### Example
 
-```toml
-[[databases]]
-name = "prod"
-host = "10.0.0.1"
-shard = 0
+=== "pgdog.toml"
+    ```toml
+    [[databases]]
+    name = "prod"
+    host = "10.0.0.1"
+    shard = 0
 
-[[databases]]
-name = "prod"
-host = "10.0.0.2"
-shard = 1
-```
+    [[databases]]
+    name = "prod"
+    host = "10.0.0.2"
+    shard = 1
+    ```
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: prod
+        host: 10.0.0.1
+        shard: 0
+      - name: prod
+        host: 10.0.0.2
+        shard: 1
+    ```
 
 ### Routing queries
 
@@ -43,12 +54,20 @@ To route queries to the right tenant (aka shard), you need to configure the shar
 
 The first one is configurable using [sharded tables](../configuration/pgdog.toml/sharded_tables.md), for example:
 
-```toml
-[[sharded_tables]]
-database = "prod"
-column = "tenant_id"
-data_type = "bigint"
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "tenant_id"
+    data_type = "bigint"
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        column: tenant_id
+        dataType: bigint
+    ```
 
 This tells PgDog that the column `tenant_id` in _all_ tables will have the data type `BIGINT` and should be used for routing queries between shards. See [supported data types](sharding/sharding-functions.md#supported-data-types) for a list of data types you can use for sharding.
 
@@ -58,14 +77,24 @@ The mapping is configurable separately for each tenant ID. Here, you have two op
 
 List-based is the most natural mapping for multitenant systems where your tenants are uniquely identified by a value. For example, using configuration, you can tell PgDog to route tenants 1, 5, and 1,000 to shard 0:
 
-```toml
-[[sharded_mappings]]
-database = "prod"
-column = "tenant_id"
-kind = "list"
-values = [1, 5, 1_000]
-shard = 0
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_mappings]]
+    database = "prod"
+    column = "tenant_id"
+    kind = "list"
+    values = [1, 5, 1_000]
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedMappings:
+      - database: prod
+        column: tenant_id
+        kind: list
+        values: [1, 5, 1_000]
+        shard: 0
+    ```
 
 You can specify as many mappings as you need and the list of values can contain as many tenants as you need. PgDog is using an efficient algorithm for mapping tenants to shards and supports millions of tenants as part of the same deployment.
 
@@ -73,22 +102,38 @@ You can specify as many mappings as you need and the list of values can contain 
 
 Range-based mapping is identical to `PARTITION BY RANGE` in Postgres and can be used creatively to separate tenants based on a range of values. For example, you can map tenants with IDs between 1 and 100 to shard 0 and everyone else to shard 1 like so:
 
-```toml
-[[sharded_mappings]]
-database = "prod"
-column = "tenant_id"
-kind = "range"
-start = 1
-end = 100
-shard = 0
+=== "pgdog.toml"
+    ```toml
+    [[sharded_mappings]]
+    database = "prod"
+    column = "tenant_id"
+    kind = "range"
+    start = 1
+    end = 100
+    shard = 0
 
-[[sharded_mappings]]
-database = "prod"
-column = "tenant_id"
-kind = "range"
-start = 100
-shard = 0
-```
+    [[sharded_mappings]]
+    database = "prod"
+    column = "tenant_id"
+    kind = "range"
+    start = 100
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedMappings:
+      - database: prod
+        column: tenant_id
+        kind: range
+        start: 1
+        end: 100
+        shard: 0
+      - database: prod
+        column: tenant_id
+        kind: range
+        start: 100
+        shard: 0
+    ```
 
 Much like Postgres partitions, the start of the range is included in the range while the end is excluded.
 

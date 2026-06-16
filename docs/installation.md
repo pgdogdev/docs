@@ -123,22 +123,37 @@ pgdog \
 
 Most configuration options have sensible defaults. This makes single-database configuration pretty short:
 
-```toml
-[[databases]]
-name = "postgres"
-host = "127.0.0.1"
-```
+=== "pgdog.toml"
+    ```toml
+    [[databases]]
+    name = "postgres"
+    host = "127.0.0.1"
+    ```
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: postgres
+        host: 127.0.0.1
+    ```
 
 #### [users.toml](configuration/users.toml/users.md)
 
 This config file contains a mapping between databases, users, and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file won't be able to connect:
 
-```toml
-[[users]]
-name = "alice"
-database = "postgres"
-password = "hunter2"
-```
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "alice"
+    database = "postgres"
+    password = "hunter2"
+    ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: alice
+        database: postgres
+        password: hunter2
+    ```
 
 !!! note "Configuring users"
 

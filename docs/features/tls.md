@@ -13,11 +13,17 @@ To enable encryption for client connections, you need to provide (or generate) a
 
 Add the following settings to your `pgdog.toml`:
 
-```toml
-[general]
-tls_certificate = "/path/to/certificate.pem"
-tls_private_key = "/path/to/private_key.pem"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    tls_certificate = "/path/to/certificate.pem"
+    tls_private_key = "/path/to/private_key.pem"
+    ```
+=== "Helm chart"
+    ```yaml
+    tlsCertificate: /path/to/certificate.pem
+    tlsPrivateKey: /path/to/private_key.pem
+    ```
 
 Both the certificate and private key need to be formatted using the [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) format. The private key should not have a passphrase.
 
@@ -46,10 +52,15 @@ The default value for most PostgreSQL connection drivers is typically `prefer`, 
 
 By default, PgDog will attempt to use TLS when connecting to PostgreSQL. This is configurable via a setting:
 
-```toml
-[general]
-tls_verify = "prefer"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    tls_verify = "prefer"
+    ```
+=== "Helm chart"
+    ```yaml
+    tlsVerify: prefer
+    ```
 
 This setting accepts almost identical values to the `sslmode` parameter used by clients:
 
@@ -62,10 +73,15 @@ This setting accepts almost identical values to the `sslmode` parameter used by 
 
 If you use `verify_ca` or `verify_full` and your certificate is not signed by a well known CA, you can configure PgDog to validate it using your own certificate chain:
 
-```toml
-[general]
-tls_server_ca_certificate = "/path/to/ca/certificate.pem"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    tls_server_ca_certificate = "/path/to/ca/certificate.pem"
+    ```
+=== "Helm chart"
+    ```yaml
+    tlsServerCaCertificate: /path/to/ca/certificate.pem
+    ```
 
 ## Performance
 

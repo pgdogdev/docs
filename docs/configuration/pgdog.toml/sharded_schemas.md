@@ -10,17 +10,28 @@ icon: material/set-split
 
 Each schema needs to have a shard mapping in the config, for example:
 
-```toml
-[[sharded_schemas]]
-database = "prod"
-name = "customer_a"
-shard = 0
+=== "pgdog.toml"
+    ```toml
+    [[sharded_schemas]]
+    database = "prod"
+    name = "customer_a"
+    shard = 0
 
-[[sharded_schemas]]
-database = "prod"
-name = "customer_b"
-shard = 1
-```
+    [[sharded_schemas]]
+    database = "prod"
+    name = "customer_b"
+    shard = 1
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedSchemas:
+      - database: prod
+        name: customer_a
+        shard: 0
+      - database: prod
+        name: customer_b
+        shard: 1
+    ```
 
 All queries that fully qualify the table names will be routed correctly, for example:
 
@@ -35,11 +46,18 @@ You can add multiple entries per database. Mappings are matched by schema name f
 
 For queries that don't specify a schema or for which a mapping doesn't exist, the default behavior is to send it to all shards. If this is not desirable, add an entry without a `name` to choose a default shard:
 
-```toml
-[[sharded_schemas]]
-database = "prod"
-shard = 0
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_schemas]]
+    database = "prod"
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedSchemas:
+      - database: prod
+        shard: 0
+    ```
 
 PgDog now sends any unmapped schema to shard zero, including plain references (`SELECT * FROM pg_stat_activity`) and schemas created after the mapping file was generated.
 

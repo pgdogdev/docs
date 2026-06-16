@@ -39,10 +39,15 @@ If the health check query finishes successfully, the connection is marked health
 
 While the health check is cheap, running it on every single transaction is unnecessary and would cause undesirable latency. For this reason, the connection health check is performed once per configurable interval, controlled by the `healthcheck_interval` setting:
 
-```toml
-[general]
-healthcheck_interval = 30_000 # Run a health check every 30 seconds
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    healthcheck_interval = 30_000 # Run a health check every 30 seconds
+    ```
+=== "Helm chart"
+    ```yaml
+    healthcheckInterval: 30_000 # Run a health check every 30 seconds
+    ```
 
 The **default** value is **30 seconds** (`30_000` milliseconds).
 
@@ -52,10 +57,15 @@ If your databases are relatively idle, connection health checks don't provide en
 
 The load balancer runs health check queries independently and asynchronously in the background. The frequency of background health checks is controlled by the `idle_healthcheck_interval` setting:
 
-```toml
-[general]
-idle_healthcheck_interval = 30_000 # Run a health check every 30 seconds
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    idle_healthcheck_interval = 30_000 # Run a health check every 30 seconds
+    ```
+=== "Helm chart"
+    ```yaml
+    idleHealthcheckInterval: 30_000 # Run a health check every 30 seconds
+    ```
 
 The **default** value for this setting is **30 seconds** (`30_000` milliseconds).
 
@@ -63,10 +73,15 @@ The **default** value for this setting is **30 seconds** (`30_000` milliseconds)
 
 When PgDog is first started, it's possible that the database or the network is not yet ready to handle requests. To make sure there are no false positives caused by a slow start, database health checks are started after a configurable delay, controlled by the `idle_healthcheck_delay` setting:
 
-```toml
-[general]
-idle_healthcheck_delay = 5_000 # 5 seconds
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    idle_healthcheck_delay = 5_000 # 5 seconds
+    ```
+=== "Helm chart"
+    ```yaml
+    idleHealthcheckDelay: 5_000 # 5 seconds
+    ```
 
 The **default** value for this setting is **5 seconds** (`5_000` milliseconds).
 
@@ -81,10 +96,15 @@ Databases are automatically put back into the load balancer after a period of ti
 
 The amount of time the database is banned from serving traffic is controlled with the `ban_timeout` setting:
 
-```toml
-[general]
-ban_timeout = 300_000 # 5 minutes
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    ban_timeout = 300_000 # 5 minutes
+    ```
+=== "Helm chart"
+    ```yaml
+    banTimeout: 300_000 # 5 minutes
+    ```
 
 The **default** value is **5 minutes** (`300_000` milliseconds).
 
@@ -105,10 +125,15 @@ By default, the load balancer gives the database a limited amount of time to ans
 
 This behavior is configurable with the `healthcheck_timeout` setting:
 
-```toml
-[general]
-healthcheck_timeout = 5_000 # 5 seconds in ms
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    healthcheck_timeout = 5_000 # 5 seconds in ms
+    ```
+=== "Helm chart"
+    ```yaml
+    healthcheckTimeout: 5_000 # 5 seconds in ms
+    ```
 
 The default value is `5_000` (5 seconds).
 
@@ -131,10 +156,15 @@ Since PgDog itself is a TCP application, no additional configuration is required
 
 If your load balancer supports sending HTTP health checks to a configurable port (like AWS NLBs, for example), you can configure PgDog to run an HTTP server to respond to them:
 
-```toml
-[general]
-healthcheck_port = 8080
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    healthcheck_port = 8080
+    ```
+=== "Helm chart"
+    ```yaml
+    healthcheckPort: 8080
+    ```
 
 This is configurable on startup only and will spin up an HTTP server on `http://0.0.0.0:8080` (or whatever port you set).
 

@@ -11,11 +11,18 @@ Other names for these tables include **mirrored tables** and **replicated tables
 
 Unless otherwise specified as a [sharded table](../../configuration/pgdog.toml/sharded_tables.md), all tables are omnisharded by default. This makes configuration simpler, and doesn't require explicitly enumerating all tables in `pgdog.toml`. For example:
 
-```toml
-[[sharded_tables]]
-database = "prod"
-column = "user_id"
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "user_id"
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        column: user_id
+    ```
 
 This will configure all tables that have the `user_id` as sharded and all others as omnisharded.
 
@@ -63,54 +70,98 @@ For example, system catalogs (e.g. `pg_database`, `pg_class`, etc.) could have d
 
 For example:
 
-```toml
-[[omnisharded_tables]]
-database = "prod"
-sticky = true
-tables = [
-    "pg_class",
-    "pg_database"
-]
-```
+=== "pgdog.toml"
+    ```toml
+    [[omnisharded_tables]]
+    database = "prod"
+    sticky = true
+    tables = [
+        "pg_class",
+        "pg_database"
+    ]
+    ```
+=== "Helm chart"
+    ```yaml
+    omnishardedTables:
+      - database: prod
+        sticky: true
+        tables:
+          - pg_class
+          - pg_database
+    ```
 
 You can enable sticky routing for all omnisharded tables in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#omnisharded_sticky):
 
-```toml
-[general]
-omnisharded_sticky = true
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    omnisharded_sticky = true
+    ```
+=== "Helm chart"
+    ```yaml
+    omnishardedSticky: true
+    ```
 
 The following system catalogs are using sticky routing by default:
 
-```toml
-[[omnisharded_tables]]
-database = "prod"
-sticky = true
-tables = [
-    "pg_class",
-    "pg_attribute",
-    "pg_attrdef",
-    "pg_index",
-    "pg_constraint",
-    "pg_namespace",
-    "pg_database",
-    "pg_tablespace",
-    "pg_type",
-    "pg_proc",
-    "pg_operator",
-    "pg_cast",
-    "pg_enum",
-    "pg_range",
-    "pg_authid",
-    "pg_am",
-]
-```
+=== "pgdog.toml"
+    ```toml
+    [[omnisharded_tables]]
+    database = "prod"
+    sticky = true
+    tables = [
+        "pg_class",
+        "pg_attribute",
+        "pg_attrdef",
+        "pg_index",
+        "pg_constraint",
+        "pg_namespace",
+        "pg_database",
+        "pg_tablespace",
+        "pg_type",
+        "pg_proc",
+        "pg_operator",
+        "pg_cast",
+        "pg_enum",
+        "pg_range",
+        "pg_authid",
+        "pg_am",
+    ]
+    ```
+=== "Helm chart"
+    ```yaml
+    omnishardedTables:
+      - database: prod
+        sticky: true
+        tables:
+          - pg_class
+          - pg_attribute
+          - pg_attrdef
+          - pg_index
+          - pg_constraint
+          - pg_namespace
+          - pg_database
+          - pg_tablespace
+          - pg_type
+          - pg_proc
+          - pg_operator
+          - pg_cast
+          - pg_enum
+          - pg_range
+          - pg_authid
+          - pg_am
+    ```
 
 This is configurable with the `system_catalogs` setting in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#system_catalogs):
 
-```toml
-[general]
-system_catalogs = "omnisharded_sticky"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    system_catalogs = "omnisharded_sticky"
+    ```
+=== "Helm chart"
+    ```yaml
+    systemCatalogs: omnisharded_sticky
+    ```
 
 If enabled (it is by default), commands like `\d`, `\d+` and others sent from `psql` will return correct results.

@@ -6,13 +6,22 @@ icon: material/alpha-r-box-outline
 
 The `rewrite` section controls PgDog's automatic SQL rewrites for sharded databases. It affects sharding key updates and multi-tuple inserts. Either one can be toggled separately:
 
-```toml
-[rewrite]
-enabled = false
-shard_key = "error"
-split_inserts = "error"
-primary_key = "ignore"
-```
+=== "pgdog.toml"
+    ```toml
+    [rewrite]
+    enabled = false
+    shard_key = "error"
+    split_inserts = "error"
+    primary_key = "ignore"
+    ```
+=== "Helm chart"
+    ```yaml
+    rewrite:
+      enabled: false
+      shardKey: "error"
+      splitInserts: "error"
+      primaryKey: "ignore"
+    ```
 
 | Setting | Description | Default |
 | --- | --- | --- |

@@ -159,10 +159,15 @@ In certain situations, the overhead of parsing queries may be too high, e.g., wh
 
 If you've configured the desired database role (and/or shard) for each of your application connections, you can disable the query parser in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#query_parser):
 
-```toml
-[general]
-query_parser = "off"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    query_parser = "off"
+    ```
+=== "Helm chart"
+    ```yaml
+    queryParser: "off"
+    ```
 
 Once it's disabled, PgDog will rely solely on the `pgdog.role` and `pgdog.shard` parameters to make its routing decisions.
 

@@ -22,24 +22,39 @@ In practice, this allows thousands of client connections to re-use just one Post
 
 Transaction mode is **enabled** by default. This is controllable via configuration, at the global, user and database levels:
 
-=== "pgdog.toml (global)"
-    ```toml
+=== "Global"
+    ```toml title="pgdog.toml"
     [general]
     pooler_mode = "transaction"
     ```
-=== "pgdog.toml (database)"
-    ```toml
+    ```yaml title="Helm chart"
+    poolerMode: transaction
+    ```
+=== "Database"
+    ```toml title="pgdog.toml"
     [[databases]]
     name = "prod"
     host = "127.0.0.1"
     pooler_mode = "transaction"
     ```
-=== "users.toml"
-    ```toml
+    ```yaml title="Helm chart"
+    databases:
+      - name: prod
+        host: 127.0.0.1
+        poolerMode: transaction
+    ```
+=== "User"
+    ```toml title="users.toml"
     [[users]]
     name = "alice"
     database = "prod"
     pooler_mode = "transaction"
+    ```
+    ```yaml title="Helm chart"
+    users:
+      - name: alice
+        database: prod
+        poolerMode: transaction
     ```
 
 ## Session state
@@ -51,17 +66,10 @@ To avoid session-level state leaking between clients, PgDog tracks connection pa
 This is performed efficiently, and server parameters are updated only if they differ from the ones set on the client.
 
 !!! note "Parsing SET commands"
-    PgDog uses `pg_query` to parse SQL statements, which includes the `SET` command. For each command sent by the client, PgDog will decode the setting
-    and save it in the client connection's internal state.
-
-    This feature is enabled only if **at least** one of the following conditions is met:
-
-    1. The database has a primary and replica(s)
-    2. The database has more than one shard
-    3. [`prepared_statements`](../configuration/pgdog.toml/general.md#prepared_statements) is set to `"full"`
-    4. [`query_parser`](../configuration/pgdog.toml/general.md#query_parser_enabled) is set to `"on"`
-
-    This is to avoid unnecessary overhead of using `pg_query` (however small), when we don't absolutely have to.
+    PgDog automatically detects `SET` commands and uses the `pg_query` SQL parser to extract the GUC/session variable. This feature is **enabled** by default.
+    
+    For deployments that don't normally need the parser (i.e. unsharded, read-only or no replicas), PgDog can selectively enable its parser for `SET` commands only. This is very fast
+    and shouldn't have a noticeable impact on pooler performance.
 
 ### Connection parameters
 
@@ -95,17 +103,36 @@ SELECT pg_advisory_lock(1234);
 
 In transaction mode, server connections are re-used between clients, so additional care needs to be taken to keep the server connection tied to the client that created the lock.
 
+### Handling advisory locks
+
 PgDog is able to detect advisory lock usage and will pin the server connection to the client connection until one of the following conditions is met:
 
 1. The client releases the lock with `pg_advisory_unlock`
 2. The client disconnects
 
-!!! note "Performance"
-    If multiple clients use advisory locks and don't release them quickly, the effectiveness of transaction pooling will be reduced because server connections will not be effectively re-used between client transactions.
+!!! note "Query parser"
+    This feature requires the query parser to be enabled, which happens if the deployment is sharded
+    or is using the read/write split feature of the [load balancer](load-balancer/index.md).
 
-### Limitations
+If your PgDog deployment is unsharded and isn't using the [load balancer](load-balancer/index.md) for read/write separation, this feature is **disabled** by default. To enable it, turn on the query parser with the following setting:
 
-PgDog doesn't keep track of multiple advisory locks inside client connections. If a client acquires two different locks, for example, and only releases one, the server connection will still be returned back to the pool with the acquired lock.
+=== "pgdog.toml"
+    ```toml
+    [general]
+    query_parser = "session_control_and_locks"
+    ```
+=== "Helm chart"
+    ```yaml
+    queryParser: session_control_and_locks
+    ```
+
+This will scan all incoming queries for `pg_advisory_*` functions and selectively enable the query parser to handle them correctly.
+
+### Performance
+
+If multiple clients use advisory locks and don't release them quickly, the effectiveness of transaction pooling will be diminshed because server connections will not be quickly re-used between client transactions.
+
+Generally speaking, Postgres advisory locks should be used inside transactions, (i.e. using `pg_xact_advisory_lock()` function), or by the schema migrations tooling only (e.g. Alembic, Rails migrations, etc.).
 
 ## Statement mode
 
@@ -113,24 +140,39 @@ Statement mode is a subset of transaction mode. In statement mode, clients are n
 
 To use statement mode, you can configure it globally or per user/database, for example:
 
-=== "pgdog.toml (global)"
-    ```toml
+=== "Global"
+    ```toml title="pgdog.toml"
     [general]
     pooler_mode = "statement"
     ```
-=== "pgdog.toml (database)"
-    ```toml
+    ```yaml title="Helm chart"
+    poolerMode: statement
+    ```
+=== "Database"
+    ```toml title="pgdog.toml"
     [[databases]]
     name = "prod"
     host = "127.0.0.1"
     pooler_mode = "statement"
     ```
-=== "users.toml"
-    ```toml
+    ```yaml title="Helm chart"
+    databases:
+      - name: prod
+        host: 127.0.0.1
+        poolerMode: statement
+    ```
+=== "User"
+    ```toml title="users.toml"
     [[users]]
     name = "alice"
     database = "prod"
     pooler_mode = "statement"
+    ```
+    ```yaml title="Helm chart"
+    users:
+      - name: alice
+        database: prod
+        poolerMode: statement
     ```
 
 Statement mode is useful when you want to avoid holding server connections idle while the client executes long transactions, but it does remove an important feature of Postgres, so additional care needs to be taken on the client to handle concurrent database updates.

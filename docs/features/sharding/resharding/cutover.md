@@ -50,10 +50,15 @@ To suspend traffic, PgDog turns on [maintenance mode](../../../administration/ma
 
 The replication lag threshold at which PgDog will pause traffic automatically is configurable in [`pgdog.toml`](../../../configuration/pgdog.toml/general.md#cutover_traffic_stop_threshold):
 
-```toml
-[general]
-cutover_traffic_stop_threshold = 1_000_000 # 1 MiB
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    cutover_traffic_stop_threshold = 1_000_000 # 1 MiB
+    ```
+=== "Helm chart"
+    ```yaml
+    cutoverTrafficStopThreshold: 1_000_000 # 1 MiB
+    ```
 
 By default, it's set to 1MB, which is low enough that when traffic is paused, the two databases will synchronize very quickly.
 
@@ -69,10 +74,15 @@ For this to work, the original database must remain in the [configuration files]
 
 The configuration swap happens in memory, but PgDog has the ability to write the new configuration files to disk as well. This is disabled by default, but can be enabled with a setting:
 
-```toml
-[general]
-cutover_save_config = true
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    cutover_save_config = true
+    ```
+=== "Helm chart"
+    ```yaml
+    cutoverSaveConfig: true
+    ```
 
 When enabled, PgDog will backup both configuration files, `pgdog.toml` as `pgdog.bak.toml` and `users.toml` as `users.bak.toml`, and save its in-memory configuration to `pgdog.toml` and `users.toml` respectively, so the new cutover configuration persists in case of an error.
 
@@ -83,11 +93,17 @@ When enabled, PgDog will backup both configuration files, `pgdog.toml` as `pgdog
 
 Before swapping the configuration, PgDog waits for the two databases to be completely identical. These thresholds are configurable as follows:
 
-```toml
-[general]
-cutover_replication_lag_threshold = 0 # 0 bytes
-cutover_last_transaction_delay = 1_000 # 1 second
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    cutover_replication_lag_threshold = 0 # 0 bytes
+    cutover_last_transaction_delay = 1_000 # 1 second
+    ```
+=== "Helm chart"
+    ```yaml
+    cutoverReplicationLagThreshold: 0 # 0 bytes
+    cutoverLastTransactionDelay: 1_000 # 1 second
+    ```
 
 Due to vacuum activity and transactions affecting other tables not in the publication, the replication lag between the two databases may never reach zero. For this reason, PgDog provides two triggers for the configuration swap:
 
@@ -100,11 +116,17 @@ The latter is computed from messages received via the replication stream and is 
 
 If these thresholds are not hit within a reasonable amount of time, PgDog will abort the cutover and resume traffic on the source database. This behavior is configurable:
 
-```toml
-[general]
-cutover_timeout = 30_000 # 30 seconds
-cutover_timeout_action = "abort" # or "cutover"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    cutover_timeout = 30_000 # 30 seconds
+    cutover_timeout_action = "abort" # or "cutover"
+    ```
+=== "Helm chart"
+    ```yaml
+    cutoverTimeout: 30_000 # 30 seconds
+    cutoverTimeoutAction: abort # or "cutover"
+    ```
 
 If `cutover_timeout_action` is set to `"cutover"` instead, PgDog will flip the traffic to the destination database. This is an acceptable course of action in environments where data integrity is not paramount or the operator is absolutely certain that both databases are identical.
 

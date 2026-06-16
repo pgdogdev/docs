@@ -7,10 +7,15 @@ icon: material/security
 Admin database settings control access to the [admin](../../administration/index.md) database which contains real time statistics about internal operations
 of PgDog. For example:
 
-```toml
-[admin]
-password = "hunter2"
-```
+=== "pgdog.toml"
+    ```toml
+    [admin]
+    password = "hunter2"
+    ```
+=== "Helm chart"
+    ```yaml
+    adminPassword: "hunter2"
+    ```
 
 ### `name`
 

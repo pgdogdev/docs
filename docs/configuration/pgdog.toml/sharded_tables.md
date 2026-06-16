@@ -12,13 +12,22 @@ To detect and route queries with sharding keys, PgDog expects the sharded column
 
 The following configuration will match queries referring to this exact table and column exclusively:
 
-```toml
-[[sharded_tables]]
-database = "prod"
-name = "users"
-column = "id"
-data_type = "bigint"
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    name = "users"
+    column = "id"
+    data_type = "bigint"
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        name: users
+        column: id
+        dataType: bigint
+    ```
 
 The table `users` is sharded on the column `id`, which has the data type `BIGINT`. Queries that reference that column will be automatically routed to one or more of the shards:
 
@@ -32,12 +41,20 @@ WHERE users.id = $1
 
 The following configuration will match queries referring to this column, irrespective of table name:
 
-```toml
-[[sharded_tables]]
-database = "prod"
-column = "user_id"
-data_type = "bigint"
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "user_id"
+    data_type = "bigint"
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        column: user_id
+        dataType: bigint
+    ```
 
 In this example, the table name is omitted so all tables that have the `user_id` column (data type `BIGINT`) will be routed automatically to the right shard(s):
 
@@ -109,17 +126,29 @@ By default, all tables unless otherwise configured as sharded, are considered om
 
 Sticky routing disables round robin for omnisharded tables and sends the queries touching those tables to the same shard, guaranteeing consistent results for the duration of a client's connection:
 
-```toml
-[[omnisharded_tables]]
-database = "prod"
-sticky = true
-tables = [
-    "settings",
-    "cities",
-    "terms_of_service",
-    "ip_blocks",
-]
-```
+=== "pgdog.toml"
+    ```toml
+    [[omnisharded_tables]]
+    database = "prod"
+    sticky = true
+    tables = [
+        "settings",
+        "cities",
+        "terms_of_service",
+        "ip_blocks",
+    ]
+    ```
+=== "Helm chart"
+    ```yaml
+    omnishardedTables:
+      - database: prod
+        sticky: true
+        tables:
+          - settings
+          - cities
+          - terms_of_service
+          - ip_blocks
+    ```
 
 All queries referencing only these tables will be sent to one of the shards, using the round robin algorithm. If the query contains a sharding key, it will be used instead and omnisharded tables will be ignored by the query router.
 
@@ -184,14 +213,24 @@ The target shard number for matched queries.
 
 Lists are defined as a list of values and a corresponding shard number. Just like sharded tables, the mapping is database and column (and optionally, table and schema) specific:
 
-```toml
-[[sharded_mappings]]
-database = "prod"
-column = "tenant_id"
-kind = "list"
-values = [1, 2, 3, 4, 5]
-shard = 0
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_mappings]]
+    database = "prod"
+    column = "tenant_id"
+    kind = "list"
+    values = [1, 2, 3, 4, 5]
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedMappings:
+      - database: prod
+        column: tenant_id
+        kind: list
+        values: [1, 2, 3, 4, 5]
+        shard: 0
+    ```
 
 All queries that match the values defined in the mapping will be routed to that specific shard, for example:
 
@@ -204,15 +243,26 @@ WHERE tenant_id = 4 AND user_id = 1235
 
 Ranges are defined with a starting value (included) and the end value (excluded), just like `PARTITION BY RANGE` in Postgres:
 
-```toml
-[[sharded_mappings]]
-database = "prod"
-column = "tenant_id"
-kind = "range"
-start = 1
-end = 100
-shard = 0
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_mappings]]
+    database = "prod"
+    column = "tenant_id"
+    kind = "range"
+    start = 1
+    end = 100
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedMappings:
+      - database: prod
+        column: tenant_id
+        kind: range
+        start: 1
+        end: 100
+        shard: 0
+    ```
 
  All sharding key values matching the range will be routed to the specified shard:
 
@@ -225,13 +275,22 @@ WHERE tenant_id IN (1, 2, 5, 10, 56)
 
 The `default` kind specifies a fallback shard for values that don't match any list mapping:
 
-```toml
-[[sharded_mappings]]
-database = "prod"
-column = "tenant_id"
-kind = "default"
-shard = 2
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_mappings]]
+    database = "prod"
+    column = "tenant_id"
+    kind = "default"
+    shard = 2
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedMappings:
+      - database: prod
+        column: tenant_id
+        kind: default
+        shard: 2
+    ```
 
 Any sharding key value that doesn't match an explicit list mapping will be routed to the default shard.
 

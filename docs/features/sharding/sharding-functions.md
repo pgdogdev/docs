@@ -37,12 +37,20 @@ The hash function evenly distributes data between all shards. It ingests bytes a
 
 The hash function is used by default when configuring sharded tables in [`pgdog.toml`](../../configuration/pgdog.toml/sharded_tables.md):
 
-```toml
-[[sharded_tables]]
-database = "prod"
-column = "user_id"
-data_type = "bigint"
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "user_id"
+    data_type = "bigint"
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        column: user_id
+        dataType: bigint
+    ```
 
 All queries referencing the `user_id` column will be automatically sent to the matching shard(s) and data in those tables will be split between all data nodes evenly. See below for a list of [supported](#supported-data-types) data types. Each can be specified as follows:
 
@@ -50,30 +58,54 @@ All queries referencing the `user_id` column will be automatically sent to the m
     !!! note "Integer types"
         Different integer types are treated the same by the query router. If you're using `BIGINT`, `INTEGER` or `SMALLINT` as your sharding key, you can specify `bigint` in the configuration:
 
-    ```toml
-    [[sharded_tables]]
-    database = "prod"
-    column = "user_id"
-    data_type = "bigint"
-    ```
+    === "pgdog.toml"
+        ```toml
+        [[sharded_tables]]
+        database = "prod"
+        column = "user_id"
+        data_type = "bigint"
+        ```
+    === "Helm chart"
+        ```yaml
+        shardedTables:
+          - database: prod
+            column: user_id
+            dataType: bigint
+        ```
 === "Text"
     !!! note "Text types"
         `VARCHAR`, `VARCHAR(n)`, and `TEXT` use the same encoding and are treated the same by the query router. For either one, you can specify `varchar` in the configuration:
-    ```toml
-    [[sharded_tables]]
-    database = "prod"
-    column = "serial_number"
-    data_type = "varchar"
-    ```
+    === "pgdog.toml"
+        ```toml
+        [[sharded_tables]]
+        database = "prod"
+        column = "serial_number"
+        data_type = "varchar"
+        ```
+    === "Helm chart"
+        ```yaml
+        shardedTables:
+          - database: prod
+            column: serial_number
+            dataType: varchar
+        ```
 === "UUID"
     !!! note "UUID types"
         Only UUIDv4 is currently supported for sharding in the query router.
-    ```toml
-    [[sharded_tables]]
-    database = "prod"
-    column = "unique_id"
-    data_type = "uuid"
-    ```
+    === "pgdog.toml"
+        ```toml
+        [[sharded_tables]]
+        database = "prod"
+        column = "unique_id"
+        data_type = "uuid"
+        ```
+    === "Helm chart"
+        ```yaml
+        shardedTables:
+          - database: prod
+            column: unique_id
+            dataType: uuid
+        ```
 
 ## List
 
@@ -81,14 +113,24 @@ The list sharding function distributes data between shards according to a value 
 
 To enable this sharding function on a table or column, you need to specify additional value <-> shard mappings in [`pgdog.toml`](../../configuration/pgdog.toml/sharded_tables.md), for example:
 
-```toml
-[[sharded_mappings]]
-database = "prod"
-column = "user_id"
-kind = "list"
-values = [1, 2, 3]
-shard = 0
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_mappings]]
+    database = "prod"
+    column = "user_id"
+    kind = "list"
+    values = [1, 2, 3]
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedMappings:
+      - database: prod
+        column: user_id
+        kind: list
+        values: [1, 2, 3]
+        shard: 0
+    ```
 
 This example will route all queries with `user_id` equal to one, two, or three to shard zero. Unlike [hash](#hash) sharding, a value <-> shard mapping is required for _all_ values of the sharding key. If a value is used that doesn't have a mapping, the query will be sent to [all shards](cross-shard-queries/index.md).
 
@@ -99,15 +141,26 @@ This example will route all queries with `user_id` equal to one, two, or three t
 
 Sharding by range is similar to [list](#list) sharding, except instead of specifying the values explicitly, you can specify a bounding range. All values that are included in the range will be sent to the specified shard, for example:
 
-```toml
-[[sharded_mappings]]
-database = "prod"
-column = "user_id"
-kind = "range"
-start = 1
-end = 100
-shard = 0
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_mappings]]
+    database = "prod"
+    column = "user_id"
+    kind = "range"
+    start = 1
+    end = 100
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedMappings:
+      - database: prod
+        column: user_id
+        kind: range
+        start: 1
+        end: 100
+        shard: 0
+    ```
 
 This will route queries that refer to the `user_id` column, with values between 1 and 100 (exclusively), to shard zero. For open-ended ranges, you can specify either the `start` or the `end` value. The start value is included in the range, while the end value is excluded.
 
@@ -138,17 +191,28 @@ When enabled, PgDog will route queries that fully qualify tables based on their 
 
 Schemas are mapped to their shards in [pgdog.toml](../../configuration/pgdog.toml/sharded_schemas.md), for example:
 
-```toml
-[[sharded_schemas]]
-database = "prod"
-name = "customer_a"
-shard = 0
+=== "pgdog.toml"
+    ```toml
+    [[sharded_schemas]]
+    database = "prod"
+    name = "customer_a"
+    shard = 0
 
-[[sharded_schemas]]
-database = "prod"
-name = "customer_b"
-shard = 1
-```
+    [[sharded_schemas]]
+    database = "prod"
+    name = "customer_b"
+    shard = 1
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedSchemas:
+      - database: prod
+        name: customer_a
+        shard: 0
+      - database: prod
+        name: customer_b
+        shard: 1
+    ```
 
 Queries that include the schema name in the tables they are referring to can be routed to the right shard. For example:
 
@@ -181,11 +245,18 @@ If a schema isn't mapped to a shard number, PgDog will fallback to using other c
 
 To avoid this behavior and send all other queries to a particular shard, you can add a default schema mapping:
 
-```toml
-[[sharded_schemas]]
-database = "prod"
-shard = 0
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_schemas]]
+    database = "prod"
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedSchemas:
+      - database: prod
+        shard: 0
+    ```
 
 This will send all queries that don't specify a schema or use a schema without a mapping to shard zero.
 

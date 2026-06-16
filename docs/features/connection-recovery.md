@@ -71,10 +71,15 @@ Just like [abandoned transactions](#abandoned-transactions), this protects Postg
 
 Connection recovery is an optional feature, enabled by default. You can change how it behaves through configuration:
 
-```toml
-[general]
-connection_recovery = "recover"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    connection_recovery = "recover"
+    ```
+=== "Helm chart"
+    ```yaml
+    connectionRecovery: recover
+    ```
 
 | Configuration value | Description |
 |-|-|
@@ -84,10 +89,15 @@ connection_recovery = "recover"
 
 To make sure abandoned server connections don't block normal operations, PgDog supports a configurable timeout on the recovery operation. If connection recovery doesn't complete in time, the connection will be closed:
 
-```toml
-[general]
-rollback_timeout = 5_000
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    rollback_timeout = 5_000
+    ```
+=== "Helm chart"
+    ```yaml
+    rollbackTimeout: 5_000
+    ```
 
 ## Client connections
 
@@ -95,10 +105,15 @@ Just like server connections, PgDog can maintain client connections (application
 
 While enabled by default, some applications don't behave well when their queries return errors instead of results. Therefore, this feature is configurable and can be disabled:
 
-```toml
-[general]
-client_connection_recovery = "drop"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    client_connection_recovery = "drop"
+    ```
+=== "Helm chart"
+    ```yaml
+    clientConnectionRecovery: drop
+    ```
 
 | Configuration value | Description |
 |-|-|

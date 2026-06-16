@@ -73,11 +73,18 @@ If the application doesn't start a transaction, PgDog will return an error and a
 
 This feature is **disabled** by default and can be enabled with configuration in [`pgdog.toml`](../../../configuration/pgdog.toml/rewrite.md):
 
-```toml
-[rewrite]
-enabled = true
-shard_key = "rewrite"
-```
+=== "pgdog.toml"
+    ```toml
+    [rewrite]
+    enabled = true
+    shard_key = "rewrite"
+    ```
+=== "Helm chart"
+    ```yaml
+    rewrite:
+      enabled: true
+      shardKey: rewrite
+    ```
 
 ### Updating multiple rows
 

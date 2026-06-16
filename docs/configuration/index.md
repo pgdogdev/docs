@@ -24,6 +24,16 @@ PgDog uses the [TOML](https://toml.io/en/) configuration language for its two co
     password = "pgdog"
     database = "pgdog"
     ```
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: pgdog
+        host: 127.0.0.1
+    users:
+      - name: pgdog
+        password: pgdog
+        database: pgdog
+    ```
 
 By default, PgDog looks for both configuration files in the current working directory (`$PWD`). Alternatively, you can pass the
 `--config=<path>` and `--users=<path>` arguments on startup.
@@ -47,10 +57,15 @@ Hot reload can be triggered by sending `SIGHUP` to the `pgdog` process or by con
 
 To make things simpler, all units of time are in milliseconds. For example, if you want to set the pool checkout timeout to 5 seconds, convert it to 5000ms instead:
 
-```toml
-[general]
-checkout_timeout = 5_000
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    checkout_timeout = 5_000
+    ```
+=== "Helm chart"
+    ```yaml
+    checkoutTimeout: 5_000
+    ```
 
 !!! note "TOML syntax"
     Since PgDog uses TOML, both `5000` and `5_000` are valid numbers. Configuration will fail to load if non-integer values are used, e.g. "5s" or "53.5".

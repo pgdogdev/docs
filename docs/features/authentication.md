@@ -51,36 +51,69 @@ Available options currently are:
 
 Server authentication method is controlled by PostgreSQL. PgDog will use whatever method Postgres requests during connection creation, which is configurable in [`pg_hba.conf`](https://www.postgresql.org/docs/current/auth-pg-hba-conf.html).
 
-PgDog currently supports two authentication methods for server connections:
+PgDog currently supports three authentication methods for server connections:
 
 1. Password authentication, using any of the [client authentication](#client-authentication) methods
 2. AWS RDS IAM authentication
+3. Azure Workload Identity authentication
 
 
 #### RDS IAM authentication
 
-!!! note "Experimental feature"
-    This feature is new and experimental. Please report any issues you may encounter.
-
 PgDog supports authenticating to RDS PostgreSQL (and Aurora) databases using [IAM](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html). This is configurable on a user-per-user basis, for example:
 
-```toml
-[[users]]
-name = "pgdog"
-database = "prod"
-server_auth = "rds_iam"
-```
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "pgdog"
+    database = "prod"
+    server_auth = "rds_iam"
+    ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: pgdog
+        database: prod
+        serverAuth: rds_iam
+    ```
+
+#### Azure Workload Identity authentication
+
+Similar to RDS IAM, PgDog can authenticate to PostgreSQL running in Azure using the built-in Workload Identity provider. This is configurable on a user-per-user basis, for example:
+
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "pgdog"
+    database = "prod"
+    server_auth = "azure_workload_identity"
+    ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: pgdog
+        database: prod
+        serverAuth: azure_workload_identity
+    ```
 
 ## Add users
 
 [`users.toml`](../configuration/users.toml/users.md) follows a simple TOML list structure. To add users, simply add another `[[users]]` section, e.g.:
 
-```toml
-[[users]]
-name = "pgdog"
-database = "pgdog"
-password = "hunter2"
-```
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "pgdog"
+    database = "pgdog"
+    password = "hunter2"
+    ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: pgdog
+        database: pgdog
+        password: hunter2
+    ```
 
 PgDog will expect clients connecting as `pgdog` to provide the password `hunter2` (hashed with `scram-sha-256` by default), and will use the same username and password to connect to PostgreSQL.
 
@@ -88,14 +121,24 @@ PgDog will expect clients connecting as `pgdog` to provide the password `hunter2
 
 You can override the user and/or password PgDog uses to connect to Postgres by specifying `server_user` and `server_password` in the same configuration:
 
-```toml
-[[users]]
-name = "pgdog"
-password = "hunter2"
-database = "pgdog"
-server_user = "bob"
-server_password = "opensesame"
-```
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "pgdog"
+    password = "hunter2"
+    database = "pgdog"
+    server_user = "bob"
+    server_password = "opensesame"
+    ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: pgdog
+        password: hunter2
+        database: pgdog
+        serverUser: bob
+        serverPassword: opensesame
+    ```
 
 This allows you to separate client and server credentials. In case your clients accidentally leak theirs, you only need to rotate them in the PgDog configuration, without having to take downtime to change passwords in PostgreSQL.
 

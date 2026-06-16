@@ -6,14 +6,23 @@ icon: material/network
 
 PgDog speaks the Postgres protocol which, underneath, uses TCP. Optimal TCP settings are necessary to quickly recover from database incidents. For example:
 
-```toml
-[tcp]
-keepalive = true
-time = 60_000
-interval = 60_000
-retries = 3
-user_timeout = 5_000
-```
+=== "pgdog.toml"
+    ```toml
+    [tcp]
+    keepalive = true
+    time = 60_000
+    interval = 60_000
+    retries = 3
+    user_timeout = 5_000
+    ```
+=== "Helm chart"
+    ```yaml
+    tcpKeepalive: true
+    tcpTime: 60_000
+    tcpInterval: 60_000
+    tcpRetries: 3
+    tcpUserTimeout: 5_000
+    ```
 
 To be consistent with the rest of PgDog documentation, units of time are in milliseconds. However, many TCP implementations only support seconds. Consider using round units, e.g., `1_000` milliseconds = 1 second.
 

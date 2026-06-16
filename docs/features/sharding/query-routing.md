@@ -126,25 +126,42 @@ Adding the sharding key column is often best, because it makes writing queries a
 
 If most or all of your tables have the sharding key and the column name is the same, you can add it to [pgdog.toml](../../configuration/pgdog.toml/sharded_tables.md) without specifying a table name, for example:
 
-```toml
-[[sharded_tables]]
-database = "prod"
-column = "user_id"
-data_type = "bigint"
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "user_id"
+    data_type = "bigint"
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        column: user_id
+        dataType: bigint
+    ```
 
 This will match all queries referring to all tables with the `user_id` column and route them to a shard accordingly.
 
 For the table storing the actual data referred to by the foreign keys, you can make another
 entry in the config, this time with the table name explicitly stated:
 
-```toml
-[[sharded_tables]]
-database = "prod"
-name = "users"
-column = "id"
-data_type = "bigint"
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    name = "users"
+    column = "id"
+    data_type = "bigint"
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        name: users
+        column: id
+        dataType: bigint
+    ```
 
 The latter will match queries referring to the `users.id` column only. Together with the `user_id` entry, all tables that contain the sharding key will be supported by the query router for direct-to-shard queries.
 

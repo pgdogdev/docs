@@ -157,13 +157,21 @@ Since creating indexes on large tables can take some time, PgDog provides an adm
 
 Schema sync creates tables, indexes, and other entities on the destination database. To make sure that this is done with a user with sufficient privileges (e.g., `CREATE` and `REPLICATION` permissions on the database), make sure to add such a user to [`users.toml`](../../../configuration/users.toml/users.md) and mark it as the schema administrator:
 
-```toml
-[[users]]
-name = "migrator"
-database = "prod"
-password = "hunter2"
-schema_admin = true
-```
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "migrator"
+    database = "prod"
+    password = "hunter2"
+    schema_admin = true
+    ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: migrator
+        database: prod
+        password: hunter2
+    ```
 
 PgDog will use this user to connect to the source and destination databases, so make sure to specify one for both databases in the configuration.
 

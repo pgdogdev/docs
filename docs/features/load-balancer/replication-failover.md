@@ -39,14 +39,23 @@ This formula assumes that when the replica's LSN is behind the primary, the prim
 
 By default, PgDog will not query databases for their replication status. To enable this feature, configure it in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#replication):
 
-```toml
-[general]
-# Start running the LSN check immediately.
-lsn_check_delay = 0
+=== "pgdog.toml"
+    ```toml
+    [general]
+    # Start running the LSN check immediately.
+    lsn_check_delay = 0
 
-# Run LSN check every second.
-lsn_check_interval = 1_000
-```
+    # Run LSN check every second.
+    lsn_check_interval = 1_000
+    ```
+=== "Helm chart"
+    ```yaml
+    # Start running the LSN check immediately.
+    lsnCheckDelay: 0
+
+    # Run LSN check every second.
+    lsnCheckInterval: 1_000
+    ```
 
 | Setting | Description |
 |-|-|
@@ -66,11 +75,17 @@ If a replica has fallen far behind the primary, it may start serving stale data 
 
 PgDog supports this with configurable banning thresholds:
 
-```toml
-[general]
-ban_replica_lag = 60_000 # 1 minute
-ban_replica_lag_bytes = 25_000_000 # 25 MiB
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    ban_replica_lag = 60_000 # 1 minute
+    ban_replica_lag_bytes = 25_000_000 # 25 MiB
+    ```
+=== "Helm chart"
+    ```yaml
+    banReplicaLag: 60_000 # 1 minute
+    banReplicaLagBytes: 25_000_000 # 25 MiB
+    ```
 
 | Setting | Description |
 |-|-|
@@ -100,17 +115,28 @@ If the `pg_is_in_recovery()` function returns `false`, PgDog will assume that th
 
 Failover is disabled by default. To enable it, change all configured databases in [`pgdog.toml`](../../configuration/pgdog.toml/databases.md) to use the `"auto"` role, for example:
 
-```toml
-[[databases]]
-name = "prod"
-host = "10.0.0.1"
-role = "auto"
+=== "pgdog.toml"
+    ```toml
+    [[databases]]
+    name = "prod"
+    host = "10.0.0.1"
+    role = "auto"
 
-[[databases]]
-name = "prod"
-host = "10.0.0.2"
-role = "auto"
-```
+    [[databases]]
+    name = "prod"
+    host = "10.0.0.2"
+    role = "auto"
+    ```
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: prod
+        host: 10.0.0.1
+        role: auto
+      - name: prod
+        host: 10.0.0.2
+        role: auto
+    ```
 
 On startup, PgDog will connect to each database, find out if they are in recovery, and automatically reload its configuration with the determined roles.
 

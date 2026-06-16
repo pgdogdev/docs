@@ -6,12 +6,19 @@ icon: material/memory
 
 Memory settings control buffer sizes used by PgDog for network I/O and task execution.
 
-```toml
-[memory]
-net_buffer = 4096
-message_buffer = 4096
-stack_size = 2097152
-```
+=== "pgdog.toml"
+    ```toml
+    [memory]
+    net_buffer = 4096
+    message_buffer = 4096
+    stack_size = 2097152
+    ```
+=== "Helm chart"
+    ```yaml
+    memoryNetBuffer: 4096
+    memoryMessageBuffer: 4096
+    memoryStackSize: 2097152
+    ```
 
 ### `net_buffer`
 

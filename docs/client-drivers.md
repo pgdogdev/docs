@@ -50,10 +50,15 @@ Connection conn = DriverManager.getConnection(url, "user", "password");
 
 This doesn't cause any query routing issues; however, PgDog can't effectively cache the query syntax tree and has to parse queries _every time_ they are executed. This is computationally expensive. Consider switching to `psycopg` (version 3) or enabling our Rust-native query parser:
 
-```toml
-[general]
-query_parser_engine = "pg_query_raw"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    query_parser_engine = "pg_query_raw"
+    ```
+=== "Helm chart"
+    ```yaml
+    queryParserEngine: pg_query_raw
+    ```
 
 We benchmarked this to be 5 times faster than normal `pg_query` parsing, which should help.
 
@@ -61,7 +66,12 @@ We benchmarked this to be 5 times faster than normal `pg_query` parsing, which s
 
 Prisma doesn't correctly use the `IN` clause with arrays, causing it to generate a very large number of unique prepared statements. This is not a big problem, but if left unchecked, can cause heavy memory usage in PgDog. Consider setting a lower prepared statements [cache limit](features/prepared-statements.md#cache-limit):
 
-```toml
-[general]
-prepared_statements_limit = 1_000
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    prepared_statements_limit = 1_000
+    ```
+=== "Helm chart"
+    ```yaml
+    preparedStatementsLimit: 1_000
+    ```

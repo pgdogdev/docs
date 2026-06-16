@@ -22,7 +22,7 @@ Query plan collection is disabled by default and can be enabled in `pgdog.toml`:
     ```yaml
     queryStats:
       enabled: true
-      queryPlansThreshold: 100
+      queryPlanThreshold: 100
     ```
 
 The plans are stored in memory and deduplicated by _normalized_ SQL of the query. This means that queries with different parameters will be tied to the same query plan, making sure PgDog doesn't plan the same query multiple times.
@@ -53,10 +53,9 @@ The query plan cache is configurable:
     ```yaml
     queryStats:
       enabled: true
-      queryPlansThreshold: 100
-      queryPlansSampleRate: 0.5
+      queryPlanThreshold: 100
       queryPlansCache: 1000
-      queryPlansMaxAge: 15000
+      queryPlanMaxAge: 15000
     ```
 
 ### Admin database

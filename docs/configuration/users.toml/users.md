@@ -6,17 +6,28 @@ icon: material/account-key
 
 This configuration controls which users are allowed to connect to PgDog. This is a TOML list so for each user, add a `[[users]]` section to `users.toml`. For example:
 
-```toml
-[[users]]
-name = "alice"
-database = "prod"
-password = "hunter2"
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "alice"
+    database = "prod"
+    password = "hunter2"
 
-[[users]]
-name = "bob"
-database = "prod"
-password = "opensesame"
-```
+    [[users]]
+    name = "bob"
+    database = "prod"
+    password = "opensesame"
+    ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: alice
+        database: prod
+        password: hunter2
+      - name: bob
+        database: prod
+        password: opensesame
+    ```
 
 ### `name`
 

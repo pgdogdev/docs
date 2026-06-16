@@ -8,13 +8,22 @@ icon: material/mirror-rectangle
 
 For example:
 
-```toml
-[[mirroring]]
-source_db = "source"
-destination_db = "dest"
-queue_length = 500
-exposure = 0.1
-```
+=== "pgdog.toml"
+    ```toml
+    [[mirroring]]
+    source_db = "source"
+    destination_db = "dest"
+    queue_length = 500
+    exposure = 0.1
+    ```
+=== "Helm chart"
+    ```yaml
+    mirrors:
+      - sourceDb: source
+        destinationDb: dest
+        queueLength: 500
+        exposure: 0.1
+    ```
 
 ### `source_db`
 

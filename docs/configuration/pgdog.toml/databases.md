@@ -7,20 +7,34 @@ Database settings configure which databases PgDog is managing. This is a TOML li
 
 For each database instance, add a `[[databases]]` entry to `pgdog.toml`. For example:
 
-```toml
-[[databases]]
-name = "prod"
-host = "10.0.0.1"
-port = 5432
-shard = 0
+=== "pgdog.toml"
+    ```toml
+    [[databases]]
+    name = "prod"
+    host = "10.0.0.1"
+    port = 5432
+    shard = 0
 
-[[databases]]
-name = "prod"
-host = "10.0.0.2"
-port = 5432
-role = "replica"
-shard = 0
-```
+    [[databases]]
+    name = "prod"
+    host = "10.0.0.2"
+    port = 5432
+    role = "replica"
+    shard = 0
+    ```
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: prod
+        host: 10.0.0.1
+        port: 5432
+        shard: 0
+      - name: prod
+        host: 10.0.0.2
+        port: 5432
+        role: replica
+        shard: 0
+    ```
 
 ### `name`
 

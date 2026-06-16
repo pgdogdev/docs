@@ -57,10 +57,15 @@ Since PgDog needs to process rows before sending them to the client, we implemen
 
 If you don't want PgDog to route cross-shard queries, e.g., because you have a [multitenant](../../multi-tenancy.md) system with no interdependencies, cross-shard queries can be disabled with a configuration setting:
 
-```toml
-[general]
-cross_shard_disabled = true
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    cross_shard_disabled = true
+    ```
+=== "Helm chart"
+    ```yaml
+    crossShardDisabled: true
+    ```
 
 When this setting is enabled and a query doesn't have a sharding key, instead of executing the query, PgDog will return an error and abort the transaction.
 

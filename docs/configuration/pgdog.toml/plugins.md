@@ -8,13 +8,20 @@ icon: material/power-plug
 
 Plugins are a TOML list, so for each plugin you want to enable, add a `[[plugins]]` entry to `pgdog.toml`. For example:
 
-```toml
-[[plugins]]
-name = "bob_router"
+=== "pgdog.toml"
+    ```toml
+    [[plugins]]
+    name = "bob_router"
 
-[[plugins]]
-name = "alice_router"
-```
+    [[plugins]]
+    name = "alice_router"
+    ```
+=== "Helm chart"
+    ```yaml
+    plugins:
+      - name: bob_router
+      - name: alice_router
+    ```
 
 !!! note
     Plugins can only be configured at PgDog startup. They cannot be changed after
@@ -27,9 +34,15 @@ name is `router`, PgDog will look for `librouter.so` on Linux, `librouter.dll` o
 
 Additionally, you can pass the relative or absolute path to the shared library itself:
 
-```toml
-[[plugins]]
-name = "/opt/plugins/librouter.so"
-```
+=== "pgdog.toml"
+    ```toml
+    [[plugins]]
+    name = "/opt/plugins/librouter.so"
+    ```
+=== "Helm chart"
+    ```yaml
+    plugins:
+      - name: /opt/plugins/librouter.so
+    ```
 
 Make sure the user running PgDog has read & execute permissions on the library.

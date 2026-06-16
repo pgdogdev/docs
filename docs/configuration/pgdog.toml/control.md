@@ -9,15 +9,27 @@ Control settings configure PgDog's connection to the PgDog control plane.
 !!! note "Enterprise edition"
     This feature is available in [Enterprise Edition](../../enterprise_edition/index.md) only.
 
-```toml
-[control]
-endpoint = "http://localhost:8080"
-token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-metrics_interval = 1000
-stats_interval = 5000
-active_queries_interval = 5000
-request_timeout = 1000
-```
+=== "pgdog.toml"
+    ```toml
+    [control]
+    endpoint = "http://localhost:8080"
+    token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    metrics_interval = 1000
+    stats_interval = 5000
+    active_queries_interval = 5000
+    request_timeout = 1000
+    ```
+=== "Helm chart"
+    ```yaml
+    control:
+      enabled: true
+      endpoint: "http://localhost:8080"
+      token: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      metricsInterval: 1000
+      statsInterval: 5000
+      activeQueriesInterval: 5000
+      requestTimeout: 1000
+    ```
 
 ### `endpoint`
 

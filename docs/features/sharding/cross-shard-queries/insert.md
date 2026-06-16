@@ -120,11 +120,18 @@ INSERT INTO "users" ("id", "email", "created_at") VALUES (pgdog.unique_id(), $1,
 
 This works for regular queries and prepared statements alike. This feature is **disabled** by default and can be enabled in [`pgdog.toml`](../../../configuration/pgdog.toml/rewrite.md):
 
-```toml
-[rewrite]
-enabled = true
-primary_key = "rewrite"
-```
+=== "pgdog.toml"
+    ```toml
+    [rewrite]
+    enabled = true
+    primary_key = "rewrite"
+    ```
+=== "Helm chart"
+    ```yaml
+    rewrite:
+      enabled: true
+      primaryKey: rewrite
+    ```
 
 ### Composite primary keys
 
@@ -162,11 +169,18 @@ This works for all queries, including prepared statements. PgDog will rewrite al
 
 Since this feature has additional overhead by using multiple shards for each query, it is **disabled** by default and can be enabled in [`pgdog.toml`](../../../configuration/pgdog.toml/rewrite.md):
 
-```toml
-[rewrite]
-enabled = true
-split_inserts = "rewrite"
-```
+=== "pgdog.toml"
+    ```toml
+    [rewrite]
+    enabled = true
+    split_inserts = "rewrite"
+    ```
+=== "Helm chart"
+    ```yaml
+    rewrite:
+      enabled: true
+      splitInserts: rewrite
+    ```
 
 ### Transaction required
 

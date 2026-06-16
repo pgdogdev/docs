@@ -32,10 +32,15 @@ Alternatively, if you're running on managed Postgres (e.g., AWS RDS), this param
 
 Once prepared transactions are enabled in Postgres, two-phase commit can be enabled in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
 
-```toml
-[general]
-two_phase_commit = true
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    two_phase_commit = true
+    ```
+=== "Helm chart"
+    ```yaml
+    twoPhaseCommit: true
+    ```
 
 ### Error handling
 
@@ -89,10 +94,15 @@ While it's often desirable to ensure cross-shard writes are atomic, rewriting si
 
 If your writes are idempotent and can be safely retried, or your application doesn't have consistency requirements, you don't need to use this. Otherwise, you can enable it in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
 
-```toml
-[general]
-two_phase_commit_auto = true
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    two_phase_commit_auto = true
+    ```
+=== "Helm chart"
+    ```yaml
+    twoPhaseCommitAuto: true
+    ```
 
 ## Reads
 

@@ -46,10 +46,15 @@ This algorithm makes no assumptions about the capacity of each database or the c
 
 Round robin is used **by default**, so no config changes are required. You can still set it explicitly in [pgdog.toml](../../configuration/pgdog.toml/general.md), like so:
 
-```toml
-[general]
-load_balancing_strategy = "round_robin"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    load_balancing_strategy = "round_robin"
+    ```
+=== "Helm chart"
+    ```yaml
+    loadBalancingStrategy: round_robin
+    ```
 
 ### Random
 
@@ -59,10 +64,15 @@ This algorithm is often effective when queries have unpredictable runtime. By ra
 
 ##### Configuration
 
-```toml
-[general]
-load_balancing_strategy = "random"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    load_balancing_strategy = "random"
+    ```
+=== "Helm chart"
+    ```yaml
+    loadBalancingStrategy: random
+    ```
 
 ### Least active connections
 
@@ -72,10 +82,15 @@ This algorithm is useful when you want to "bin pack" the replica cluster. It ass
 
 ##### Configuration
 
-```toml
-[general]
-load_balancing_strategy = "least_active_connections"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    load_balancing_strategy = "least_active_connections"
+    ```
+=== "Helm chart"
+    ```yaml
+    loadBalancingStrategy: least_active_connections
+    ```
 
 
 ## Single endpoint
@@ -111,17 +126,28 @@ The load balancer recursively checks CTEs and, if any of them contains a query t
 
 The load balancer is **enabled by default** when more than one database with the same `name` property is configured in [pgdog.toml](../../configuration/pgdog.toml/databases.md), for example:
 
-```toml
-[[databases]]
-name = "prod"
-role = "primary"
-host = "10.0.0.1"
+=== "pgdog.toml"
+    ```toml
+    [[databases]]
+    name = "prod"
+    role = "primary"
+    host = "10.0.0.1"
 
-[[databases]]
-name = "prod"
-role = "replica"
-host = "10.0.0.2"
-```
+    [[databases]]
+    name = "prod"
+    role = "replica"
+    host = "10.0.0.2"
+    ```
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: prod
+        role: primary
+        host: 10.0.0.1
+      - name: prod
+        role: replica
+        host: 10.0.0.2
+    ```
 
 ## Primary reads
 
@@ -129,19 +155,29 @@ By default, if replica databases are configured, the primary is treated as one o
 
 This behavior is configurable in [pgdog.toml](../../configuration/pgdog.toml/general.md#read_write_split). You can isolate your primary from read queries and allow it to only serve writes:
 
-```toml
-[general]
-read_write_split = "exclude_primary"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    read_write_split = "exclude_primary"
+    ```
+=== "Helm chart"
+    ```yaml
+    readWriteSplit: exclude_primary
+    ```
 
 #### Failover for reads
 
 In case one of your replicas fails, you can configure the primary to serve read queries temporarily while you (or your cloud vendor) bring the replica back up. This is configurable, like so:
 
-```toml
-[general]
-read_write_split = "include_primary_if_replica_banned"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    read_write_split = "include_primary_if_replica_banned"
+    ```
+=== "Helm chart"
+    ```yaml
+    readWriteSplit: include_primary_if_replica_banned
+    ```
 
 ## Learn more
 

@@ -12,10 +12,15 @@ PgDog can annotate the query plan returned by Postgres with its own routing deci
 
 To avoid breaking existing tooling which relies on the standard `EXPLAIN` format, PgDog's `EXPLAIN` is disabled by default and can be turned on with configuration:
 
-```toml
-[general]
-expanded_explain = true
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    expanded_explain = true
+    ```
+=== "Helm chart"
+    ```yaml
+    expandedExplain: true
+    ```
 
 When configured, all `EXPLAIN` queries will start returning two query plans: one for Postgres and one for PgDog. For example:
 

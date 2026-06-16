@@ -25,10 +25,15 @@ PgDog implements a subset of authentication methods supported by Postgres. We're
 
 By default, client connections will use `scram-sha-256` for password encryption during the authentication handshake. This method is secure and recommended in production. PgDog does support using others, and you can change it with configuration:
 
-```toml
-[general]
-auth_type = "scram"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    auth_type = "scram"
+    ```
+=== "Helm chart"
+    ```yaml
+    authType: scram
+    ```
 
 Available options currently are:
 
@@ -100,10 +105,15 @@ Passthrough authentication is a feature where instead of storing passwords in `u
 
 Passthrough authentication is disabled by default and can be enabled with configuration:
 
-```toml
-[general]
-passthrough_auth = "enabled"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    passthrough_auth = "enabled"
+    ```
+=== "Helm chart"
+    ```yaml
+    passthroughAuth: enabled
+    ```
 
 This will require clients to send passwords in plain text. PgDog will create a connection pool for the database/user pair and the provided password. The database must exist in [`pgdog.toml`](../configuration/pgdog.toml/databases.md).
 
@@ -115,10 +125,15 @@ Sending plain text passwords over unencrypted connections isn't ideal, even if P
 
 If you don't want to set up TLS (it has some impact on latency), you can override this behavior and send passwords via plain text (unsecured) connection:
 
-```toml
-[general]
-passthrough_auth = "enabled_plain"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    passthrough_auth = "enabled_plain"
+    ```
+=== "Helm chart"
+    ```yaml
+    passthroughAuth: enabled_plain
+    ```
 
 ## Password security
 

@@ -22,9 +22,14 @@ This process takes place in the background, so the schema snapshot across nodes 
 
 Schema reloading on DDL is enabled by default. This is configurable in [`pgdog.toml`](../configuration/pgdog.toml/general.md#reload_schema_on_ddl):
 
-```toml
-[general]
-reload_schema_on_ddl = true
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    reload_schema_on_ddl = true
+    ```
+=== "Helm chart"
+    ```yaml
+    reloadSchemaOnDdl: true
+    ```
 
 In the open source edition, this reloads the schema on the same node only, while in the Enterprise edition, this triggers a schema reload on all PgDog nodes part of the same deployment.

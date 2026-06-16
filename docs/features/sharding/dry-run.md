@@ -9,10 +9,15 @@ In dry run mode, PgDog will parse every single query and record the routing deci
 
 You can enable dry run in the config:
 
-```toml
-[general]
-dry_run = true
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    dry_run = true
+    ```
+=== "Helm chart"
+    ```yaml
+    dryRun: true
+    ```
 
 PgDog supports hot reload of its configuration files, so you can toggle this setting without restarting the connection pooler. When enabled, PgDog enables its internal query parser (powered by `pg_query`) and attempts to "shard" every single query it receives.
 

@@ -15,10 +15,15 @@ PgDog supports this in [transaction mode](transaction-mode.md), removing this li
 
 You can enable pub/sub support by configuring the asynchronous message channel size in [`pgdog.toml`](../configuration/pgdog.toml/general.md):
 
-```toml
-[general]
-pub_sub_channel_size = 4096
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    pub_sub_channel_size = 4096
+    ```
+=== "Helm chart"
+    ```yaml
+    pubSubChannelSize: 4096
+    ```
 
 Clients can then use Postgres pub/sub like normal. PgDog will intercept all commands and process them internally. How each command is handled is described below.
 

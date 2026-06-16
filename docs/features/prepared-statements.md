@@ -30,10 +30,15 @@ at a global level, so clients can't evict a prepared statement potentially used 
 
 Prepared statements are stored in memory. On machines constrained by RAM, it's reasonable to introduce a limit on how many statements should be stored. This limit is controlled through configuration:
 
-```toml
-[general]
-prepared_statements_limit = 500
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    prepared_statements_limit = 500
+    ```
+=== "Helm chart"
+    ```yaml
+    preparedStatementsLimit: 500
+    ```
 
 This limit is strictly enforced on server connections: if a prepared statement needs to be sent to a server connection and it would exceed this capacity, the _least recently used_ statement will be closed to allow for more space on the connection.
 
@@ -77,10 +82,15 @@ global name. Since this requires PgDog to parse _each_ incoming query, and that'
 
 You can enable it in [`pgdog.toml`](../configuration/pgdog.toml/general.md#prepared_statements):
 
-```toml
-[general]
-prepared_statements = "full"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    prepared_statements = "full"
+    ```
+=== "Helm chart"
+    ```yaml
+    preparedStatements: full
+    ```
 
 Statements prepared using this method can be executed normally with `Bind` and `Execute` messages. Result data types can be inspected with `Describe`, just
 like a regular prepared statement.
@@ -95,7 +105,12 @@ By default, unnamed (or anonymous) prepared statements are not cached and are se
 
 To make those drivers work, consider caching and rewriting unnamed prepared statements, like so:
 
-```toml
-[general]
-prepared_statements = "extended_anonymous"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    prepared_statements = "extended_anonymous"
+    ```
+=== "Helm chart"
+    ```yaml
+    preparedStatements: extended_anonymous
+    ```

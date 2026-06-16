@@ -44,6 +44,17 @@ Databases are a list of PostgreSQL databases proxied by the connection pooler, w
     !!! note "Configuring users"
         Unlike PgBouncer, PgDog connection pool users are configured separately in [`users.toml`](../configuration/users.toml/users.md).
 
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: prod
+        host: 10.0.0.1
+        port: 5432
+      - name: staging
+        host: 10.0.0.1
+        port: 5432
+    ```
+
 #### Overrides
 
 Both PgBouncer and PgDog can override the user's password used to connect to PostgreSQL.
@@ -61,6 +72,16 @@ Both PgBouncer and PgDog can override the user's password used to connect to Pos
     user = "postgres"
     password = "hunter2"
     pooler_mode = "transaction"
+    ```
+=== "Helm chart"
+    ```yaml
+    databases:
+      - name: prod
+        host: 10.0.0.1
+        port: 5432
+        user: postgres
+        password: hunter2
+        poolerMode: transaction
     ```
 
 #### Database-level settings
@@ -112,6 +133,12 @@ PgDog follows the same principles and has a [`[general]`](../configuration/pgdog
     port = 6432
     default_pool_size = 100
     pooler_mode = "transaction"
+    ```
+=== "Helm chart"
+    ```yaml
+    port: 6432
+    defaultPoolSize: 100
+    poolerMode: transaction
     ```
 
 #### Supported settings
@@ -301,16 +328,35 @@ The PgBouncer's user list is a list of username/password pairs. The users listed
     database = "staging"
     password = "oranges"
     ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: postgres
+        database: prod
+        password: hunter2
+      - name: apples
+        database: staging
+        password: oranges
+    ```
 
 In addition to passwords, [`users.toml`](../configuration/users.toml/users.md) entries allow to configure user-specific overrides, for example:
 
-```toml
-[[users]]
-name = "postgres"
-database = "postgres"
-password = "hunter2"
-pooler_mode = "session"
-```
+=== "users.toml"
+    ```toml
+    [[users]]
+    name = "postgres"
+    database = "postgres"
+    password = "hunter2"
+    pooler_mode = "session"
+    ```
+=== "Helm chart"
+    ```yaml
+    users:
+      - name: postgres
+        database: postgres
+        password: hunter2
+        poolerMode: session
+    ```
 
 ## Read more
 

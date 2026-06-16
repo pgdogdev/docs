@@ -29,11 +29,18 @@ INSERT INTO users VALUES ($1, $2);
 
 In addition to detecting sharding keys, PgDog uses the schema cache to determine if a table is sharded or omnisharded. If a sharded table is configured using a column name only in [`pgdog.toml`](../../../configuration/pgdog.toml/sharded_tables.md), inspecting its schema is the only way to find if it has the sharding key, for example:
 
-```toml
-[[sharded_tables]]
-database = "prod"
-column = "user_id"
-```
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "user_id"
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        column: user_id
+    ```
 
 When a query comes in that doesn't specify this column, PgDog needs to decide if the table is sharded or omnisharded:
 

@@ -54,6 +54,7 @@ The query plan cache is configurable:
     queryStats:
       enabled: true
       queryPlansThreshold: 100
+      queryPlansSampleRate: 0.5
       queryPlansCache: 1000
       queryPlansMaxAge: 15000
     ```

@@ -22,10 +22,10 @@ docker run ghcr.io/pgdogdev/pgdog:main
 
 ### SemVer
 
-PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run `v0.1.29` like so:
+PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run `v0.1.44` like so:
 
 ```
-docker run ghcr.io/pgdogdev/pgdog:v0.1.29
+docker run ghcr.io/pgdogdev/pgdog:v0.1.44
 ```
 
 ### AWS ECS
@@ -34,6 +34,23 @@ docker run ghcr.io/pgdogdev/pgdog:v0.1.29
     This is a new feature. Please report any issues you may encounter.
 
  We recently added a [Terraform module](https://github.com/pgdogdev/pgdog-ecs-terraform) to deploy PgDog on AWS ECS. It works with the same Docker image as our Helm chart, so the experience should be familiar.
+
+## Pre-built binaries
+
+Each PgDog release (weekly, on Thursdays) contains pre-built binaries for Linux (arm64, amd64), Mac (aarch64, i.e. Apple Silicon), and Debian packages (`.deb`) for convenient installation on Debian/Ubuntu.
+
+You can download pre-built binaries in [GitHub](https://github.com/pgdogdev/pgdog/releases).
+
+#### glibc
+The Linux binaries are built on Ubuntu 24.04, and are linked against glibc version 2.39. To run them, your system needs glibc 2.39 or later.
+
+#### Mac OS
+
+The Mac OS binary is not signed. To run it locally, make sure to de-quarantine it:
+
+```bash
+xattr -d com.apple.quarantine ./pgdog
+```
 
 ## From source
 

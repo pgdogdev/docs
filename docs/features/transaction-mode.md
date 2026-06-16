@@ -119,11 +119,11 @@ If your PgDog deployment is unsharded and isn't using the [load balancer](load-b
 === "pgdog.toml"
     ```toml
     [general]
-    query_parser = "session_state_and_locks"
+    query_parser = "session_control_and_locks"
     ```
 === "Helm chart"
     ```yaml
-    queryParser: session_state_and_locks
+    queryParser: session_control_and_locks
     ```
 
 This will scan all incoming queries for `pg_advisory_*` functions and selectively enable the query parser to handle them correctly.

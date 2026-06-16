@@ -16,13 +16,13 @@ Query plan collection is disabled by default and can be enabled in `pgdog.toml`:
     ```toml
     [query_stats]
     enabled = true
-    query_plan_threshold = 100 # Queries slower than 100ms will be planned.
+    query_plans_threshold = 100 # Queries slower than 100ms will be planned.
     ```
 === "Helm chart"
     ```yaml
     queryStats:
       enabled: true
-      queryPlanThreshold: 100
+      queryPlansThreshold: 100
     ```
 
 The plans are stored in memory and deduplicated by _normalized_ SQL of the query. This means that queries with different parameters will be tied to the same query plan, making sure PgDog doesn't plan the same query multiple times.
@@ -33,10 +33,10 @@ The query plan cache is configurable:
 
 | Argument | Description | Example |
 |-|-|-|
-| `query_plan_threshold` | Minimum query runtime that triggers a query plan (in ms). | `100` |
+| `query_plans_threshold` | Minimum query runtime that triggers a query plan (in ms). | `100` |
 | `query_plans_sample_rate` | Percentage of all queries executed through PgDog that will be planned, irrespective of their runtime (between 0.0 and 1.0). | `0.5` |
 | `query_plans_cache` | Maximum number of entries in the in-memory plan cache. | `500` |
-| `query_plan_max_age` | Query plans older than this are considered stale and will be replanned if the query is executed again (in ms). | `15_000` |
+| `query_plans_max_age` | Query plans older than this are considered stale and will be replanned if the query is executed again (in ms). | `15_000` |
 
 ##### Example
 
@@ -44,19 +44,19 @@ The query plan cache is configurable:
     ```toml
     [query_stats]
     enabled = true
-    query_plan_threshold = 100
+    query_plans_threshold = 100
     query_plans_sample_rate = 0.5
     query_plans_cache = 1_000
-    query_plan_max_age = 15_000
+    query_plans_max_age = 15_000
     ```
 === "Helm chart"
     ```yaml
     queryStats:
       enabled: true
-      queryPlanThreshold: 100
+      queryPlansThreshold: 100
       queryPlansSampleRate: 0.5
       queryPlansCache: 1000
-      queryPlanMaxAge: 15000
+      queryPlansMaxAge: 15000
     ```
 
 ### Admin database

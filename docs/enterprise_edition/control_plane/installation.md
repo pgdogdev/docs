@@ -131,6 +131,52 @@ The client secret can be alternatively set as an environment variable:
 | GitHub| `GITHUB_CLIENT_SECRET` |
 | Google | `GOOGLE_CLIENT_SECRET` |
 
+### Using a Secret
+
+To keep the client OAuth2 secret out of the `ConfigMap`, you can reference an existing Kubernetes `Secret` instead. The chart will mount it into the environment automatically.
+
+#### Create Secret
+
+The `Secret` resource should be in the same namespace as the chart release:
+
+=== "GitHub"
+    ```bash title="kubectl"
+    kubectl create secret generic pgdog-oauth-secrets \
+      --namespace pgdog \
+      --from-literal=github-client-secret=shhh
+    ```
+=== "Google"
+    ```bash title="kubectl"
+    kubectl create secret generic pgdog-oauth-secrets \
+      --namespace pgdog \
+      --from-literal=google-client-secret=shhh
+    ```
+
+The secret can then be referenced in `values.yaml`:
+
+=== "GitHub"
+    ```yaml title="values.yaml"
+    github:
+      client_id: Iv1.0123456789abcdef
+      allowed_orgs:
+        - acme-corp
+      secret:
+        name: pgdog-oauth-secrets
+        clientSecretKey: github-client-secret
+    ```
+=== "Google"
+    ```yaml title="values.yaml"
+    google:
+      client_id: 0123456789-abc.apps.googleusercontent.com
+      allowed_domains:
+        - acme.com
+      secret:
+        name: pgdog-oauth-secrets
+        clientSecretKey: google-client-secret
+    ```
+
+The same method can be used to store the `client_id` (using `clientIdKey` as key).
+
 
 ### Access control
 `allowed_orgs` (GitHub) and `allowed_domains` (Google) restrict logins to members of those organizations or email domains. If left empty, anyone who can authenticate with the provider is allowed in.

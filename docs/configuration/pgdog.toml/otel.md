@@ -30,6 +30,9 @@ the authentication header.
 
 To obtain a Datadog API key, go to your Organization settings / API keys.
 
+!!! note "Kubernetes"
+    If deploying with Kubernetes, you can source the API key from a `Secret` instead of setting it directly. See [Using a Secret](../../features/metrics.md#using-a-secret).
+
 ### `namespace`
 
 By default, all metrics will be sent under the `pgdog` namespace, e.g.: `pgdog.sv_idle`.

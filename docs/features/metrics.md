@@ -41,10 +41,15 @@ and available from an HTTP endpoint.
 
 The endpoint is disabled by default. You can enable it by configuring which port it should run on:
 
-```toml
-[general]
-openmetrics_port = 9090
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    openmetrics_port = 9090
+    ```
+=== "Helm chart"
+    ```yaml
+    openMetricsPort: 9090
+    ```
 
 This setting can only be configured on startup. Once configured, the endpoint will be available on `http://0.0.0.0:9090` and can be queried with any HTTP client, for example:
 
@@ -56,14 +61,20 @@ curl http://127.0.0.1:9090/metrics
 
 To avoid name conflicts between PgDog's metrics and your own, you can namespace these metrics with a configurable prefix:
 
-```toml
-[general]
-openmetrics_namespace = "pgdog_"
-```
+=== "pgdog.toml"
+    ```toml
+    [general]
+    openmetrics_namespace = "pgdog_"
+    ```
+=== "Helm chart"
+    ```yaml
+    openMetricsNamespace: pgdog_
+    ```
 
 !!! note "Prefix format"
-    Some OpenMetrics implementations don't support special characters in the metric name (e.g., periods, commas, etc.). In that case,
-    you can use an underscore (`_`) instead.
+    Some OpenMetrics implementations don't support special characters in the metric name (e.g., periods, commas, etc.) while others prefer a period (`.`, e.g. Datadog).
+
+    To make these metrics display correctly when collected with the Datadog agent, set `openmetrics_namespace` to `"pgdog."` instead.
 
 ## OTEL
 
@@ -87,6 +98,28 @@ See [`[otel]` configuration](../configuration/pgdog.toml/otel.md) for the full l
       datadogApiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       endpoint: "https://otlp.us5.datadoghq.com/v1/metrics"
     ```
+
+#### Using a Secret
+
+If deploying with Kubernetes, you can keep the Datadog API key out of the config by referencing an existing Kubernetes `Secret` instead. The chart injects it as the `DD_API_KEY` environment variable.
+
+The `Secret` resource should be in the same namespace as the chart release:
+
+```bash title="kubectl"
+kubectl create secret generic my-datadog \
+  --namespace pgdog \
+  --from-literal=dd-api-key=<your-datadog-api-key>
+```
+
+The secret can then be referenced in `values.yaml`:
+
+```yaml title="values.yaml"
+otel:
+  endpoint: "https://otlp.us5.datadoghq.com/v1/metrics"
+  datadogApiKeySecret:
+    name: my-datadog
+    key: dd-api-key
+```
 
 #### Namespace
 
@@ -167,3 +200,10 @@ The following metrics are exported via the OpenMetrics endpoint:
 | `avg_cleaned` | Average number of times server connections were cleaned from client parameters. | `gauge` |
 | `query_cache_limit` | Maximum number of queries that can be stored in the cache. | `gauge` |
 | `query_cache_parse_time` | Time spent parsing queries due to cache misses. | `counter` |
+| `query_cache_fingerprints` | Number of query fingerprints calculated. | `counter` |
+| `total_auth_attempts` | Total number of server authentication attempts. | `counter` |
+| `avg_auth_attempts` | Average number of server authentication attempts per statistics period. | `gauge` |
+| `pub_sub_listeners` | Current number of clients listening on a pub/sub channel. | `gauge` |
+| `pub_sub_listener_received` | Total number of notifications received by pub/sub listeners. | `counter` |
+| `pub_sub_listener_dropped` | Total number of notifications dropped by lagging pub/sub listeners. | `counter` |
+| `two_pc_recovered_total` | Total number of in-flight 2PC transactions restored from the WAL during recovery. | `counter` |

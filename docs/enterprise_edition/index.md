@@ -16,7 +16,7 @@ The following features are available exclusively in the Enterprise edition:
 |-|-|
 | [Control plane](control_plane/index.md) (beta) | Manage multiple PgDog nodes and deployments. |
 | Queries | Monitor queries running through PgDog in real-time. |
-| Plans | Request and track Postgres query plans for slow queries. |
+| [Plans](plans.md) | Request and track Postgres query plans for slow queries. |
 | Metrics | Second-precision PgDog and resource usage metrics. |
 | [Quality of Service](qos.md) (alpha) | Track and block bad queries automatically. |
 
@@ -69,12 +69,7 @@ image:
 
 #### Control plane
 
-The [control plane](control_plane/index.md) comes with its own [Helm chart](control_plane/installation.md). The chart has a few cluster dependencies, which you can check using our installation script:
-
-```bash
-curl -fsSL \
-  https://raw.githubusercontent.com/pgdogdev/helm-ee/main/install.sh | bash
-```
+The [control plane](control_plane/index.md) comes with its own [Helm chart](control_plane/installation.md).
 
 ### From source
 

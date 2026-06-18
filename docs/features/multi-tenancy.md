@@ -71,7 +71,7 @@ The first one is configurable using [sharded tables](../configuration/pgdog.toml
 
 This tells PgDog that the column `tenant_id` in _all_ tables will have the data type `BIGINT` and should be used for routing queries between shards. See [supported data types](sharding/sharding-functions.md#supported-data-types) for a list of data types you can use for sharding.
 
-The mapping is configurable separately for each tenant ID. Here, you have two options: **list-based** and **range-based** mapping.
+The value-to-shard mapping is configured inside the table's `[[sharded_tables]]` entry. You have two options: **list-based** and **range-based** mapping.
 
 #### List-based mapping
 
@@ -79,21 +79,24 @@ List-based is the most natural mapping for multitenant systems where your tenant
 
 === "pgdog.toml"
     ```toml
-    [[sharded_mappings]]
+    [[sharded_tables]]
     database = "prod"
     column = "tenant_id"
-    kind = "list"
-    values = [1, 5, 1_000]
+    data_type = "bigint"
+
+    [[sharded_tables.mapping]]
+    values = [1, 5, 1000]
     shard = 0
     ```
 === "Helm chart"
     ```yaml
-    shardedMappings:
+    shardedTables:
       - database: prod
         column: tenant_id
-        kind: list
-        values: [1, 5, 1_000]
-        shard: 0
+        dataType: bigint
+        mapping:
+          - values: [1, 5, 1000]
+            shard: 0
     ```
 
 You can specify as many mappings as you need and the list of values can contain as many tenants as you need. PgDog is using an efficient algorithm for mapping tenants to shards and supports millions of tenants as part of the same deployment.
@@ -104,35 +107,32 @@ Range-based mapping is identical to `PARTITION BY RANGE` in Postgres and can be 
 
 === "pgdog.toml"
     ```toml
-    [[sharded_mappings]]
+    [[sharded_tables]]
     database = "prod"
     column = "tenant_id"
-    kind = "range"
+    data_type = "bigint"
+
+    [[sharded_tables.mapping]]
     start = 1
     end = 100
     shard = 0
 
-    [[sharded_mappings]]
-    database = "prod"
-    column = "tenant_id"
-    kind = "range"
+    [[sharded_tables.mapping]]
     start = 100
-    shard = 0
+    shard = 1
     ```
 === "Helm chart"
     ```yaml
-    shardedMappings:
+    shardedTables:
       - database: prod
         column: tenant_id
-        kind: range
-        start: 1
-        end: 100
-        shard: 0
-      - database: prod
-        column: tenant_id
-        kind: range
-        start: 100
-        shard: 0
+        dataType: bigint
+        mapping:
+          - start: 1
+            end: 100
+            shard: 0
+          - start: 100
+            shard: 1
     ```
 
 Much like Postgres partitions, the start of the range is included in the range while the end is excluded.

@@ -154,82 +154,64 @@ All queries referencing only these tables will be sent to one of the shards, usi
 
 ## Shard by list and range
 
-!!! note "Required configuration"
-    The `[[sharded_tables]]` configuration entry is still required for list and range sharding. It specifies the data type of the column, which tells PgDog how to parse its value at runtime.
-
-
 By default, PgDog uses hash-based sharding, with data evenly split between shards. If you want to organize your data differently, you can use list-based and range-based sharding. List-based sharding uses the same algorithm as Postgres' `PARTITION BY LIST` and range-based uses `PARTITION BY RANGE`.
 
-To configure either one, you need to specify the value-to-shard mapping in the configuration.
+To configure either one, add a `mapping` to the table's `[[sharded_tables]]` entry. Each rule assigns an explicit set of values (list), a bounded range (range), or everything else (default) to a shard. PgDog infers the rule type from the fields you set.
 
-## Mapping fields
+A mapping is a list of rules attached to a `[[sharded_tables]]` entry. TOML gives you two equivalent ways to write that list:
 
-!!! note
-    The `column`, `table`, and `schema` fields must match a corresponding `[[sharded_tables]]` entry.
+- One `[[sharded_tables.mapping]]` block per rule. The double square brackets are TOML's syntax for an array, so repeating the block simply appends another rule (this is the style used in the examples below). Each block attaches to the most recently defined `[[sharded_tables]]`, so place a table's mapping blocks directly after its entry and before the next `[[sharded_tables]]`.
+- A single inline array, e.g. `mapping = [ { values = [1, 2], shard = 0 }, { shard = 1 } ]`, where each `{ ... }` is one rule.
 
-### `database`
+Both forms produce exactly the same configuration, so use whichever is easier to read.
 
-The name of the database in [`[[databases]]`](databases.md) section.
-
-### `column`
-
-The name of the column to match for routing. Must match a `column` in `[[sharded_tables]]`.
-
-### `table`
-
-The name of the table to match. Must match a `name` in `[[sharded_tables]]` if specified there. This is optional.
-
-### `schema`
-
-The name of the PostgreSQL schema to match. Must match a `schema` in `[[sharded_tables]]` if specified there. This is optional.
-
-### `kind`
-
-The type of mapping. Available options:
-
-- `list`: match specific values (i.e., `PARTITION BY LIST`)
-- `range`: match a range of values (i.e., `PARTITION BY RANGE`)
-- `default`: fallback for unmatched values (list-based sharding only)
+Each rule has a target `shard` plus the fields that define which values it matches:
 
 ### `values`
 
-For `list` mappings, the set of values that route to this shard.
+A set of values that route to this shard. Setting `values` makes the rule a **list** rule (`PARTITION BY LIST`).
 
 ### `start`
 
-For `range` mappings, the starting value (inclusive).
+The starting value of a range, inclusive. Setting `start` and/or `end` makes the rule a **range** rule (`PARTITION BY RANGE`). Omit `start` for a range that is unbounded below.
 
 ### `end`
 
-For `range` mappings, the ending value (exclusive).
+The ending value of a range, exclusive. Omit `end` for a range that is unbounded above.
 
 ### `shard`
 
-The target shard number for matched queries.
+The target shard number for matched values. A rule with only `shard` set (no `values`, `start`, or `end`) is the **default** rule: a catch-all for any value not matched by a list or range rule.
+
+!!! note
+    The rule type is inferred from the fields present: `values` → list, `start`/`end` → range, `shard` alone → default. PgDog resolves a value against list rules first, then range rules, then the default.
 
 ## Mapping examples
 
 ### Lists
 
-Lists are defined as a list of values and a corresponding shard number. Just like sharded tables, the mapping is database and column (and optionally, table and schema) specific:
+A list rule routes an explicit set of values to a shard:
 
 === "pgdog.toml"
     ```toml
-    [[sharded_mappings]]
+    [[sharded_tables]]
     database = "prod"
     column = "tenant_id"
-    kind = "list"
+    data_type = "bigint"
+
+    [[sharded_tables.mapping]]
     values = [1, 2, 3, 4, 5]
     shard = 0
     ```
 === "Helm chart"
     ```yaml
-    shardedMappings:
+    shardedTables:
       - database: prod
         column: tenant_id
-        kind: list
-        values: [1, 2, 3, 4, 5]
-        shard: 0
+        dataType: bigint
+        mapping:
+          - values: [1, 2, 3, 4, 5]
+            shard: 0
     ```
 
 All queries that match the values defined in the mapping will be routed to that specific shard, for example:
@@ -241,30 +223,33 @@ WHERE tenant_id = 4 AND user_id = 1235
 
 ### Range
 
-Ranges are defined with a starting value (included) and the end value (excluded), just like `PARTITION BY RANGE` in Postgres:
+A range rule is defined with a starting value (included) and an ending value (excluded), just like `PARTITION BY RANGE` in Postgres:
 
 === "pgdog.toml"
     ```toml
-    [[sharded_mappings]]
+    [[sharded_tables]]
     database = "prod"
     column = "tenant_id"
-    kind = "range"
+    data_type = "bigint"
+
+    [[sharded_tables.mapping]]
     start = 1
     end = 100
     shard = 0
     ```
 === "Helm chart"
     ```yaml
-    shardedMappings:
+    shardedTables:
       - database: prod
         column: tenant_id
-        kind: range
-        start: 1
-        end: 100
-        shard: 0
+        dataType: bigint
+        mapping:
+          - start: 1
+            end: 100
+            shard: 0
     ```
 
- All sharding key values matching the range will be routed to the specified shard:
+All sharding key values matching the range will be routed to the specified shard:
 
 ```postgresql
 UPDATE users SET deleted_at = NOW()
@@ -273,26 +258,72 @@ WHERE tenant_id IN (1, 2, 5, 10, 56)
 
 ### Default
 
-The `default` kind specifies a fallback shard for values that don't match any list mapping:
+A rule with only a `shard` set — no `values`, `start`, or `end` — is the default: a fallback for any value not matched by a list or range rule.
 
 === "pgdog.toml"
     ```toml
-    [[sharded_mappings]]
+    [[sharded_tables]]
     database = "prod"
     column = "tenant_id"
-    kind = "default"
+    data_type = "bigint"
+
+    [[sharded_tables.mapping]]
     shard = 2
     ```
 === "Helm chart"
     ```yaml
-    shardedMappings:
+    shardedTables:
       - database: prod
         column: tenant_id
-        kind: default
-        shard: 2
+        dataType: bigint
+        mapping:
+          - shard: 2
     ```
 
-Any sharding key value that doesn't match an explicit list mapping will be routed to the default shard.
+On its own, a default rule routes every value to the same shard. It's most useful alongside list or range rules, as a catch-all for the values they don't cover (see [below](#combining-list-range-and-default)).
 
-!!! note
-    The `default` kind only works with list-based sharding, not range-based sharding.
+### Combining list, range, and default
+
+All three rule types can be used together in the same table. PgDog evaluates a value against the **list** rules first, then the **range** rules, and finally falls back to the **default** rule:
+
+=== "pgdog.toml"
+    ```toml
+    [[sharded_tables]]
+    database = "prod"
+    column = "tenant_id"
+    data_type = "bigint"
+
+    # list: tenant_id 1, 2, or 3 -> shard 0
+    [[sharded_tables.mapping]]
+    values = [1, 2, 3]
+    shard = 0
+
+    # range: 100 <= tenant_id < 200 -> shard 1 (start included, end excluded)
+    [[sharded_tables.mapping]]
+    start = 100
+    end = 200
+    shard = 1
+
+    # default: any value not matched above -> shard 2
+    [[sharded_tables.mapping]]
+    shard = 2
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedTables:
+      - database: prod
+        column: tenant_id
+        dataType: bigint
+        mapping:
+          # list: tenant_id 1, 2, or 3 -> shard 0
+          - values: [1, 2, 3]
+            shard: 0
+          # range: 100 <= tenant_id < 200 -> shard 1 (start included, end excluded)
+          - start: 100
+            end: 200
+            shard: 1
+          # default: any value not matched above -> shard 2
+          - shard: 2
+    ```
+
+With this configuration, `tenant_id = 2` is routed to shard 0 (list match), `tenant_id = 150` to shard 1 (range match), and `tenant_id = 5000` to shard 2 (default). Without a default rule, a value that matches no list or range rule is sent to [all shards](../../features/sharding/cross-shard-queries/index.md).

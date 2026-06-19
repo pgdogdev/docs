@@ -1,6 +1,6 @@
 nav:
-  - 'manager.md'
-  - 'functions.md'
   - 'index.md'
   - 'cache.md'
+  - 'manager.md'
+  - 'functions.md'
   - 'migrations.md'

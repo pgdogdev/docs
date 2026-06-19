@@ -673,6 +673,26 @@ Number of identical log messages allowed within [`log_dedup_window`](#log_dedup_
 
 Default: **`0`** (disabled)
 
+### `query_size_limit`
+
+Maximum size, in bytes, of a query message (`Query` or `Parse`) received from a client. When a message exceeds this size, the action taken depends on [`query_size_limit_action`](#query_size_limit_action). Other protocol messages (e.g. `Bind`, `CopyData`) are not affected.
+
+!!! note
+    This setting is useful for protecting the query parser from very large SQL texts that could cause excessive CPU or memory usage.
+
+Default: **none** (disabled)
+
+### `query_size_limit_action`
+
+Action to take when a client query message exceeds [`query_size_limit`](#query_size_limit).
+
+Available options:
+
+- `warn` (default): log a warning with a sample of the query; the query is still executed normally
+- `block`: reject the message before reading it into memory, send the client a FATAL error (`54000`), and disconnect
+
+Default: **`warn`**
+
 ## Statistics
 
 ### `stats_period`

@@ -8,30 +8,14 @@ jobs:
     verify-tomls:
         runs-on: blacksmith-4vcpu-ubuntu-2404
         timeout-minutes: 30
+        env:
+            PGDOG_IMAGE: ghcr.io/pgdogdev/pgdog-enterprise:main-ent
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-            - name: Checkout pgdog-enterprise
-              uses: actions/checkout@v4
-              with:
-                  repository: pgdogdev/pgdog-enterprise
-                  ref: main-ent
-                  path: pgdog-source
-                  token: ${{ secrets.PGDOG_ENTERPRISE_TOKEN }}
-            - uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: stable
-                  override: true
-            - name: Install CMake 3.31
-              run: |
-                  sudo apt update && sudo apt install mold -y
-                  sudo apt remove cmake
-                  sudo pip3 install cmake==3.31.6
-                  cmake --version
-            - name: Build
-              run: cargo build
-              working-directory: pgdog-source
+            - name: Pull PgDog Enterprise image
+              run: docker pull "$PGDOG_IMAGE"
             - name: Install test dependencies
               run: sudo pip3 install -r tests/requirements.txt
             - name: Run tests
-              run: python3 tests/test_code_blocks.py pgdog-source/target/debug/pgdog
+              run: python3 tests/test_code_blocks.py tests/pgdog-docker.sh

@@ -73,3 +73,10 @@ PgDog transmits the following information to the control plane:
 | Queries | Queries that are currently executing through each PgDog node. |
 | Query plans | Output of `EXPLAIN` for slow and sampled queries, collected in the background. |
 | Configuration | Current PgDog settings and database schema. |
+
+## Read more
+
+{{ next_steps_links([
+    ("Installation", "installation.md", "Deploy the control plane alongside your PgDog nodes and connect them together."),
+    ("Features", "features/index.md", "Explore control plane features like alerts, configuration management, instances, metrics, and Slack integration."),
+]) }}

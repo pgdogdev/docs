@@ -1,3 +1,7 @@
+---
+icon: material/alert-circle-outline
+---
+
 # Alerts
 
 Since the control plane has access to real-time PgDog [metrics](metrics.md), it can detect outliers and trigger automatic alerts.

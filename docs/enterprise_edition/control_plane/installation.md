@@ -15,7 +15,7 @@ helm install control pgdogdev-ee/pgdog-control
 
 The chart has a few external requirements, [documented below](#requirements).
 
-## Guided install
+## Dependencies
 
 While the chart creates and manages several resources, including an `Ingress`, some of them have external dependencies which cannot be created by Helm.
 
@@ -30,9 +30,6 @@ The script requires that you have both the `awscli` and `kubectl` installed, whi
 
 !!! note "Read-only actions"
     The guided installation script is strictly **read-only** and will never make any modifications to your environment.
-
-
-## Requirements
 
 Since the chart creates an `Ingress` resource for the web dashboard, an ingress controller is required to access the web dashboard. The chart supports four Ingress settings out of the box:
 

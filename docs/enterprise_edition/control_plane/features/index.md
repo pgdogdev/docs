@@ -9,6 +9,7 @@ The control plane provides operational features for monitoring, configuring, and
 | Feature | Description |
 |-|-|
 | [Alerts](alerts.md) | Detect outliers in live PgDog metrics and send incidents to supported providers. |
+| [Autoscaling](autoscaling.md) | Automatically resize connection pools when PgDog nodes are added or removed. |
 | [Configuration](config.md) | Manage PgDog configuration across connected instances. |
 | [Instances](instances.md) | View and manage PgDog instances connected to the control plane. |
 | [Metrics](metrics.md) | Inspect metrics reported by PgDog instances. |

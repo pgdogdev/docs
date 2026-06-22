@@ -1,3 +1,7 @@
+---
+icon: material/slack
+---
+
 # Slack integration
 
 The control plane can send notifications to a Slack channel. Notifications include changes to managed PgDog deployments, like Helm chart updates, configuration reloading, and updates to database topology.

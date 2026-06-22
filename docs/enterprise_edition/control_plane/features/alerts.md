@@ -4,12 +4,12 @@ icon: material/alert-circle-outline
 
 # Alerts
 
-Since the control plane has access to real-time PgDog [metrics](metrics.md), it can detect outliers and trigger automatic alerts.
+Since the control plane has access to real-time PgDog [metrics](../../../features/metrics.md), it can detect outliers and trigger automatic alerts.
 
 ## How it works
 
 The control plane evaluates the metrics it receives from all PgDog instances on a continuous loop. When they exceed pre-configured thresholds, an incident
-is created using one of configured integrations.
+is created using one of the configured integrations.
 
 <center>
     <img src="/images/ee/alerts.png" width="100%" alt="Alerts">
@@ -55,7 +55,7 @@ The following parameters are configurable via the [Helm chart](../installation.m
 | `clients_waiting` | Average number of clients waiting for a connection from a pool. | Clients, e.g., `10` |
 | `cpu` | Average CPU utilization of each PgDog pod. | Percentage, e.g., `90.0` (90%) |
 | `memory` | Average memory utilization of each PgDog pod. | MiB, e.g., `2048` (2048 MiB) |
-| `server_connections` | Average Nnmber of open connections from PgDog to Postgres. | Connections, e.g., `100` |
+| `server_connections` | Average number of open connections from PgDog to Postgres. | Connections, e.g., `100` |
 
 #### Evaluation window
 

@@ -23,7 +23,7 @@ The following parameters can be configured via the [Helm chart](../installation.
 | Parameters | Description |
 |-|-|
 | `bot_token` | The Slack API bot token. |
-| `channel` | The slack channel ID where the Slack bot is allowed to post messages. |
+| `channel` | The Slack channel ID where the Slack bot is allowed to post messages. |
 
 ## Notifications
 
@@ -32,5 +32,5 @@ If Slack integration is configured, the control plane will send the following no
 | Notification | Description |
 |-|-|
 | Helm install (start) | The control plane starts executing the `helm upgrade --install` command to modify/create a PgDog deployment. |
-| Helm install (end) | The control plane is finished executing the `helm ugprade --install` command. If any errors occur, they are included in the notification. |
+| Helm install (end) | The control plane is finished executing the `helm upgrade --install` command. If any errors occur, they are included in the notification. |
 | Configuration reload | The control plane triggers a configuration reload on all PgDog instances in a deployment. |

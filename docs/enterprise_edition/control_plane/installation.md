@@ -46,7 +46,7 @@ If deploying the dashboard with access to the Internet, make sure to configure a
 
 ## Ingress
 
-Most of the settings that need to be provided are around the Ingress and OAuth authentication. The [guided install](#guided-install) will configure them automatically. However, if you're installing manually, they are documented below:
+Most of the settings that need to be provided are around the Ingress and OAuth authentication. The [guided install](#dependencies) will configure them automatically. However, if you're installing manually, they are documented below:
 
 | Setting | Description | Example |
 |-|-|-|

@@ -1,11 +1,22 @@
 x-pgdog: &pgdog
-  image: ghcr.io/pgdogdev/pgdog-enterprise:v2026-06-15
-  command: ["pgdog", "--config", "/etc/pgdog/pgdog.toml", "--users", "/etc/secrets/pgdog/users.toml"]
+  image: ghcr.io/pgdogdev/pgdog-enterprise:v2026-06-22
+  command:
+    [
+      "pgdog",
+      "--config",
+      "/etc/pgdog/pgdog.toml",
+      "--users",
+      "/etc/secrets/pgdog/users.toml",
+    ]
   mem_limit: 1g
   environment:
     PGPASSWORD: postgres
   healthcheck:
-    test: ["CMD-SHELL", "psql -h 127.0.0.1 -p 6432 -U postgres -d postgres -tAc 'SELECT 1' || exit 1"]
+    test:
+      [
+        "CMD-SHELL",
+        "psql -h 127.0.0.1 -p 6432 -U postgres -d postgres -tAc 'SELECT 1' || exit 1",
+      ]
     interval: 5s
     timeout: 5s
     retries: 5
@@ -32,7 +43,7 @@ services:
     image: redis:7
 
   control:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-06-15
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-06-22
     ports:
       - "8099:8080"
     environment:

@@ -7,6 +7,10 @@ Since the control plane has access to real-time PgDog [metrics](metrics.md), it 
 The control plane evaluates the metrics it receives from all PgDog instances on a continuous loop. When they exceed pre-configured thresholds, an incident
 is created using one of configured integrations.
 
+<center>
+    <img src="/images/ee/alerts.png" width="100%" alt="Alerts">
+</center>
+
 ### Integrations
 
 The following incident management providers are supported:
@@ -35,15 +39,20 @@ control:
 
 #### Parameters
 
+!!! note "Disabled by default"
+    Thresholds have no defaults. If a threshold is not configured, its metric will not be monitored.
+
+
 The following parameters are configurable via the [Helm chart](../installation.md):
 
 | Parameter | Description | Unit |
 |-|-|-|
-| `evaluation_window_secs` | The evaluation window for the metrics. Longer windows reduce the chance of false positives in spiky workloads. Shorter windows are quicker to notify in case of a real issue. | Seconds, e.g., `300` (5 minutes) |
-| `thresholds.clients_waiting` | Average number of clients waiting for a connection from a pool. | Clients, e.g., `10` |
-| `thresholds.cpu` | CPU utilization of each PgDog pod. | Percentage, e.g., `90.0` (90%) |
-| `thresholds.memory` | Memory utilization of each PgDog pod. | MiB, e.g., `2048` (2048 MiB) |
-| `thresholds.server_connections` | Number of open connections from PgDog to Postgres. | Connections, e.g., `100` |
+| `evaluation_window_secs` | The metrics evaluation window. Metrics are averaged over this period to produce an alert signal. | Seconds, e.g., `300` (5 minutes) |
+| `clients_waiting` | Average number of clients waiting for a connection from a pool. | Clients, e.g., `10` |
+| `cpu` | Average CPU utilization of each PgDog pod. | Percentage, e.g., `90.0` (90%) |
+| `memory` | Average memory utilization of each PgDog pod. | MiB, e.g., `2048` (2048 MiB) |
+| `server_connections` | Average Nnmber of open connections from PgDog to Postgres. | Connections, e.g., `100` |
 
-!!! note "Disabled by default"
-    Thresholds have no defaults. If not configured, a threshold will not trigger an alert.
+#### Evaluation window
+
+Longer evaluation windows reduce the chance of false positives in spiky workloads. Shorter windows will be evaluated quicker and will trigger faster notifications in case of an incident.

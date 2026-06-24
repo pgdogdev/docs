@@ -10,7 +10,7 @@ log = logging.getLogger("mkdocs.plugins.macros")
 # Latest released tag for the Enterprise Docker images. Update this in one
 # place; reference it in docs with {{ enterprise_tag }}. Can be overridden at
 # build time with the ENTERPRISE_TAG environment variable.
-ENTERPRISE_TAG = os.environ.get("ENTERPRISE_TAG", "v2026-06-22")
+ENTERPRISE_TAG = os.environ.get("ENTERPRISE_TAG", "v2026-06-24")
 
 
 def define_env(env):

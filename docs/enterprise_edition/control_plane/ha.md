@@ -24,7 +24,7 @@ Whichever instance acquires the lease first will report itself as `"Ready"` to t
 
 ### Configuration
 
-This feature is **enabled** by default. Leader election settings can be configured in the Helm chart:
+This feature is **disabled** by default. It can be enabled and configured in the Helm chart:
 
 ```yaml title="values.yaml"
 control:
@@ -41,7 +41,7 @@ Most of these settings have sane defaults:
 
 | Configuration | Description |
 |-|-|
-| `enabled` | Toggle leader election on or off. It is enabled by default (`true`). |
+| `enabled` | Toggle leader election on or off. It is disabled by default (`false`). |
 | `lease_name` | The name of the `Lease` resource. Change it if you're planning to deploy more than one control plane per namespace. |
 | `lease_duration_secs` | Lease duration. Longer values prevent lease takeover due to clock skew, but slow down redeployments after unexpected pod termination. |
 | `lease_interval_secs` | How often the control plane leader attempts to renew the lease. |

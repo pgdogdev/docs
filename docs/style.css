@@ -44,6 +44,15 @@ table {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+/* ===== Theme-aware Images ===== */
+.theme-aware-image {
+  filter: contrast(1.04) saturate(1.08);
+}
+
+[data-md-color-scheme="slate"] .theme-aware-image {
+  filter: invert(1) hue-rotate(180deg) contrast(1.12) saturate(1.05);
+}
+
 /* ===== Card Grid ===== */
 .grid {
   display: grid;

@@ -70,7 +70,7 @@
    Dark scheme (slate)  → PgDog blue accent on near-black
    -------------------------------------------------------------------------- */
 [data-md-color-scheme="slate"] {
-  --pg-bg: #0d0e12;
+  --pg-bg: #111318;
   --pg-bg-subtle: #14161b;
   --pg-bg-code: #16181e;
   --pg-text: #e9eaee;

@@ -53,9 +53,9 @@
 
   /* Code syntax highlighting — restrained design palette */
   --md-code-hl-keyword-color: #3f6fe8;
-  --md-code-hl-string-color: #3ba776;
+  --md-code-hl-string-color: #2c8a60;
   --md-code-hl-number-color: #b5791b;
-  --md-code-hl-comment-color: #9aa0ab;
+  --md-code-hl-comment-color: #6e7480;
   --md-code-hl-constant-color: #b5791b;
   --md-code-hl-name-color: var(--pg-text);
   --md-code-hl-function-color: var(--pg-text);
@@ -104,7 +104,7 @@
   --md-code-hl-keyword-color: #7aa2ff;
   --md-code-hl-string-color: #5fcf94;
   --md-code-hl-number-color: #e0b463;
-  --md-code-hl-comment-color: #666b75;
+  --md-code-hl-comment-color: #8a8f99;
   --md-code-hl-constant-color: #e0b463;
   --md-code-hl-name-color: var(--pg-text);
   --md-code-hl-function-color: var(--pg-text);
@@ -134,9 +134,39 @@
   font-weight: 700;
   letter-spacing: -0.3px;
 }
+/* Sit the title right next to the logo. Material's margin lives on a
+   [dir=ltr]-scoped rule, so match its specificity; also trim the logo button's
+   right padding/margin. */
+.md-header .md-header__title {
+  margin-left: 0.3rem;
+}
+.md-header .md-header__button.md-logo {
+  margin-right: 0;
+  padding-right: 0;
+}
+/* The logo PNG is white (made for the original dark header). On the light-mode
+   top bar that makes it invisible, so swap in a blue-recolored copy. */
+[data-md-color-scheme="default"] .md-header__button.md-logo img {
+  content: url("/images/logo-blue-64x64.png");
+}
 .md-header__button.md-icon,
 .md-header__source {
   color: var(--pg-muted);
+}
+/* Light mode: darken the GitHub icon, repo name and stats (they inherit a
+   mid-grey and the facts are dimmed to 75% by default). */
+[data-md-color-scheme="default"] .md-header__source {
+  color: var(--pg-text);
+}
+[data-md-color-scheme="default"] .md-source__facts {
+  opacity: 0.85;
+}
+/* Dark mode: brighten the GitHub icon, repo name and stats. */
+[data-md-color-scheme="slate"] .md-header__source {
+  color: var(--pg-text);
+}
+[data-md-color-scheme="slate"] .md-source__facts {
+  opacity: 0.85;
 }
 .md-header__button.md-icon:hover {
   color: var(--pg-text);
@@ -154,6 +184,16 @@
   background-color: var(--pg-bg-subtle);
   border-color: var(--pg-border-strong);
 }
+/* Dark mode: lift the search box off the near-black header so it's prominent. */
+[data-md-color-scheme="slate"] .md-search__form {
+  background-color: #1c2029;
+  border-color: #353a45;
+}
+[data-md-color-scheme="slate"] .md-search__form:hover,
+[data-md-color-scheme="slate"] [data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+  background-color: #222632;
+  border-color: var(--pg-accent);
+}
 [data-md-toggle="search"]:checked ~ .md-header .md-search__form {
   border-color: var(--pg-border-strong);
 }
@@ -165,6 +205,10 @@
 }
 .md-search__icon {
   color: var(--pg-faint);
+}
+/* Light mode: the magnifier defaults to white (header context) — make it dark. */
+[data-md-color-scheme="default"] .md-search__icon {
+  color: var(--pg-text);
 }
 
 /* ===== Typography ===== */
@@ -218,9 +262,12 @@
 .md-nav {
   font-size: 0.7rem;
 }
-/* Breathing room below the "PgDog" title before the first menu item. */
+/* Breathing room below the "PgDog" title before the first menu item.
+   Also drop Material's bg-colored box-shadow glow on the sticky title, which
+   bleeds onto the first item as an odd fade (the title bg is already solid). */
 .md-sidebar--primary .md-nav__title {
   padding-bottom: 1rem;
+  box-shadow: none;
 }
 /* Slightly larger left-menu text at every nesting level (the right-hand TOC,
    which lives in the secondary sidebar, keeps the base size). rem avoids the
@@ -245,6 +292,14 @@
 .md-nav__link:focus,
 .md-nav__link:hover {
   background-color: var(--pg-hover);
+  color: var(--pg-text);
+}
+/* Consistent, scheme-aware contrast for every left-menu AND right-TOC item
+   (links and expandable section labels alike): --pg-text is near-black in light
+   mode and near-white in dark mode. Active links keep the accent; the uppercase
+   top-level group labels stay faint via their higher-specificity rule below. */
+.md-sidebar--primary .md-nav__link:not(.md-nav__link--active),
+.md-sidebar--secondary .md-nav__link:not(.md-nav__link--active) {
   color: var(--pg-text);
 }
 .md-nav__item .md-nav__link--active,
@@ -329,10 +384,10 @@ table {
 
 /* ===== Code blocks ===== */
 .md-typeset pre > code {
-  border-radius: var(--pg-radius-lg);
+  border-radius: 0;
 }
 .md-typeset .highlight {
-  border-radius: var(--pg-radius-lg);
+  border-radius: 0;
   overflow: hidden;
   border: 1px solid var(--pg-border);
 }
@@ -373,13 +428,28 @@ table {
   border-color: var(--pg-border-strong);
 }
 
+/* Monospace text WITHOUT the inline-code box (no background / border).
+   Usage in Markdown (attr_list + md_in_html are enabled):
+     <span class="mono">some text</span>
+   Or strip the box off real inline code:  `text`{ .mono }                  */
+.md-typeset .mono,
+.md-typeset code.mono {
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+.md-typeset code.mono {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.9em;
+}
+
 /* ===== Admonitions ===== */
 /* Whole block softly tinted, 3px colored left border, colored title. */
 .md-typeset .admonition,
 .md-typeset details {
   border: 1px solid var(--pg-border);
   border-left: 3px solid var(--pg-accent);
-  border-radius: var(--pg-radius);
+  border-radius: 0;
   background-color: var(--pg-accent-soft);
   box-shadow: none;
   font-size: 0.76rem;
@@ -549,8 +619,20 @@ table {
 .md-footer {
   margin-top: 2rem;
 }
+/* Light mode: Material's footer (prev/next nav bar) is dark in both schemes.
+   Make it a light, subtle bar with dark text. */
+[data-md-color-scheme="default"] .md-footer {
+  --md-footer-bg-color: var(--pg-bg-subtle);
+  --md-footer-bg-color--dark: var(--pg-bg-subtle);
+  --md-footer-fg-color: var(--pg-text);
+  --md-footer-fg-color--light: var(--pg-muted);
+  --md-footer-fg-color--lighter: var(--pg-faint);
+  color: var(--pg-text);
+  border-top: 1px solid var(--pg-border);
+}
+/* Hide the bottom meta bar ("Made with MkDocs" + social/GitHub icons). */
 .md-footer-meta {
-  background-color: var(--pg-bg-subtle);
+  display: none;
 }
 
 /* ===== Hero section (homepage) ===== */

@@ -27,6 +27,7 @@ Transaction mode is **enabled** by default. This is controllable via configurati
     [general]
     pooler_mode = "transaction"
     ```
+    <br>
     ```yaml title="Helm chart"
     poolerMode: transaction
     ```
@@ -37,6 +38,7 @@ Transaction mode is **enabled** by default. This is controllable via configurati
     host = "127.0.0.1"
     pooler_mode = "transaction"
     ```
+    <br>
     ```yaml title="Helm chart"
     databases:
       - name: prod
@@ -50,6 +52,7 @@ Transaction mode is **enabled** by default. This is controllable via configurati
     database = "prod"
     pooler_mode = "transaction"
     ```
+    <br>
     ```yaml title="Helm chart"
     users:
       - name: alice
@@ -145,6 +148,7 @@ To use statement mode, you can configure it globally or per user/database, for e
     [general]
     pooler_mode = "statement"
     ```
+    <br>
     ```yaml title="Helm chart"
     poolerMode: statement
     ```
@@ -155,6 +159,7 @@ To use statement mode, you can configure it globally or per user/database, for e
     host = "127.0.0.1"
     pooler_mode = "statement"
     ```
+    <br>
     ```yaml title="Helm chart"
     databases:
       - name: prod
@@ -168,6 +173,7 @@ To use statement mode, you can configure it globally or per user/database, for e
     database = "prod"
     pooler_mode = "statement"
     ```
+    <br>
     ```yaml title="Helm chart"
     users:
       - name: alice

@@ -246,6 +246,20 @@
   text-decoration: none;
   font-weight: 500;
 }
+/* Keep links bold when wrapped in **bold** (our 500 weight was overriding it). */
+.md-typeset strong a,
+.md-typeset a strong {
+  font-weight: 700;
+}
+/* Links inside headings should take the heading's weight, not the link 500. */
+.md-typeset h1 a,
+.md-typeset h2 a,
+.md-typeset h3 a,
+.md-typeset h4 a,
+.md-typeset h5 a,
+.md-typeset h6 a {
+  font-weight: inherit;
+}
 .md-typeset a:hover {
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -400,6 +414,7 @@ table {
    Pin it flush so the title sits at the top of the block. */
 .md-typeset .highlight > .filename {
   margin-top: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--pg-faint) 35%, var(--pg-border-strong));
 }
 /* Language label shown by pymdownx.highlight */
 .md-typeset .highlight [data-md-annotation-id],

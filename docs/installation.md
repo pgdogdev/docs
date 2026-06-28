@@ -31,22 +31,23 @@ docker run ghcr.io/pgdogdev/pgdog:v0.1.44
 ### AWS ECS
 
 !!! note "New feature"
-    This is a new feature. Please report any issues you may encounter.
+    The ECS Terraform module is a new project. Please report any issues you may encounter. Community contributions are welcome.
 
- We recently added a [Terraform module](https://github.com/pgdogdev/pgdog-ecs-terraform) to deploy PgDog on AWS ECS. It works with the same Docker image as our Helm chart, so the experience should be familiar.
+ We recently added a [Terraform module](https://github.com/pgdogdev/pgdog-ecs-terraform) to deploy PgDog in AWS ECS. It works with the same Docker image as our [Helm chart](#kubernetes), so the experience should be familiar.
 
 ## Pre-built binaries
 
-Each PgDog release (weekly, on Thursdays) contains pre-built binaries for Linux (arm64, amd64), Mac (aarch64, i.e. Apple Silicon), and Debian packages (`.deb`) for convenient installation on Debian/Ubuntu.
+Each PgDog release (every week, on Thursday) contains pre-built binaries for Linux (arm64, amd64), Mac (aarch64, i.e. Apple Silicon), and Debian packages (`.deb`) for convenient installation on Debian/Ubuntu.
 
-You can download pre-built binaries in [GitHub](https://github.com/pgdogdev/pgdog/releases).
+You can download all binaries from the [releases page](https://github.com/pgdogdev/pgdog/releases) in GitHub.
 
-#### glibc
-The Linux binaries are built on Ubuntu 24.04, and are linked against glibc version 2.39. To run them, your system needs glibc 2.39 or later.
+#### Linux binaries and glibc
 
-#### Mac OS
+The Linux binaries are built on Ubuntu 24.04 and are linked against glibc version 2.39. To run them, your system needs glibc 2.39 or later.
 
-The Mac OS binary is not signed. To run it locally, make sure to de-quarantine it:
+#### Mac OS security
+
+The Mac OS binary is not signed. To run it locally, make sure to de-quarantine it first, e.g.:
 
 ```bash
 xattr -d com.apple.quarantine ./pgdog
@@ -54,11 +55,11 @@ xattr -d com.apple.quarantine ./pgdog
 
 ## From source
 
-PgDog can be easily compiled from source. For production deployments, a `Dockerfile` is provided in [GitHub](https://github.com/pgdogdev/pgdog/tree/main/Dockerfile). If you prefer to deploy on bare-metal or you're looking to run PgDog locally, you'll need to install a few dependencies.
+PgDog can be easily compiled from source. For production deployments, a [`Dockerfile`](https://github.com/pgdogdev/pgdog/tree/main/Dockerfile) is provided in our code repository. If you prefer to deploy on bare-metal or you are looking to run PgDog locally, you will need to install a few dependencies.
 
 ### Dependencies
 
-Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make sure to have a working version of a C/C++ compiler installed.
+Parts of PgDog depend on C/C++ libraries which are compiled from source. Make sure to have a working version of a C/C++ compiler installed before building from source:
 
 === "macOS"
     Install [Xcode](https://developer.apple.com/xcode/) from the App Store and CMake & Clang from Homebrew:
@@ -102,7 +103,7 @@ git clone https://github.com/pgdogdev/pgdog && \
 cd pgdog
 ```
 
-To make sure you get all performance benefits, PgDog should be compiled in release mode:
+To make sure you get all performance benefits, PgDog should be compiled in release mode with all optimizations:
 
 ```bash
 cargo build --release
@@ -110,7 +111,7 @@ cargo build --release
 
 ### Launch PgDog
 
-You can start PgDog by running the binary directly, located in `target/release/pgdog`, or with Cargo:
+You can start PgDog by running the binary directly which is located in `target/release/pgdog`, or by running it with Cargo:
 
 ```bash
 cargo run --release
@@ -122,13 +123,12 @@ PgDog is configured via two files:
 
 | Configuration file | Description |
 |-|-|
-| [pgdog.toml](configuration/index.md) | Contains general settings and information about PostgreSQL servers. |
-| [users.toml](configuration/users.toml/users.md) | Contains users and passwords that are allowed to connect to PgDog. |
+| [pgdog.toml](configuration/index.md) | General settings and information about PostgreSQL servers. |
+| [users.toml](configuration/users.toml/users.md) | Usernames and passwords that are allowed to connect to PgDog. |
 
-Users are configured separately to allow them to be encrypted at rest in environments that support it, like in Kubernetes or with the AWS Secrets Manager.
+Users are configured separately which allows them to be encrypted at rest in environments that support it, like in Kubernetes or with the AWS Secrets Manager.
 
-Both config files should be placed in the current working directory (`$PWD`) for PgDog to detect them. Alternatively,
-you can pass their paths at startup as arguments:
+If the configuration files are placed in the current working directory (`$PWD`), PgDog will detect them automatically. Alternatively, you can pass their paths at startup as arguments:
 
 ```bash
 pgdog \
@@ -155,7 +155,7 @@ Most configuration options have sensible defaults. This makes single-database co
 
 #### [users.toml](configuration/users.toml/users.md)
 
-This config file contains a mapping between databases, users, and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file won't be able to connect:
+This config file contains a mapping between databases, users, and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file will not be able to connect:
 
 === "users.toml"
     ```toml
@@ -173,7 +173,6 @@ This config file contains a mapping between databases, users, and passwords. Unl
     ```
 
 !!! note "Configuring users"
-
     PgDog creates connection pools for each user/database pair. If no users are configured in `users.toml`, all connection pools will be disabled and PgDog won't connect to the database(s).
 
 ## Next steps

@@ -10,7 +10,7 @@ Authentication is **enabled** by default. Applications connecting to PgDog must 
 
 ## Supported methods
 
-PgDog implements a subset of authentication methods supported by Postgres and some others which are commonly used in the industry. The following table summarizes the current level of support for client and server connection authentication methods:
+PgDog implements a subset of authentication methods supported by Postgres and some others commonly used in the industry. The following table summarizes the current level of support for client and server connection authentication methods:
 
 | Authentication method | Client connections | Server connections |
 |-|-|-|
@@ -28,7 +28,7 @@ PgDog implements a subset of authentication methods supported by Postgres and so
 
 ## Client authentication
 
-By default, client connections will use password authentication encrypted with `scram-sha-256`. This method is secure and recommended for production usage. PgDog supports using other methods, e.g., `md5` and `plain`, which you can change it with configuration:
+By default, client connections will use password authentication encrypted with `scram-sha-256`. This method is secure and recommended for production usage. PgDog supports using other methods, e.g., `md5` and `plain`, which you can change with configuration:
 
 === "pgdog.toml"
     ```toml
@@ -52,7 +52,7 @@ The following password authentication algorithms are available for client connec
 
 ### SCRAM performance
 
-The SCRAM-SHA-256 algorithm is computationally expensive and will use a considerable amount of CPU time. This is by design so it makes it difficult to brute-force. However, if your application is frequently creating new connections to the database, like serverless apps running on Vercel, Cloudflare workers, etc., this could also have a latency impact.
+The SCRAM-SHA-256 algorithm is computationally expensive and will use a considerable amount of CPU time. This is by design, since it makes passwords difficult to brute-force. However, if your application is frequently creating new connections to the database, like serverless apps running on Vercel, Cloudflare workers, etc., this could also have a latency impact.
     
 If your application is affected by this, consider enabling [TLS](tls.md) and using the `plain` authentication method instead. Modern CPUs implement TLS algorithms in hardware which makes them efficient and fast.
 
@@ -60,14 +60,14 @@ If your application is affected by this, consider enabling [TLS](tls.md) and usi
 
 The server authentication method is controlled by PostgreSQL. PgDog will use whatever method Postgres requests during connection creation, which is configurable in the [`pg_hba.conf`](https://www.postgresql.org/docs/current/auth-pg-hba-conf.html) file on the server.
 
-PgDog currently supports four (4) authentication methods for server connections:
+PgDog currently supports four authentication methods for server connections:
 
 | Method | Description |
 |-|-|
 | Password authentication | PgDog sends the password using one of the supported [password encryption](#client-authentication) algorithms. |
 | [AWS RDS IAM](#rds-iam-authentication) | PgDog requests a temporary password from AWS IAM and uses that for password authentication instead. |
 | [Azure Workload Identity](#azure-workload-identity-authentication) | Same method as AWS RDS IAM, except supported on Azure. |
-| Hashicorp Vault | PgDog connects to a configured instance of Hashicorpt Vault and uses the provided username and password. |
+| Hashicorp Vault | PgDog connects to a configured instance of Hashicorp Vault and uses the provided username and password. |
 
 ### RDS IAM authentication
 
@@ -121,7 +121,7 @@ To use Workload Identity authentication, configure it on each user in [`users.to
 ### Hashicorp Vault
 
 !!! info "TODO: Documentation"
-    Support for Hashicorp Vault authentication has been added in [v0.1.46](https://github.com/pgdogdev/pgdog/releases/tag/v0.1.46). It has not been documented or thouroughly tested yet.
+    Support for Hashicorp Vault authentication has been added in [v0.1.46](https://github.com/pgdogdev/pgdog/releases/tag/v0.1.46). It has not been documented or thoroughly tested yet.
 
 ## Configuring users
 
@@ -185,11 +185,11 @@ If you want to use a different username or password for PgDog to connect to Post
         serverPassword: opensesame
     ```
 
-This allows you to separate client and server authentication credentials. In case your applications accidentally leak their credentials (e.g., by comitting them to git), you only need to rotate them in the PgDog configuration, without having to take downtime to change passwords in PostgreSQL.
+This allows you to separate client and server authentication credentials. In case your applications accidentally leak their credentials (e.g., by committing them to git), you only need to rotate them in the PgDog configuration, without having to take downtime to change passwords in PostgreSQL.
 
 ## Passthrough authentication
 
-Passthrough authentication is a feature where instead of storing passwords in `users.toml`, PgDog attempts to connect to PostgreSQL using the credentials provided by the client. Passthrough authentication simplifies PgDog deployments by using a single source of truth for user credentials and doesn't require passwords to be stored outside the database or the application.
+With passthrough authentication, instead of storing passwords in `users.toml`, PgDog connects to PostgreSQL using the credentials provided by the client. Passthrough authentication simplifies PgDog deployments by using a single source of truth for user credentials and doesn't require passwords to be stored outside the database or the application.
 
 Passthrough authentication is **disabled** by default and can be enabled with configuration:
 
@@ -207,7 +207,7 @@ Since PgDog doesn't store the server password anymore, using passthrough authent
 
 When a client connects to PgDog for the first time, it will create a connection pool for the database/user pair and the provided password. The database specified by the client must still exist in [`pgdog.toml`](../configuration/pgdog.toml/databases.md).
 
-When configuration is reloaded, connection pools created with passthrough auth are temporarily removed and immediately re-create when a connected client executes a query. As long as `passthrough_auth` is enabled between configuration changes, clients will not be impacted.
+When configuration is reloaded, connection pools created with passthrough auth are temporarily removed and immediately re-created when a connected client executes a query. As long as `passthrough_auth` is enabled between configuration changes, clients will not be impacted.
 
 ### Passthrough authentication security
 
@@ -244,7 +244,7 @@ The most typical deployments of PgDog with passthrough authentication do not con
         serverAuth: rds_iam
     ```
 
-Passthrough authentication must still be enabled in `pgdog.toml`. PgDog will use password supplied by the client and create a connection pool dynamically when they connect for the first time.
+Passthrough authentication must still be enabled in `pgdog.toml`. PgDog will use the password supplied by the client and create a connection pool dynamically when they connect for the first time.
 
 ### Changing passwords
 

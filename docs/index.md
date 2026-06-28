@@ -10,7 +10,7 @@ PgDog is a connection pooler, load balancer and database sharder for PostgreSQL.
 
 PgDog is an open source project. You can download its code from our [repository](https://github.com/pgdogdev/pgdog) in GitHub. If you're deploying PgDog to your cloud account (or on prem), you can either use the [compiled binaries](https://github.com/pgdogdev/pgdog/releases) we provide, or build it from source. 
 
-Every commit in the `main` branch and weekly tagged releases have a correspoding images in our [Docker](github.com/orgs/pgdogdev/packages/container/package/pgdog) repository, for example:
+Every commit in the `main` branch and weekly tagged releases have corresponding images in our [Docker](https://github.com/orgs/pgdogdev/packages/container/package/pgdog) repository, for example:
 
 ```bash
 docker run ghcr.io/pgdogdev/pgdog:v0.1.46
@@ -20,7 +20,7 @@ docker run ghcr.io/pgdogdev/pgdog:v0.1.46
 
 PostgreSQL is a process-based, single-primary database. It has an upper bound on the number of clients that can connect, the number of queries a single server can execute, and on the amount of data it can write at any given time.
 
-PgDog is a proxy that can help solve all of these problems. It's a single executable, deployed between the application and the database. It understands the protocol used by applications to talk to the database and the replication protocol used by PostgreSQL. This allows do its job in the background, without impacting how Postgres servers operate or how applications query it.
+PgDog is a proxy that can help solve all of these problems. It's a single executable, deployed between the application and the database. It understands the protocol used by applications to talk to the database and the replication protocol used by PostgreSQL. This allows it to do its job in the background, without impacting how Postgres servers operate or how applications query it.
 
 ## Connection pooler
 
@@ -50,7 +50,7 @@ The solution to an overextended database is sharding: splitting all tables and i
 As shards store more data and grow, they can be split again, scaling PostgreSQL horizontally. Sharded databases can grow into petabytes (that's thousands of TB), while serving OLTP and OLAP use cases.
 
 <center>
-  <img src="/images/resharding-intro.png" class="theme-aware-image" width=85%" alt="How PgDog sharding works" />
+  <img src="/images/resharding-intro.png" class="theme-aware-image" width="85%" alt="How PgDog sharding works" />
 </center>
 
 PgDog operates on the application layer of the stack: it speaks PostgreSQL and understands not only the queries sent by applications but also the logical replication protocol used by the server. This allows it to automatically route queries while moving data between machines to create more capacity.

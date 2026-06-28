@@ -33,7 +33,7 @@ docker run ghcr.io/pgdogdev/pgdog:v0.1.44
 !!! note "New feature"
     The ECS Terraform module is a new project. Please report any issues you may encounter. Community contributions are welcome.
 
- We recently added a [Terraform module](https://github.com/pgdogdev/pgdog-ecs-terraform) to deploy PgDog in AWS ECS. It works with the same Docker image as our [Helm chart](#kubernetes), so the experience should be familiar.
+We recently added a [Terraform module](https://github.com/pgdogdev/pgdog-ecs-terraform) to deploy PgDog on AWS ECS. It works with the same Docker image as our [Helm chart](#kubernetes), so the experience should be familiar.
 
 ## Pre-built binaries
 
@@ -59,7 +59,7 @@ PgDog can be easily compiled from source. For production deployments, a [`Docker
 
 ### Dependencies
 
-Parts of PgDog depend on C/C++ libraries which are compiled from source. Make sure to have a working version of a C/C++ compiler installed before building from source:
+Parts of PgDog depend on C/C++ libraries, which are compiled from source. Make sure to have a working version of a C/C++ compiler installed before building from source:
 
 === "macOS"
     Install [Xcode](https://developer.apple.com/xcode/) from the App Store and CMake & Clang from Homebrew:
@@ -111,7 +111,7 @@ cargo build --release
 
 ### Launch PgDog
 
-You can start PgDog by running the binary directly which is located in `target/release/pgdog`, or by running it with Cargo:
+You can start PgDog by running the binary directly, which is located in `target/release/pgdog`, or by running it with Cargo:
 
 ```bash
 cargo run --release
@@ -126,7 +126,7 @@ PgDog is configured via two files:
 | [pgdog.toml](configuration/index.md) | General settings and information about PostgreSQL servers. |
 | [users.toml](configuration/users.toml/users.md) | Usernames and passwords that are allowed to connect to PgDog. |
 
-Users are configured separately which allows them to be encrypted at rest in environments that support it, like in Kubernetes or with the AWS Secrets Manager.
+Users are configured separately, which allows them to be encrypted at rest in environments that support it, like in Kubernetes or with the AWS Secrets Manager.
 
 If the configuration files are placed in the current working directory (`$PWD`), PgDog will detect them automatically. Alternatively, you can pass their paths at startup as arguments:
 

@@ -201,7 +201,7 @@
   color: var(--pg-text);
 }
 .md-search__input::placeholder {
-  color: var(--pg-faint);
+  color: var(--pg-muted);
 }
 .md-search__icon {
   color: var(--pg-faint);

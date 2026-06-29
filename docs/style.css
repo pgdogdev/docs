@@ -1,19 +1,381 @@
-/* ===== Custom Properties ===== */
+/* ==========================================================================
+   PgDog Docs Theme — ported onto MkDocs Material
+   Source design: "PgDog Docs Theme" (Claude Design)
+   A clean, modern docs look: PgDog brand blue, tight bold headings, subtle
+   borders, soft-tinted admonitions and rounded code blocks — layered on top
+   of Material so content tabs, card grids, search and instant-nav keep working.
+   ========================================================================== */
+
+/* ===== Shared tokens ===== */
 :root {
-  --card-border-radius: 8px;
-  --card-padding: 1.2rem;
+  --pg-radius: 10px;
+  --pg-radius-lg: 12px;
   --transition-speed: 0.2s;
+  --card-border-radius: 10px;
+  --card-padding: 1.2rem;
+}
+
+/* --------------------------------------------------------------------------
+   Light scheme  → bind PgDog tokens onto Material's palette variables
+   -------------------------------------------------------------------------- */
+[data-md-color-scheme="default"] {
+  --pg-bg: #ffffff;
+  --pg-bg-subtle: #f7f8fa;
+  --pg-bg-code: #eceef2;
+  --pg-text: #1b1c21;
+  --pg-muted: #5c616b;
+  --pg-faint: #9aa0ab;
+  --pg-border: #ebecef;
+  --pg-border-strong: #e0e2e6;
+  --pg-accent: #3f6fe8;
+  --pg-accent-soft: rgba(63, 111, 232, 0.10);
+  --pg-hover: rgba(16, 17, 20, 0.045);
+  --pg-amber: #b5791b; --pg-amber-bg: rgba(217, 149, 40, 0.11); --pg-amber-bd: rgba(217, 149, 40, 0.40);
+  --pg-green: #1f8a5b; --pg-green-bg: rgba(31, 138, 91, 0.10); --pg-green-bd: rgba(31, 138, 91, 0.35);
+  --pg-red:   #c0392b; --pg-red-bg:   rgba(192, 57, 43, 0.09); --pg-red-bd:   rgba(192, 57, 43, 0.35);
+
+  /* Material core palette */
+  --md-default-bg-color: var(--pg-bg);
+  --md-default-fg-color: var(--pg-text);
+  --md-default-fg-color--light: var(--pg-muted);
+  --md-default-fg-color--lighter: var(--pg-faint);
+  --md-default-fg-color--lightest: var(--pg-border);
+  --md-primary-fg-color: var(--pg-accent);
+  --md-primary-fg-color--light: var(--pg-accent);
+  --md-primary-fg-color--dark: var(--pg-accent);
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+  --md-accent-fg-color: var(--pg-accent);
+  --md-accent-fg-color--transparent: var(--pg-accent-soft);
+  --md-typeset-a-color: var(--pg-accent);
+  --md-code-bg-color: var(--pg-bg-code);
+  --md-code-fg-color: var(--pg-text);
+
+  /* Code syntax highlighting — restrained design palette */
+  --md-code-hl-keyword-color: #3f6fe8;
+  --md-code-hl-string-color: #2c8a60;
+  --md-code-hl-number-color: #b5791b;
+  --md-code-hl-comment-color: #6e7480;
+  --md-code-hl-constant-color: #b5791b;
+  --md-code-hl-name-color: var(--pg-text);
+  --md-code-hl-function-color: var(--pg-text);
+  --md-code-hl-operator-color: var(--pg-muted);
+  --md-code-hl-punctuation-color: var(--pg-muted);
+  --md-code-hl-variable-color: var(--pg-text);
+  --md-code-hl-special-color: #c0392b;
+  --md-code-hl-generic-color: var(--pg-faint);
+}
+
+/* --------------------------------------------------------------------------
+   Dark scheme (slate)  → PgDog blue accent on near-black
+   -------------------------------------------------------------------------- */
+[data-md-color-scheme="slate"] {
+  --pg-bg: #111318;
+  --pg-bg-subtle: #14161b;
+  --pg-bg-code: #16181e;
+  --pg-text: #e9eaee;
+  --pg-muted: #979ca6;
+  --pg-faint: #666b75;
+  --pg-border: #22242b;
+  --pg-border-strong: #2c2f37;
+  --pg-accent: #7aa2ff;
+  --pg-accent-soft: rgba(122, 162, 255, 0.16);
+  --pg-hover: rgba(255, 255, 255, 0.05);
+  --pg-amber: #e0b463; --pg-amber-bg: rgba(224, 180, 99, 0.10); --pg-amber-bd: rgba(224, 180, 99, 0.32);
+  --pg-green: #4fcf94; --pg-green-bg: rgba(79, 207, 148, 0.10); --pg-green-bd: rgba(79, 207, 148, 0.30);
+  --pg-red:   #f0857a; --pg-red-bg:   rgba(240, 133, 122, 0.10); --pg-red-bd:   rgba(240, 133, 122, 0.30);
+
+  --md-default-bg-color: var(--pg-bg);
+  --md-default-fg-color: var(--pg-text);
+  --md-default-fg-color--light: var(--pg-muted);
+  --md-default-fg-color--lighter: var(--pg-faint);
+  --md-default-fg-color--lightest: var(--pg-border);
+  --md-primary-fg-color: var(--pg-accent);
+  --md-primary-fg-color--light: var(--pg-accent);
+  --md-primary-fg-color--dark: var(--pg-accent);
+  --md-primary-bg-color: var(--pg-text);
+  --md-primary-bg-color--light: var(--pg-muted);
+  --md-accent-fg-color: var(--pg-accent);
+  --md-accent-fg-color--transparent: var(--pg-accent-soft);
+  --md-typeset-a-color: var(--pg-accent);
+  --md-code-bg-color: var(--pg-bg-code);
+  --md-code-fg-color: var(--pg-text);
+
+  --md-code-hl-keyword-color: #7aa2ff;
+  --md-code-hl-string-color: #5fcf94;
+  --md-code-hl-number-color: #e0b463;
+  --md-code-hl-comment-color: #8a8f99;
+  --md-code-hl-constant-color: #e0b463;
+  --md-code-hl-name-color: var(--pg-text);
+  --md-code-hl-function-color: var(--pg-text);
+  --md-code-hl-operator-color: var(--pg-muted);
+  --md-code-hl-punctuation-color: var(--pg-muted);
+  --md-code-hl-variable-color: var(--pg-text);
+  --md-code-hl-special-color: #f0857a;
+  --md-code-hl-generic-color: var(--pg-faint);
 }
 
 /* ===== Header ===== */
+/* Flat header: page background + a hairline border, like the design. */
 .md-header {
-  --md-primary-fg-color: rgb(7, 81, 207);
+  background-color: var(--pg-bg);
+  color: var(--pg-text);
+  border-bottom: 1px solid var(--pg-border);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
+.md-header[data-md-state="shadow"],
+.md-header--shadow {
+  box-shadow: none;
+}
+.md-header__title {
+  color: var(--pg-text);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+/* Sit the title right next to the logo. Material's margin lives on a
+   [dir=ltr]-scoped rule, so match its specificity; also trim the logo button's
+   right padding/margin. */
+.md-header .md-header__title {
+  margin-left: 0.3rem;
+}
+.md-header .md-header__button.md-logo {
+  margin-right: 0;
+  padding-right: 0;
+}
+/* The logo PNG is white (made for the original dark header). On the light-mode
+   top bar that makes it invisible, so swap in a blue-recolored copy. */
+[data-md-color-scheme="default"] .md-header__button.md-logo img {
+  content: url("/images/logo-blue-64x64.png");
+}
+.md-header__button.md-icon,
+.md-header__source {
+  color: var(--pg-muted);
+}
+/* Light mode: darken the GitHub icon, repo name and stats (they inherit a
+   mid-grey and the facts are dimmed to 75% by default). */
+[data-md-color-scheme="default"] .md-header__source {
+  color: var(--pg-text);
+}
+[data-md-color-scheme="default"] .md-source__facts {
+  opacity: 0.85;
+}
+/* Dark mode: brighten the GitHub icon, repo name and stats. */
+[data-md-color-scheme="slate"] .md-header__source {
+  color: var(--pg-text);
+}
+[data-md-color-scheme="slate"] .md-source__facts {
+  opacity: 0.85;
+}
+.md-header__button.md-icon:hover {
+  color: var(--pg-text);
+  opacity: 1;
+}
 
-[data-md-color-scheme="slate"] .md-header {
-  --md-primary-fg-color: rgb(30, 58, 138);
-  background-color: hsla(230, 15%, 14%, 0.85);
+/* Search box in the header — subtle pill, like the design's search button. */
+.md-search__form {
+  background-color: var(--pg-bg-subtle);
+  border: 1px solid var(--pg-border);
+  border-radius: 10px;
+  box-shadow: none;
+}
+.md-search__form:hover {
+  background-color: var(--pg-bg-subtle);
+  border-color: var(--pg-border-strong);
+}
+/* Dark mode: lift the search box off the near-black header so it's prominent. */
+[data-md-color-scheme="slate"] .md-search__form {
+  background-color: #1c2029;
+  border-color: #353a45;
+}
+[data-md-color-scheme="slate"] .md-search__form:hover,
+[data-md-color-scheme="slate"] [data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+  background-color: #222632;
+  border-color: var(--pg-accent);
+}
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+  border-color: var(--pg-border-strong);
+}
+.md-search__input {
+  color: var(--pg-text);
+}
+.md-search__input::placeholder {
+  color: var(--pg-muted);
+}
+.md-search__icon {
+  color: var(--pg-faint);
+}
+/* Light mode: the magnifier defaults to white (header context) — make it dark. */
+[data-md-color-scheme="default"] .md-search__icon {
+  color: var(--pg-text);
+}
+
+/* ===== Typography ===== */
+.md-typeset {
+  font-size: 0.8rem;
+  line-height: 1.75;
+  color: var(--pg-text);
+}
+.md-typeset h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.14;
+  color: var(--pg-text);
+  margin: 0 0 0.8rem;
+}
+.md-typeset h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 2.2rem 0 0.7rem;
+}
+.md-typeset h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 1.6rem 0 0.5rem;
+}
+.md-typeset h4 {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.md-typeset a {
+  color: var(--pg-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+/* Darker blue for prose links in light mode (leaves the nav/accent untouched). */
+[data-md-color-scheme="default"] .md-typeset a {
+  color: #2e59cf;
+}
+/* Keep links bold when wrapped in **bold** (our 500 weight was overriding it). */
+.md-typeset strong a,
+.md-typeset a strong {
+  font-weight: 700;
+}
+/* Links inside headings should take the heading's weight, not the link 500. */
+.md-typeset h1 a,
+.md-typeset h2 a,
+.md-typeset h3 a,
+.md-typeset h4 a,
+.md-typeset h5 a,
+.md-typeset h6 a {
+  font-weight: inherit;
+}
+.md-typeset a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.md-typeset hr {
+  border-bottom: 1px solid var(--pg-border);
+}
+.md-typeset blockquote {
+  border-left: 3px solid var(--pg-border-strong);
+  color: var(--pg-muted);
+}
+
+/* ===== Sidebar navigation ===== */
+.md-nav {
+  font-size: 0.7rem;
+}
+/* Breathing room below the "PgDog" title before the first menu item.
+   Also drop Material's bg-colored box-shadow glow on the sticky title, which
+   bleeds onto the first item as an odd fade (the title bg is already solid). */
+.md-sidebar--primary .md-nav__title {
+  padding-bottom: 1rem;
+  box-shadow: none;
+}
+/* Slightly larger left-menu text at every nesting level (the right-hand TOC,
+   which lives in the secondary sidebar, keeps the base size). rem avoids the
+   size compounding as nav levels nest. */
+.md-sidebar--primary .md-nav {
+  font-size: 0.8rem;
+}
+.md-nav__link {
+  border-radius: 8px;
+  padding: 0.3rem 0.55rem;
+  margin: 1px 0;
+  color: var(--pg-muted);
+  transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+/* Expandable sections wrap an inner link + arrow in a .md-nav__link container.
+   Reset the nested link's padding (Material does this) so the text lines up
+   with leaf links instead of getting doubled-up left offset. */
+.md-nav__link > .md-nav__link {
+  padding: 0;
+  margin: 0;
+}
+.md-nav__link:focus,
+.md-nav__link:hover {
+  background-color: var(--pg-hover);
+  color: var(--pg-text);
+}
+/* Consistent, scheme-aware contrast for every left-menu AND right-TOC item
+   (links and expandable section labels alike): --pg-text is near-black in light
+   mode and near-white in dark mode. Active links keep the accent; the uppercase
+   top-level group labels stay faint via their higher-specificity rule below. */
+.md-sidebar--primary .md-nav__link:not(.md-nav__link--active),
+.md-sidebar--secondary .md-nav__link:not(.md-nav__link--active) {
+  color: var(--pg-text);
+}
+.md-nav__item .md-nav__link--active,
+.md-nav__link--active {
+  color: var(--pg-accent);
+  background-color: var(--pg-accent-soft);
+  font-weight: 650;
+}
+/* For expandable sections the active link is the zero-padded inner link, which
+   would make the highlight pill too thin. Move the highlight to the container,
+   which keeps the full row padding and the correct left edge. */
+.md-nav__container:has(> .md-nav__link--active) {
+  background-color: var(--pg-accent-soft);
+  border-radius: 8px;
+  font-weight: 650;
+}
+.md-nav__container > .md-nav__link--active {
+  background-color: transparent;
+}
+/* Top-level section labels: small uppercase, like the design's nav groups. */
+.md-nav--primary > .md-nav__list > .md-nav__item--section > .md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item > label.md-nav__link {
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: var(--pg-faint);
+  background: transparent;
+  margin-top: 0.6rem;
+}
+.md-nav__item--section > .md-nav__link:hover {
+  background: transparent;
+  color: var(--pg-faint);
+}
+
+/* ===== Table of contents (right rail) ===== */
+.md-nav--secondary .md-nav__title {
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: var(--pg-faint);
+}
+.md-nav--secondary .md-nav__link {
+  border-left: 2px solid var(--pg-border);
+  border-radius: 0;
+  padding-left: 0.8rem;
+  margin: 1px 0;
+}
+.md-nav--secondary .md-nav__link:hover {
+  background: transparent;
+  color: var(--pg-text);
+}
+.md-nav--secondary .md-nav__link--active {
+  background: transparent;
+  border-left-color: var(--pg-accent);
+  color: var(--pg-accent);
+  font-weight: 600;
 }
 
 /* ===== Tables ===== */
@@ -21,143 +383,302 @@ table {
   table-layout: fixed !important;
   display: table !important;
 }
-
 .md-typeset table:not([class]) {
-  border-radius: var(--card-border-radius);
+  border-radius: var(--pg-radius);
   overflow: hidden;
-  border: 1px solid var(--md-default-fg-color--lightest);
-  font-size: 0.75rem;
+  border: 1px solid var(--pg-border);
+  font-size: 0.76rem;
+  box-shadow: none;
+}
+.md-typeset table:not([class]) th {
+  background-color: var(--pg-bg-subtle);
+  color: var(--pg-text);
+  font-weight: 650;
+  border-bottom: 1px solid var(--pg-border-strong);
+}
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--pg-border);
 }
 
-.md-typeset table:not([class]) th {
-  background-color: var(--md-default-fg-color--lightest);
+/* ===== Code blocks ===== */
+.md-typeset pre > code {
+  border-radius: 0;
+}
+.md-typeset .highlight {
+  border-radius: 0;
+  overflow: hidden;
+  border: 1px solid var(--pg-border);
+}
+.md-typeset .highlight > pre,
+.md-typeset pre {
+  margin: 0;
+}
+/* Titled code blocks: the filename's default margin-top can't collapse inside
+   our bordered, overflow-hidden container, leaving an empty gap above it.
+   Pin it flush so the title sits at the top of the block. */
+.md-typeset .highlight > .filename {
+  margin-top: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--pg-faint) 35%, var(--pg-border-strong));
+}
+/* Language label shown by pymdownx.highlight */
+.md-typeset .highlight [data-md-annotation-id],
+.md-typeset .highlighttable .linenos {
+  background: var(--pg-bg-subtle);
+}
+/* Code blocks: a touch smaller than body text. */
+.md-typeset pre > code,
+.md-typeset .highlight code,
+.md-typeset .md-code__content {
+  font-size: 0.72rem;
+}
+
+/* ===== Inline code ===== */
+.md-typeset :not(pre) > code {
+  font-size: 0.9em;
+  padding: 0.1em 0.4em;
+  border-radius: 6px;
+  background-color: var(--pg-bg-code);
+  border: 1px solid var(--pg-border);
+  color: var(--pg-text);
+}
+/* Inline code reads small, so give it a bit more contrast on the light theme. */
+[data-md-color-scheme="default"] .md-typeset :not(pre) > code {
+  background-color: #e6e8ee;
+  border-color: var(--pg-border-strong);
+}
+
+/* Monospace text WITHOUT the inline-code box (no background / border).
+   Usage in Markdown (attr_list + md_in_html are enabled):
+     <span class="mono">some text</span>
+   Or strip the box off real inline code:  `text`{ .mono }                  */
+.md-typeset .mono,
+.md-typeset code.mono {
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+.md-typeset code.mono {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.9em;
+}
+
+/* ===== Admonitions ===== */
+/* Whole block softly tinted, 3px colored left border, colored title. */
+.md-typeset .admonition,
+.md-typeset details {
+  border: 1px solid var(--pg-border);
+  border-left: 3px solid var(--pg-accent);
+  border-radius: 0;
+  background-color: var(--pg-accent-soft);
+  box-shadow: none;
+  font-size: 0.76rem;
+}
+.md-typeset .admonition-title,
+.md-typeset summary {
+  background-color: transparent !important;
+  color: var(--pg-accent);
+  font-weight: 700;
+  border: none;
+}
+.md-typeset .admonition-title::before,
+.md-typeset summary::before {
+  background-color: var(--pg-accent);
+}
+
+/* warning family → amber */
+.md-typeset .admonition.warning,
+.md-typeset .admonition.caution,
+.md-typeset .admonition.attention,
+.md-typeset details.warning,
+.md-typeset details.caution {
+  background-color: var(--pg-amber-bg);
+  border-color: var(--pg-amber-bd);
+  border-left-color: var(--pg-amber);
+}
+.md-typeset .warning > .admonition-title,
+.md-typeset .caution > .admonition-title,
+.md-typeset .attention > .admonition-title,
+.md-typeset .warning > summary,
+.md-typeset .caution > summary {
+  color: var(--pg-amber);
+}
+.md-typeset .warning > .admonition-title::before,
+.md-typeset .caution > .admonition-title::before,
+.md-typeset .attention > .admonition-title::before,
+.md-typeset .warning > summary::before,
+.md-typeset .caution > summary::before {
+  background-color: var(--pg-amber);
+}
+
+/* success / tip-as-success family → green */
+.md-typeset .admonition.success,
+.md-typeset .admonition.check,
+.md-typeset .admonition.done,
+.md-typeset details.success {
+  background-color: var(--pg-green-bg);
+  border-color: var(--pg-green-bd);
+  border-left-color: var(--pg-green);
+}
+.md-typeset .success > .admonition-title,
+.md-typeset .check > .admonition-title,
+.md-typeset .done > .admonition-title,
+.md-typeset .success > summary {
+  color: var(--pg-green);
+}
+.md-typeset .success > .admonition-title::before,
+.md-typeset .check > .admonition-title::before,
+.md-typeset .done > .admonition-title::before,
+.md-typeset .success > summary::before {
+  background-color: var(--pg-green);
+}
+
+/* danger family → red */
+.md-typeset .admonition.danger,
+.md-typeset .admonition.error,
+.md-typeset .admonition.failure,
+.md-typeset .admonition.bug,
+.md-typeset details.danger,
+.md-typeset details.error,
+.md-typeset details.bug {
+  background-color: var(--pg-red-bg);
+  border-color: var(--pg-red-bd);
+  border-left-color: var(--pg-red);
+}
+.md-typeset .danger > .admonition-title,
+.md-typeset .error > .admonition-title,
+.md-typeset .failure > .admonition-title,
+.md-typeset .bug > .admonition-title,
+.md-typeset .danger > summary,
+.md-typeset .error > summary,
+.md-typeset .bug > summary {
+  color: var(--pg-red);
+}
+.md-typeset .danger > .admonition-title::before,
+.md-typeset .error > .admonition-title::before,
+.md-typeset .failure > .admonition-title::before,
+.md-typeset .bug > .admonition-title::before,
+.md-typeset .danger > summary::before,
+.md-typeset .error > summary::before,
+.md-typeset .bug > summary::before {
+  background-color: var(--pg-red);
+}
+
+/* ===== Content tabs (pymdownx.tabbed) ===== */
+.md-typeset .tabbed-labels > label {
+  font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.65rem;
-  letter-spacing: 0.05em;
+  color: var(--pg-muted);
+}
+.md-typeset .tabbed-set > input:checked + label {
+  color: var(--pg-accent);
+}
+.md-typeset .tabbed-labels {
+  box-shadow: inset 0 -1px var(--pg-border);
 }
 
 /* ===== Screenshots ===== */
 .screenshot {
-  border-radius: var(--card-border-radius);
-  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: var(--pg-radius);
+  border: 1px solid var(--pg-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* ===== Theme-aware Images ===== */
+/* ===== Theme-aware images ===== */
 .theme-aware-image {
   filter: contrast(1.04) saturate(1.08);
 }
-
 [data-md-color-scheme="slate"] .theme-aware-image {
   filter: invert(1) hue-rotate(180deg) contrast(1.12) saturate(1.05);
 }
 
-/* ===== Card Grid ===== */
+/* ===== Card grid (card_grid / next_steps_links macros) ===== */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   margin: 1.5rem 0;
 }
-
 .grid > div {
+  position: relative;
   padding: var(--card-padding);
-  border: 1px solid var(--md-default-fg-color--lightest);
-  border-radius: var(--card-border-radius);
-  transition: all var(--transition-speed) ease;
+  border: 1px solid var(--pg-border);
+  border-radius: var(--pg-radius-lg);
   background: var(--md-default-bg-color);
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
-
+/* Make the whole card clickable: stretch the title link over the card. */
+.md-typeset .grid > div h4 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
 .grid > div:hover {
-  border-color: var(--md-primary-fg-color);
+  border-color: var(--pg-accent);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
-
+.grid > div .card-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
 .grid > div h4 {
   margin: 0 0 0.5rem 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
-
-.grid > div h4 a {
-  color: var(--md-primary-fg-color);
+.md-typeset .grid > div h4 a {
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 650;
 }
-
 .grid > div p {
   margin: 0;
-  font-size: 0.82rem;
-  color: var(--md-default-fg-color--light);
-  line-height: 1.5;
+  font-size: 0.78rem;
+  color: var(--pg-text);
+  line-height: 1.55;
 }
 
-/* ===== Code Blocks ===== */
-.md-typeset pre > code {
-  border-radius: var(--card-border-radius);
-}
-
-.md-typeset code {
-  border-radius: 4px;
-  font-size: 0.82em;
-}
-
-.md-typeset .highlight {
-  border-radius: var(--card-border-radius);
-  overflow: hidden;
-}
-
-/* ===== Inline Code ===== */
-.md-typeset :not(pre) > code {
-  padding: 0.1em 0.4em;
-  background-color: var(--md-code-bg-color);
-  border: 1px solid var(--md-default-fg-color--lightest);
-}
-
-/* ===== Admonitions ===== */
-.md-typeset .admonition,
-.md-typeset details {
-  border-radius: var(--card-border-radius);
-  border-width: 0 0 0 4px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* ===== Navigation ===== */
-.md-nav__item .md-nav__link--active {
-  font-weight: 600;
-}
-
-/* ===== Content Width ===== */
+/* ===== Content width & footer ===== */
 .md-grid {
   max-width: 1400px;
 }
-
-/* ===== Footer ===== */
 .md-footer {
   margin-top: 2rem;
 }
+/* Light mode: Material's footer (prev/next nav bar) is dark in both schemes.
+   Make it a light, subtle bar with dark text. */
+[data-md-color-scheme="default"] .md-footer {
+  --md-footer-bg-color: var(--pg-bg-subtle);
+  --md-footer-bg-color--dark: var(--pg-bg-subtle);
+  --md-footer-fg-color: var(--pg-text);
+  --md-footer-fg-color--light: var(--pg-muted);
+  --md-footer-fg-color--lighter: var(--pg-faint);
+  color: var(--pg-text);
+  border-top: 1px solid var(--pg-border);
+}
+/* Hide the bottom meta bar ("Made with MkDocs" + social/GitHub icons). */
+.md-footer-meta {
+  display: none;
+}
 
-/* ===== Hero Section (homepage) ===== */
+/* ===== Hero section (homepage) ===== */
 .hero {
   text-align: center;
   padding: 2rem 0 1rem;
 }
-
 .hero h1 {
   font-size: 2.2rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin-bottom: 0.5rem;
 }
-
 .hero p {
   font-size: 1.1rem;
-  color: var(--md-default-fg-color--light);
+  color: var(--pg-muted);
   max-width: 640px;
   margin: 0 auto 1.5rem;
   line-height: 1.6;
 }
-
 .hero .hero-buttons {
   display: flex;
   gap: 0.75rem;
@@ -165,58 +686,53 @@ table {
   flex-wrap: wrap;
   margin-bottom: 1rem;
 }
-
 .hero .hero-buttons a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1.4rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   font-size: 0.88rem;
   text-decoration: none;
   transition: all var(--transition-speed) ease;
 }
-
 .hero .hero-buttons .btn-primary {
-  background-color: var(--md-primary-fg-color);
-  color: var(--md-primary-bg-color);
+  background-color: var(--pg-accent);
+  color: #ffffff;
 }
-
 .hero .hero-buttons .btn-primary:hover {
-  opacity: 0.9;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.92;
+  box-shadow: 0 4px 12px rgba(63, 111, 232, 0.3);
 }
-
 .hero .hero-buttons .btn-secondary {
-  border: 1px solid var(--md-default-fg-color--lighter);
-  color: var(--md-default-fg-color);
+  border: 1px solid var(--pg-border-strong);
+  color: var(--pg-text);
 }
-
 .hero .hero-buttons .btn-secondary:hover {
-  border-color: var(--md-primary-fg-color);
-  color: var(--md-primary-fg-color);
-}
-
-/* ===== Feature Cards (icons) ===== */
-.grid > div .card-icon {
-  font-size: 1.6rem;
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-/* ===== Tabs ===== */
-.md-typeset .tabbed-labels > label {
-  font-size: 0.75rem;
-  font-weight: 600;
+  border-color: var(--pg-accent);
+  color: var(--pg-accent);
 }
 
 /* ===== Responsive ===== */
+/* Material bumps the root font-size up on wide viewports (137.5% at 100em,
+   150% at 125em). Pin it to the base size so text stays consistent across
+   widths instead of growing on large displays. */
+@media screen and (min-width: 100em) {
+  html {
+    font-size: 125%;
+  }
+}
+@media screen and (min-width: 125em) {
+  html {
+    font-size: 125%;
+  }
+}
+
 @media screen and (max-width: 76.25em) {
   .hero h1 {
     font-size: 1.6rem;
   }
-
   .hero p {
     font-size: 0.95rem;
   }

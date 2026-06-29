@@ -4,7 +4,7 @@ icon: material/connection
 
 # Connection recovery
 
-PostgreSQL database connections are expensive to create so PgDog does its best not to close them unless absolutely necessary. In case a client disconnects before fully processing a query response, PgDog will attempt to preserve the connection using several recovery steps.
+PostgreSQL database connections are expensive to create so PgDog does its best not to close them unless absolutely necessary. In case a client disconnects before fully processing a query response, PgDog will attempt to preserve the connection using several recovery methods.
 
 ## Abandoned transactions
 
@@ -69,7 +69,7 @@ Just like [abandoned transactions](#abandoned-transactions), this protects Postg
 
 ### Configuration
 
-Connection recovery is an optional feature, enabled by default. You can change how it behaves through configuration:
+Connection recovery is an optional feature, **enabled** by default. You can change how it behaves through configuration:
 
 === "pgdog.toml"
     ```toml
@@ -80,6 +80,8 @@ Connection recovery is an optional feature, enabled by default. You can change h
     ```yaml
     connectionRecovery: recover
     ```
+
+The following connection recovery options are available:
 
 | Configuration value | Description |
 |-|-|
@@ -103,7 +105,7 @@ To make sure abandoned server connections don't block normal operations, PgDog s
 
 Just like server connections, PgDog can maintain client connections (application --> PgDog) during incidents. This helps preserve application-side connection pools and avoids re-creating thousands of connections unnecessarily.
 
-While enabled by default, some applications don't behave well when their queries return errors instead of results. Therefore, this feature is configurable and can be disabled:
+While **enabled** by default, some applications don't behave well when their queries return errors instead of results. Therefore, this feature is configurable and can be disabled:
 
 === "pgdog.toml"
     ```toml
@@ -114,6 +116,8 @@ While enabled by default, some applications don't behave well when their queries
     ```yaml
     clientConnectionRecovery: drop
     ```
+
+The following client connection recovery options are available:
 
 | Configuration value | Description |
 |-|-|

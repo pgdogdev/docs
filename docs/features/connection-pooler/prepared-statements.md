@@ -16,8 +16,9 @@ entry and gives it a unique name.
 The `Parse` message is then renamed and sent to Postgres. This way, multiple clients can send the same prepared
 statement through PgDog without causing `"duplicate prepared statement"` errors.
 
-<center>
-  <img src="/images/prepared-statements-1.png" width="100%" height="auto" alt="Prepared statements">
+<center style="margin: 1rem 0">
+  <img src="/images/prepared-statements-1.png" class="theme-aware-image" width="95%" height="auto" alt="Prepared statements">
+  <p>Prepared statements flow</p>
 </center>
 
 While the global cache helps with statement reuse, each client keeps its own mapping of prepared statement names.
@@ -44,43 +45,51 @@ This limit is strictly enforced on server connections: if a prepared statement n
 
 Since clients re-use prepared statements, this limit isn't enforced for clients: they can prepare as many statements as they wish (and you have memory for). Each statement keeps a counter of when it's used by a client. If the counter reaches zero, i.e., all clients either closed it explicitly or disconnected, the statement is removed from the global cache.
 
-### Tracking used statements
+## Tracking used statements
 
-The number of prepared statements and what they are can be tracked by executing this command on the [admin database](../administration/index.md):
+The number of prepared statements and what they are can be tracked by executing this command on the [admin database](../../administration/index.md):
 
-```
-SHOW PREPARED;
-```
+=== "Command"
 
-Additionally, each server connection entry in [`SHOW SERVERS`](../administration/servers.md) will report the number of currently prepared statements.
+    ```
+    SHOW PREPARED;
+    ```
+=== "Output"
+    ```
+       name    |                       statement                       | rewrite | used_by | memory_used 
+    -----------+-------------------------------------------------------+---------+---------+-------------
+     __pgdog_1 | SELECT abalance FROM pgbench_accounts WHERE aid = $1; |         |       4 |         144
+    (1 row)
+    ```
+
+Additionally, each server connection entry in the admin [`SHOW SERVERS`](../../administration/servers.md) view will report the number of currently prepared statements.
+
+### Metrics
+
+The number of prepared statements in the global cache, and for each connection pool, is reported in OTEL and OpenMetrics [exporters](../metrics.md).
 
 ## Simple protocol
 
-While prepared statements are typically sent using the extended protocol (`Parse`, `Bind`, `Describe`), Postgres
+While prepared statements are typically sent using the extended protocol (i.e., `Parse`, `Bind`, `Describe` messages), Postgres
 supports preparing statements using the `PREPARE` command, and executing them using the `EXECUTE` command.
 
 PgDog supports rewriting these prepared statements to make sure their names are globally unique, just like with the extended
-protocol.
+protocol, for example:
 
-For example:
+=== "Original statement"
+    ```postgresql
+    PREPARE test AS SELECT * FROM users;
+    ```
 
-```postgresql
-PREPARE test AS SELECT * FROM users;
-```
-
-will be rewritten by PgDog to:
-
-```postgresql
-PREPARE __pgdog_1 AS SELECT * FROM users;
-```
+=== "Rewritten statement"
+    ```postgresql
+    PREPARE __pgdog_1 AS SELECT * FROM users;
+    ```
 
 Statements sent over the simple protocol are not checked against the global cache. Each new statement is given a unique
 global name. Since this requires PgDog to parse _each_ incoming query, and that's computationally expensive, this feature is **disabled** by default.
 
-!!! note
-    `full` extends `extended`: it rewrites named extended-protocol statements in addition to simple-protocol `PREPARE`/`EXECUTE`.
-
-You can enable it in [`pgdog.toml`](../configuration/pgdog.toml/general.md#prepared_statements):
+You can enable simple statement rewrites in [`pgdog.toml`](../configuration/pgdog.toml/general.md#prepared_statements):
 
 === "pgdog.toml"
     ```toml
@@ -95,22 +104,9 @@ You can enable it in [`pgdog.toml`](../configuration/pgdog.toml/general.md#prepa
 Statements prepared using this method can be executed normally with `Bind` and `Execute` messages. Result data types can be inspected with `Describe`, just
 like a regular prepared statement.
 
-!!! note "Sharding support"
-    Currently, `EXECUTE` of prepared statements requiring [sharding](sharding/index.md) isn't supported. By default, the statement
-    will be sent to all shards.
+!!! warning "Sharding support"
+    Currently, `EXECUTE` command for [sharded](../sharding/index.md) prepared statements is not supported. Such commands will be sent to all shards.
 
 ## Unnamed statements
 
-By default, unnamed (or anonymous) prepared statements are not cached and are sent to Postgres as-is. This works fine for most client drivers because they send the entire query in a single request. However, some drivers, like `go/pq` do not.
-
-To make those drivers work, consider caching and rewriting unnamed prepared statements, like so:
-
-=== "pgdog.toml"
-    ```toml
-    [general]
-    prepared_statements = "extended_anonymous"
-    ```
-=== "Helm chart"
-    ```yaml
-    preparedStatements: extended_anonymous
-    ```
+Unnamed (aka anonymous) prepared statements are not cached and are sent to Postgres connections as-is.

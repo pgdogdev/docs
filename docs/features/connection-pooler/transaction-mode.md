@@ -12,8 +12,8 @@ All queries served by PostgreSQL run inside transactions. Transactions can be st
 
 PgDog takes advantage of this behavior and can split up transactions inside client connections and send them individually, in order, to the first available PostgreSQL server in the connection pool.
 
-<center>
-  <img src="/images/transaction-mode.png" width="85%" alt="Load balancer" />
+<center style="margin: 1rem 0">
+  <img src="/images/transaction-mode.png" width="95%" alt="Load balancer" class="theme-aware-image" />
 </center>
 
 In practice, this allows thousands of client connections to re-use just one PostgreSQL server connection. Most pools will have several server connections, so hundreds of thousands of clients can use the pooler to execute queries without exceeding the database connection limit.
@@ -68,11 +68,11 @@ To avoid session-level state leaking between clients, PgDog tracks connection pa
 
 This is performed efficiently, and server parameters are updated only if they differ from the ones set on the client.
 
-!!! note "Parsing SET commands"
-    PgDog automatically detects `SET` commands and uses the `pg_query` SQL parser to extract the GUC/session variable. This feature is **enabled** by default.
+### Parsing SET commands
+
+PgDog automatically detects `SET` commands and uses the native PostgreSQL query parser to extract the GUC/session variable. This feature is enabled by default.
     
-    For deployments that don't normally need the parser (i.e. unsharded, read-only or no replicas), PgDog can selectively enable its parser for `SET` commands only. This is very fast
-    and shouldn't have a noticeable impact on pooler performance.
+For deployments that don't normally need the parser (i.e. unsharded, replica-only deployments, or a primary with no replicas), PgDog can selectively enable its parser for `SET` commands only. This is very fast and shouldn't have a noticeable impact on pooler performance.
 
 ### Connection parameters
 
@@ -82,9 +82,9 @@ Most Postgres connection drivers support passing parameters in the connection UR
 postgres://user@host:6432/db?options=-c%20statement_timeout%3D3s
 ```
 
-This sets the `statement_timeout` setting to `3s` (3 seconds). Each time this client
+This example sets the `statement_timeout` setting to `3s` (3 seconds). Each time this client
 executes a transaction, the pooler will check the value for `statement_timeout` on the server connection,
-and if it differs, issue a command to Postgres to update it:
+and if it differs, issue a `SET` command to the Postgres server connection to update it:
 
 ```postgresql
 SET statement_timeout TO '3s';
@@ -102,6 +102,8 @@ For example:
 
 ```postgresql
 SELECT pg_advisory_lock(1234);
+-- Do some work outside the database.
+SELECT pg_advisory_unlock(1234);
 ```
 
 In transaction mode, server connections are re-used between clients, so additional care needs to be taken to keep the server connection tied to the client that created the lock.
@@ -110,7 +112,7 @@ In transaction mode, server connections are re-used between clients, so addition
 
 PgDog is able to detect advisory lock usage and will pin the server connection to the client connection until one of the following conditions is met:
 
-1. The client releases the lock with `pg_advisory_unlock`
+1. The client releases the lock by calling `pg_advisory_unlock()`
 2. The client disconnects
 
 !!! note "Query parser"
@@ -129,7 +131,7 @@ If your PgDog deployment is unsharded and isn't using the [load balancer](load-b
     queryParser: session_control_and_locks
     ```
 
-This will scan all incoming queries for `pg_advisory_*` functions and selectively enable the query parser to handle them correctly.
+This will scan all `SELECT` queries for `pg_advisory_*()` functions and selectively enable the query parser to handle them correctly.
 
 ### Performance
 

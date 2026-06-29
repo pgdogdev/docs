@@ -38,3 +38,12 @@ Additionally, PgDog is easier to manage from an infrastructure/DevOps perspectiv
 If your application uses `LISTEN`/`NOTIFY`, e.g., [DBOS](https://dbos.dev) or another job queue, it would traditionally need to connect to Postgres directly. PgDog implements its own pub/sub queue and sends and receives `LISTEN`/`NOTIFY` messages for clients connected to it.
 
 This allows applications to use `LISTEN`/`NOTIFY` in [transaction mode](pub_sub.md), just like any other Postgres feature.
+
+## Read more
+
+{{ next_steps_links([
+    ("Transaction mode", "/features/connection-pooler/transaction-mode/", "Multiplex PostgreSQL server connections across thousands of clients."),
+    ("Pub/Sub", "/features/connection-pooler/pub_sub/", "Use LISTEN and NOTIFY through PgDog in transaction mode."),
+    ("Connection recovery", "/features/connection-pooler/connection-recovery/", "Recover interrupted server connections if clients abruptly disconnect."),
+    ("Prepared statements", "/features/connection-pooler/prepared-statements/", "Use named prepared statements efficiently in transaction mode."),
+]) }}

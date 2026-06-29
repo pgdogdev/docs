@@ -9,7 +9,7 @@ Historically, this feature was only available to clients which connect to Postgr
 
 ## How it works
 
-Pub/sub support is **disabled** by default and can be enabled by configuring the asynchronous message channel size in [`pgdog.toml`](../configuration/pgdog.toml/general.md):
+Pub/sub support is **disabled** by default and can be enabled by configuring the asynchronous message channel size in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
 
 === "pgdog.toml"
     ```toml

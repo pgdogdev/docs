@@ -10,7 +10,7 @@ PgDog aims to be the de facto PostgreSQL proxy and pooler. Below is a feature co
 
 | Feature | PgBouncer | PgCat | PgDog |
 |-|-|-|-|
-| [Connection pooler](../features/transaction-mode.md) | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline: |
+| [Connection pooler](../features/connection-pooler/transaction-mode.md) | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline: |
 | Load balancer | Requires external TCP proxy | :material-check-circle-outline: | :material-check-circle-outline: |
 | [Read/write separation](../features/load-balancer/index.md) | No | Basic support | Advanced support handling edge cases |
 | [Failover](../features/load-balancer/healthchecks.md) | No | :material-check-circle-outline: | :material-check-circle-outline: |
@@ -19,7 +19,7 @@ PgDog aims to be the de facto PostgreSQL proxy and pooler. Below is a feature co
 | [Metrics](../features/metrics.md) | Admin database only | OpenMetrics & admin database | OpenMetrics & admin database |
 | [Mirroring](../features/mirroring.md) | No | Partial support | :material-check-circle-outline: |
 | TLS | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline: |
-| [Prepared statements](../features/prepared-statements.md) | :material-check-circle-outline: | Partial support | :material-check-circle-outline: |
+| [Prepared statements](../features/connection-pooler/prepared-statements.md) | :material-check-circle-outline: | Partial support | :material-check-circle-outline: |
 | [Plugins](../features/plugins/index.md) | No | Hardcoded in core | :material-check-circle-outline: |
 | Session evariables in transaction mode | Partial support | Partial support | :material-check-circle-outline: |
 

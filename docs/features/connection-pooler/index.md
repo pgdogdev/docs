@@ -12,7 +12,7 @@ The Postgres ecosystem has many other connection poolers, e.g., the ubiquitous P
 
 ### Connection state
 
-PgDog can handle `SET` commands and preserve connection state in [transaction mode](../transaction-mode.md). For example, this command works without polluting the connection state for other clients:
+PgDog can handle `SET` commands and preserve connection state in [transaction mode](transaction-mode.md). For example, this command works without polluting the connection state for other clients:
 
 ```postgresql
 SET application_name TO 'sidekiq';
@@ -37,4 +37,4 @@ Additionally, PgDog is easier to manage from an infrastructure/DevOps perspectiv
 
 If your application uses `LISTEN`/`NOTIFY`, e.g., [DBOS](https://dbos.dev) or another job queue, it would traditionally need to connect to Postgres directly. PgDog implements its own pub/sub queue and sends and receives `LISTEN`/`NOTIFY` messages for clients connected to it.
 
-This allows applications to use `LISTEN`/`NOTIFY` in [transaction mode](../pub_sub.md), just like any other Postgres feature.
+This allows applications to use `LISTEN`/`NOTIFY` in [transaction mode](pub_sub.md), just like any other Postgres feature.

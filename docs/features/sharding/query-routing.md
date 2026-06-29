@@ -29,7 +29,7 @@ WHERE
   payments.user_id = $1; -- Sharding key.
 ```
 
-Both regular queries and [prepared statements](../prepared-statements.md) are supported. So if your database driver is using placeholders instead of actual values, PgDog will extract the sharding key value from the extended protocol messages.
+Both regular queries and [prepared statements](../connection-pooler/prepared-statements.md) are supported. So if your database driver is using placeholders instead of actual values, PgDog will extract the sharding key value from the extended protocol messages.
 
 ### Supported syntax
 
@@ -60,7 +60,7 @@ INSERT INTO payments (user_id, amount) VALUES ($1, $2) RETURNING *
 
 If the query is inserting a row into a [sharded table](../../configuration/pgdog.toml/sharded_tables.md), the query router will extract the sharding key, and route the query to the corresponding shard.
 
-Just like for `SELECT` queries, both [prepared statements](../prepared-statements.md) and regular queries are supported.
+Just like for `SELECT` queries, both [prepared statements](../connection-pooler/prepared-statements.md) and regular queries are supported.
 
 ### Supported syntax
 

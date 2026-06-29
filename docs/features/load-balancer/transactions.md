@@ -4,7 +4,7 @@ icon: material/swap-horizontal
 
 # Transactions
 
-PgDog's load balancer is [transaction-aware](../transaction-mode.md) and will ensure that all statements inside a transaction are sent to the same PostgreSQL connection on just one database.
+PgDog's load balancer is [transaction-aware](../connection-pooler/transaction-mode.md) and will ensure that all statements inside a transaction are sent to the same PostgreSQL connection on just one database.
 
 To make sure all queries inside a transaction succeed, PgDog will route all manually started transactions to the primary database.
 

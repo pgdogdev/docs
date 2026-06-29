@@ -13,7 +13,7 @@ helm repo add pgdogdev-ee https://helm-ee.pgdog.dev
 helm install control pgdogdev-ee/pgdog-control
 ```
 
-The chart has a few external requirements, [documented below](#requirements).
+The chart has a few external requirements, [documented below](#dependencies).
 
 ## Dependencies
 

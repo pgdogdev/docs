@@ -117,9 +117,9 @@ PgDog is able to detect advisory lock usage and will pin the server connection t
 
 !!! note "Query parser"
     This feature requires the query parser to be enabled, which happens if the deployment is sharded
-    or is using the read/write split feature of the [load balancer](load-balancer/index.md).
+    or is using the read/write split feature of the [load balancer](../load-balancer/index.md).
 
-If your PgDog deployment is unsharded and isn't using the [load balancer](load-balancer/index.md) for read/write separation, this feature is **disabled** by default. To enable it, turn on the query parser with the following setting:
+If your PgDog deployment is unsharded and isn't using the [load balancer](../load-balancer/index.md) for read/write separation, this feature is **disabled** by default. To enable it, turn on the query parser with the following setting:
 
 === "pgdog.toml"
     ```toml

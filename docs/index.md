@@ -32,7 +32,7 @@ Unlike those proxies, PgDog handles features that usually force a pooler to pin 
 
 PgDog is also multithreaded, so a single instance can serve many more clients while still relying on the same small number of Postgres connections.
 
-You can read more about how the connection pooler works [here](features/transaction-mode.md).
+You can read more about how the connection pooler works [here](features/connection-pooler/transaction-mode.md).
 
 ## Load balancer
 
@@ -62,8 +62,8 @@ This documentation provides a detailed overview of all PgDog features, along wit
 ## Read more
 
 {{ next_steps_links([
-    ("Features", "/features/", "Read more about PgDog features like load balancing, supported authentication mechanisms, TLS, health checks, and more."),
-    ("Administration", "/administration/", "Learn how to operate PgDog in production, like fetching real-time statistics from the admin database or updating configuration."),
-    ("Installation", "/installation/", "Install PgDog on your Linux server or on your Linux/Mac/Windows machine for local development."),
-    ("Configuration", "/configuration/", "Reference for PgDog configuration like maximum server connections, number of shards, and more."),
+    ("Installation", "/installation/", "Deploy PgDog with Helm on Kubernetes, run it on AWS ECS with Terraform, with Docker, with pre-built binaries, or by building from source."),
+    ("Connection pooler", "/features/connection-pooler/", "Multiplex thousands of application connections over a small number of PostgreSQL server connections."),
+    ("Load balancer", "/features/load-balancer/", "Distribute read queries across replicas and send write queries to the primary database."),
+    ("Sharding", "/features/sharding/", "Scale PostgreSQL horizontally with query routing, data migration, and schema management."),
 ]) }}

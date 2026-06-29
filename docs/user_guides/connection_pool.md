@@ -4,7 +4,7 @@ icon: material/pipe
 
 # Connection pools configuration
 
-When deploying a connection pooler for the first time, it can be challenging to know how many connections to provision for each [connection pool](../configuration/pgdog.toml/general.md#default_pool_size). The goal of using a connection pooler, like PgDog, is to reduce the total number of database connections by taking advantage of [transaction mode](../features/transaction-mode.md).
+When deploying a connection pooler for the first time, it can be challenging to know how many connections to provision for each [connection pool](../configuration/pgdog.toml/general.md#default_pool_size). The goal of using a connection pooler, like PgDog, is to reduce the total number of database connections by taking advantage of [transaction mode](../features/connection-pooler/transaction-mode.md).
 
 Sizing up the right value for that setting depends on your database, but follows a few general principles.
 

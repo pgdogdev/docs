@@ -62,7 +62,7 @@ Available options:
 - `statement`
 
 
-See [transaction mode](../../features/transaction-mode.md) and [session mode](../../features/session-mode.md) for more details on each mode.
+See [transaction mode](../../features/connection-pooler/transaction-mode.md) and [session mode](../../features/connection-pooler/session-mode.md) for more details on each mode.
 
 Default:  **`transaction`**
 
@@ -170,7 +170,7 @@ from abnormal conditions like hardware failure.
 
 ### `rollback_timeout`
 
-How long to allow for `ROLLBACK` queries to run on server connections with unfinished transactions. See [transaction mode](../../features/transaction-mode.md) for more details.
+How long to allow for `ROLLBACK` queries to run on server connections with unfinished transactions. See [transaction mode](../../features/connection-pooler/transaction-mode.md) for more details.
 
 Default: **`5_000`** (5s)
 
@@ -379,7 +379,7 @@ Default: **`extended`**
 ### `prepared_statements_limit`
 
 Number of prepared statements that will be allowed for each server connection. If this limit is reached, the least used statement is closed
-and replaced with the newest one. Additionally, any unused statements in the [global cache](../../features/prepared-statements.md) above this
+and replaced with the newest one. Additionally, any unused statements in the [global cache](../../features/connection-pooler/prepared-statements.md) above this
 limit will be removed.
 
 Default: **`none`** (unlimited)
@@ -388,7 +388,7 @@ Default: **`none`** (unlimited)
 
 ### `pub_sub_channel_size`
 
-Enables support for [pub/sub](../../features/pub_sub.md) and configures the size of the background task queue.
+Enables support for [pub/sub](../../features/connection-pooler/pub_sub.md) and configures the size of the background task queue.
 
 Default: **`none`** (disabled)
 
@@ -476,7 +476,7 @@ Default: **`1_000`**
 !!! warning "Deprecated setting"
     This setting is deprecated. Use [`query_parser`](#query_parser) instead.
 
-Force-enable query parsing to take advantage of its features in non-sharded databases, like [advisory locks](../../features/transaction-mode.md#advisory-locks) or managing [session state](../../features/transaction-mode.md#session-state).
+Force-enable query parsing to take advantage of its features in non-sharded databases, like [advisory locks](../../features/connection-pooler/transaction-mode.md#advisory-locks) or managing [session state](../../features/connection-pooler/transaction-mode.md#session-state).
 
 ### `query_parser`
 

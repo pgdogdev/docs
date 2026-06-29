@@ -89,7 +89,7 @@ protocol, for example:
 Statements sent over the simple protocol are not checked against the global cache. Each new statement is given a unique
 global name. Since this requires PgDog to parse _each_ incoming query, and that's computationally expensive, this feature is **disabled** by default.
 
-You can enable simple statement rewrites in [`pgdog.toml`](../configuration/pgdog.toml/general.md#prepared_statements):
+You can enable simple statement rewrites in [`pgdog.toml`](../../configuration/pgdog.toml/general.md#prepared_statements):
 
 === "pgdog.toml"
     ```toml

@@ -24,11 +24,11 @@ These features are required for PgDog to act as a replacement for PgBouncer and/
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| [Transactional pooler](features/transaction-mode.md) | :material-check-circle-outline: | |
-| [Session mode](features/session-mode.md) | :material-check-circle-outline: | No sharding or load balancing. |
+| [Transactional pooler](features/connection-pooler/transaction-mode.md) | :material-check-circle-outline: | |
+| [Session mode](features/connection-pooler/session-mode.md) | :material-check-circle-outline: | No sharding or load balancing. |
 | [Load balancer](features/load-balancer/index.md) | :material-check-circle-outline:  | |
 | [Health checks & failover](features/load-balancer/healthchecks.md) | :material-check-circle-outline:  | |
-| [Prepared statements](features/prepared-statements.md) | :material-check-circle-outline:  | |
+| [Prepared statements](features/connection-pooler/prepared-statements.md) | :material-check-circle-outline:  | |
 | [Metrics](features/metrics.md) | :material-check-circle-outline: | Admin database views contain more columns than PgBouncer. |
 | [Encryption](features/tls.md) | :material-check-circle-outline: | |
 | [Authentication](features/authentication.md) | :material-wrench: | Password authentication only. `scram-sha-256`, `md5` are supported. |

@@ -94,8 +94,8 @@ Overrides [`min_pool_size`](../pgdog.toml/general.md#min_pool_size) for this use
 
 ### `pooler_mode`
 
-Overrides [`pooler_mode`](../pgdog.toml/general.md) for this user. This allows users in [session mode](../../features/session-mode.md) to connect to the
-same PgDog instance as users in [transaction mode](../../features/transaction-mode.md).
+Overrides [`pooler_mode`](../pgdog.toml/general.md) for this user. This allows users in [session mode](../../features/connection-pooler/session-mode.md) to connect to the
+same PgDog instance as users in [transaction mode](../../features/connection-pooler/transaction-mode.md).
 
 Default: **none** (defaults to `pooler_mode` from `pgdog.toml`)
 

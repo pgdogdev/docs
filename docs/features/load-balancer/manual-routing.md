@@ -173,4 +173,4 @@ Once it's disabled, PgDog will rely solely on the `pgdog.role` and `pgdog.shard`
 
 ### Session state & `SET`
 
-The query parser is used to intercept and interpret `SET` commands. If the parser is disabled and your application uses `SET` commands to configure the connection, PgDog will not be able to guarantee that all connections have the correct session settings in [transaction mode](../transaction-mode.md).
+The query parser is used to intercept and interpret `SET` commands. If the parser is disabled and your application uses `SET` commands to configure the connection, PgDog will not be able to guarantee that all connections have the correct session settings in [transaction mode](../connection-pooler/transaction-mode.md).

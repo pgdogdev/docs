@@ -27,7 +27,7 @@ Session mode can be enabled globally or on a per-user basis:
 ## Performance
 
 Unlike [transaction mode](transaction-mode.md), session mode doesn't allow for client <-> server connection multiplexing, so the maximum number of allowed client connections
-is controlled by the [`default_pool_size`](../configuration/pgdog.toml/general.md#default_pool_size) (or [`pool_size`](../configuration/users.toml/users.md#pool_size)) settings.
+is controlled by the [`default_pool_size`](../../configuration/pgdog.toml/general.md#default_pool_size) (or [`pool_size`](../../configuration/users.toml/users.md#pool_size)) settings.
 
 For example, if your database pool size is 15,
 only 15 clients will be able to connect and use that database via PgDog at any given moment.
@@ -36,7 +36,7 @@ only 15 clients will be able to connect and use that database via PgDog at any g
 
 In session mode, when the connection pool reaches full capacity, a client has to disconnect before another one can connect to PgDog.
 
-Clients attempting to connect will wait in a queue until a client disconnects. The maximum amount of time a client is allowed to wait is controlled by the [`checkout_timeout`](../configuration/pgdog.toml/general.md#checkout_timeout) setting.
+Clients attempting to connect will wait in a queue until a client disconnects. The maximum amount of time a client is allowed to wait is controlled by the [`checkout_timeout`](../../configuration/pgdog.toml/general.md#checkout_timeout) setting.
 
 
 ### Benefits of session mode

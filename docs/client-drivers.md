@@ -64,7 +64,7 @@ We benchmarked this to be 5 times faster than normal `pg_query` parsing, which s
 
 ### Prisma
 
-Prisma doesn't correctly use the `IN` clause with arrays, causing it to generate a very large number of unique prepared statements. This is not a big problem, but if left unchecked, can cause heavy memory usage in PgDog. Consider setting a lower prepared statements [cache limit](features/prepared-statements.md#cache-limit):
+Prisma doesn't correctly use the `IN` clause with arrays, causing it to generate a very large number of unique prepared statements. This is not a big problem, but if left unchecked, can cause heavy memory usage in PgDog. Consider setting a lower prepared statements [cache limit](features/connection-pooler/prepared-statements.md#cache-limit):
 
 === "pgdog.toml"
     ```toml

@@ -8,7 +8,7 @@ PgDog is a connection pooler, load balancer and database sharder for PostgreSQL.
 
 ## Getting started
 
-PgDog is an open source project. You can download its code from our [repository](https://github.com/pgdogdev/pgdog) in GitHub. If you're deploying PgDog to your cloud account (or on prem), you can either use the [compiled binaries](https://github.com/pgdogdev/pgdog/releases) we provide, or build it from source. 
+PgDog is an open source project. You can download its code from our [repository](https://github.com/pgdogdev/pgdog) on GitHub. If you're deploying PgDog to your cloud account (or on prem), you can either use the [compiled binaries](https://github.com/pgdogdev/pgdog/releases) we provide or build it from source.
 
 Every commit in the `main` branch and weekly tagged releases have corresponding images in our [Docker](https://github.com/orgs/pgdogdev/packages/container/package/pgdog) repository, for example:
 
@@ -18,36 +18,36 @@ docker run ghcr.io/pgdogdev/pgdog:v0.1.46
 
 ## Why PgDog
 
-PostgreSQL is a process-based, single-primary database. It has an upper bound on the number of clients that can connect, the number of queries a single server can execute, and on the amount of data it can write at any given time.
+PostgreSQL is a process-based, single-primary database. As such, it has hard limits on how many clients can connect, how many queries a single server can execute, and how much data it can write at any given time.
 
-PgDog is a proxy that can help solve all of these problems. It's a single executable, deployed between the application and the database. It understands the protocol used by applications to talk to the database and the replication protocol used by PostgreSQL. This allows it to do its job in the background, without impacting how Postgres servers operate or how applications query it.
+PgDog helps you work around these limits. It's a single binary, deployed between your application and the database, that speaks both the protocol applications use to talk to Postgres and the replication protocol Postgres uses internally. This lets PgDog do its job transparently, without changes to Postgres or the applications that query it.
 
 ## Connection pooler
 
-PgDog is a connection pooler, similar to PgBouncer or RDS Proxy. It can multiplex thousands of application connections with only a handful of actual Postgres server connections. This effectively removes the upper bound on the number of connections PostgreSQL databases can serve.
+Like PgBouncer or RDS Proxy, PgDog is a connection pooler: it multiplexes thousands of application connections over just a handful of Postgres server connections. This effectively removes the limit on how many clients a PostgreSQL database can serve at once.
 
-Unlike PgBouncer or RDS Proxy, PgDog has more features that make it easier to use: it can handle SET statements, LISTEN/NOTIFY commands and advisory locks, without breaking connection state or pinning connections.
+Unlike those proxies, PgDog handles features that usually force a pooler to pin or reset connections. It supports SET statements, LISTEN/NOTIFY, and advisory locks without breaking connection state, so your application keeps working as if it were talking to Postgres directly.
 
-PgDog is also multithreaded, so more clients can connect to just one instance of PgDog and use the same, small, number of Postgres connections.
+PgDog is also multithreaded, so a single instance can serve many more clients while still relying on the same small number of Postgres connections.
 
 You can read more about how PgDog handles transactions [here](features/transaction-mode.md).
 
 ## Load balancer
 
-If your database has multiple replicas, PgDog can equally spread read queries between them using one of several load balancing [algorithms](features/load-balancer/index.md) it supports out of the box. This makes it easy to add more replicas to scale reads, without changing application code or adding additional infrastructure, like HAProxy or Patroni.
+If your database has read replicas, PgDog can distribute read queries across them using one of several built-in load balancing [algorithms](features/load-balancer/index.md). This lets you scale reads simply by adding replicas, with no application changes and no extra infrastructure like HAProxy or Patroni.
 
 You can read more about how PgDog load balances queries [here](features/load-balancer/index.md).
 
 
 ## Sharding PostgreSQL
 
-Unlike NoSQL databases, PostgreSQL can serve INSERT, UPDATE, and DELETE queries from only one server. Once the capacity of that server is exceeded, applications have to find new and creative ways to reduce their impact on the database, like batching requests or delaying workloads to run overnight.
+Unlike NoSQL databases, PostgreSQL can serve INSERT, UPDATE, and DELETE queries from only one server. Once that server's capacity is exceeded, applications have to find new and creative ways to reduce their load on the database, such as batching requests or deferring workloads to run overnight.
 
-At the same time, database operators are faced with increasing operating costs, like behind schedule vacuums, table bloat and downtime. Incidents are frequent and engineers are more focused on not breaking the DB than building new features.
+At the same time, database operators face rising operating costs from vacuums that fall behind schedule, table bloat and downtime. Incidents become frequent, and engineers end up more focused on keeping the database from breaking than on building new features.
 
 The solution to an overextended database is sharding: splitting all tables and indices equally between multiple machines. For example, if your primary database is 750 GB, splitting it into 3 shards will produce 3 databases of 250 GB each. As databases get smaller, vacuums start to catch up, indices fit into memory again, and queries run faster with reliable performance.
 
-As shards store more data and grow, they can be split again, scaling PostgreSQL horizontally. Sharded databases can grow into petabytes (that's thousands of TB), while serving OLTP and OLAP use cases.
+As shards accumulate more data and grow, they can be split again, scaling PostgreSQL horizontally. Sharded databases can grow into petabytes (thousands of TB) while serving both OLTP and OLAP workloads.
 
 <center>
   <img src="/images/resharding-intro.png" class="theme-aware-image" width="85%" alt="How PgDog sharding works" />

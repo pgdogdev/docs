@@ -39,6 +39,12 @@ If your application uses `LISTEN`/`NOTIFY`, e.g., [DBOS](https://dbos.dev) or an
 
 This allows applications to use `LISTEN`/`NOTIFY` in [transaction mode](pub_sub.md), just like any other Postgres feature.
 
+### Connection recovery
+
+Unlike other poolers, PgDog takes extra care not to close connections to Postgres unless absolutely necessary. It goes as far as to roll back abandoned transactions and drain abandoned queries. This protects the database against connection storms created by buggy applications.
+
+You can read more about connection recovery methods [here](connection-recovery.md).
+
 ## Read more
 
 {{ next_steps_links([

@@ -4,7 +4,7 @@ icon: material/chart-timeline-variant
 
 # Replication and failover
 
-PgDog has built-in functionality for monitoring the state of Postgres replica databases. If configured, it can also automatically detect when a replica is promoted and redirect write queries to the new primary, and ban replicas from serving traffic if they have fallen far behind in the replication stream.
+PgDog has built-in functionality for monitoring the state of Postgres replica databases. If configured, it can also automatically detect when a replica is promoted and redirect write queries to the new primary, or block replicas from serving traffic if they have fallen far behind in the replication stream.
 
 ## Replication
 
@@ -25,7 +25,7 @@ In addition to fetching raw metrics, PgDog can calculate the replication lag (al
 | Primary LSN | Get the LSN from the primary using `pg_current_wal_lsn()`. |
 | Replica LSN | Get the LSN from each replica using `pg_last_wal_replay_lsn()` or `pg_last_wal_receive_lsn()`. |
 | LSN check | If the two LSNs are identical, replication lag is 0. |
-| Calculate lag | If the two LSNs are different, replication lag is `now() - pg_last_xact_replay_timestamp()`. |
+| Calculate lag | If the two LSNs are different, replication lag is `now() - pg_last_xact_replay_timestamp()` retrieved from the replica. |
 
 This formula assumes that when the replica's LSN is behind the primary, the primary is still receiving write requests. While this is not always the case, it will show replication lag growing over time if the replication stream is falling behind or is broken.
 
@@ -33,7 +33,7 @@ This formula assumes that when the replica's LSN is behind the primary, the prim
     It is possible to calculate the exact replication delay in bytes by subtracting a replica LSN from the primary LSN. While this provides an exact measurement,
     that metric isn't very useful: it's hard to translate bytes into a measurement of how stale the data on the replica truly is.
     
-    Approximating the lag in milliseconds is more informative and will be reasonably accurate the majority of the time.
+    Approximating the lag in milliseconds is more informative and will be reasonably accurate most of the time.
 
 ### Configuration
 
@@ -66,10 +66,15 @@ Decreasing the value of `lsn_check_interval` will produce more accurate statisti
 
 It's common for PgDog deployments to be serving upwards of 30,000-50,000 queries per second per pooler process, so you can run the LSN check query quite frequently without noticeable impact on system latency.
 
+#### Saturated connection pool
+
+If the connection pool is at capacity, either due to a database incident or an inefficient query, PgDog will create a standalone connection to fetch the LSN from each database in the configuration. This is to make sure that it can't miss
+a [failover](#failover) event during a database incident.
+
 ### Replica lag ban
 
-!!! note "Experimental feature"
-    This feature is new and experimental. Please report any issues you encounter.
+!!! note "New feature"
+    This feature is new and experimental. Please report any issues you may encounter.
 
 If a replica has fallen far behind the primary, it may start serving stale data to the application. This can cause hard to debug issues, so it's often best to remove this replica from the load balancer until it's able to catch up.
 
@@ -98,13 +103,14 @@ Unlike [health check-triggered](healthchecks.md) bans, replica lag ban is not cl
 
 ## Failover
 
-<center>
-  <img src="/images/failover.png" width="95%" alt="Failover" />
-</center>
-
 If the `pg_is_in_recovery()` function returns `true`, the database is configured as a standby. It can only serve read queries (e.g. `SELECT`) and is expected to be reasonably up-to-date with the primary database.
 
 Replica databases can be promoted to serve write queries. If that happens, `pg_is_in_recovery()` will start returning `false`. You can read more about this in the [PostgreSQL documentation](https://www.postgresql.org/docs/18/functions-admin.html#FUNCTIONS-RECOVERY-CONTROL).
+
+<center>
+  <img src="/images/failover.png" width="90%" alt="Failover" class="theme-aware-image" />
+  <p>Failover event</p>
+</center>
 
 !!! warning "Failover trigger"
     PgDog does not detect primary failure and **will not** call `pg_promote()`. It is expected that the databases are managed externally by another tool, like Patroni or AWS RDS, which handle replica promotion.
@@ -139,6 +145,10 @@ Failover is disabled by default. To enable it, change all configured databases i
     ```
 
 On startup, PgDog will connect to each database, find out if they are in recovery, and automatically reload its configuration with the determined roles.
+
+!!! info "Replication lag monitoring"
+    In order for PgDog to detect failover events, it needs to query the database for its [replication status](#configuration). Make sure to set
+    `lsn_check_delay` to a reasonable value (e.g., `0`) before enabling this feature.
 
 ### Split brain
 

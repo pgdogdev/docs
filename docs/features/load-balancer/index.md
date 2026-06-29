@@ -9,7 +9,7 @@ icon: material/lan
 
 # Load balancer overview
 
-PgDog understands the PostgreSQL wire protocol and uses its SQL parser to understand queries. This allows it to split read queries from write queries and distribute traffic evenly between databases.
+PgDog understands the PostgreSQL wire protocol and uses the native PostgreSQL parser to understand queries. This allows it to split read queries from write queries and distribute traffic evenly between databases.
 
 Applications can connect to a single PgDog [endpoint](#single-endpoint), without having to manually manage multiple connection pools.
 
@@ -18,13 +18,15 @@ Applications can connect to a single PgDog [endpoint](#single-endpoint), without
 When a query is received by PgDog, it will inspect it using the native Postgres SQL parser. If the query is a `SELECT` and the [configuration](../../configuration/pgdog.toml/databases.md) contains both primary and replica databases, PgDog will send it to one of the replicas. For all other queries, PgDog will send them to the primary.
 
 <center>
-  <img src="/images/replicas.png" width="80%" alt="Load balancer" />
+  <img src="/images/replicas.png" width="95%" alt="Load balancer" class="theme-aware-image" />
+  <p>Load balancer topology</p>
 </center>
 
 Applications don't have to manually route queries between databases or maintain several connection pools internally.
 
-!!! note "SQL compatibility"
-    PgDog's query parser is powered by the `pg_query` library, which extracts the Postgres native SQL parser directly from its source code. This makes it **100% compatible** with the PostgreSQL query language and allows PgDog to understand all valid PostgreSQL queries.
+### SQL compatibility
+
+PgDog's query parser is powered by the `pg_query` library, which extracts the Postgres native SQL parser directly from its source code. This makes it **100% compatible** with the PostgreSQL query language and allows PgDog to understand all valid PostgreSQL queries.
 
 ## Load distribution
 

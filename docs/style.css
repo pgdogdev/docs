@@ -246,6 +246,10 @@
   text-decoration: none;
   font-weight: 500;
 }
+/* Darker blue for prose links in light mode (leaves the nav/accent untouched). */
+[data-md-color-scheme="default"] .md-typeset a {
+  color: #2e59cf;
+}
 /* Keep links bold when wrapped in **bold** (our 500 weight was overriding it). */
 .md-typeset strong a,
 .md-typeset a strong {
@@ -595,11 +599,19 @@ table {
   margin: 1.5rem 0;
 }
 .grid > div {
+  position: relative;
   padding: var(--card-padding);
   border: 1px solid var(--pg-border);
   border-radius: var(--pg-radius-lg);
   background: var(--md-default-bg-color);
   transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+/* Make the whole card clickable: stretch the title link over the card. */
+.md-typeset .grid > div h4 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 .grid > div:hover {
   border-color: var(--pg-accent);
@@ -615,15 +627,14 @@ table {
   margin: 0 0 0.5rem 0;
   font-size: 0.85rem;
 }
-.grid > div h4 a {
-  color: var(--pg-accent);
+.md-typeset .grid > div h4 a {
   text-decoration: none;
   font-weight: 650;
 }
 .grid > div p {
   margin: 0;
   font-size: 0.78rem;
-  color: var(--pg-muted);
+  color: var(--pg-text);
   line-height: 1.55;
 }
 

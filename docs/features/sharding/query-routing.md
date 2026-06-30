@@ -122,7 +122,7 @@ This is because PgDog needs to split up the execution of these statements and ex
 
 ## UPDATE and DELETE
 
-Both `UPDATE` and `DELETE` queries work similarly to [SELECT](#select) queries. The query router looks inside the `WHERE` clause for sharding keys, and routes the query to the corresponding shard, for example:
+Both UPDATE and DELETE queries work similarly to [SELECT](#select) queries. The query router looks inside the `WHERE` clause for sharding keys, and routes the query to the corresponding shard, for example:
 
 ```postgresql
 UPDATE users SET email = $1 WHERE tenant_id = $2 AND id = $3;
@@ -134,6 +134,10 @@ If no `WHERE` clause is present, or it's filtering on a column not used for shar
 UPDATE users SET banned = true WHERE created_at <= NOW(); -- Not a sharding key.
 UPDATE users SET banned = true; -- Missing WHERE clause.
 ```
+
+### Sharding key updates
+
+Unlike Citus, PgDog supports mutating a sharding key column with `UPDATE` statements. Under the hood, it will move the row between shards, deleting it from the original shard and inserting it into the new one. See [sharding key updates](cross-shard-queries/update.md#sharding-key-updates) for more details.
 
 ## Foreign keys
 

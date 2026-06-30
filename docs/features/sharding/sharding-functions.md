@@ -72,14 +72,14 @@ To match a specific table/column combination, you can specify the table name as 
     ```toml
     [[sharded_tables]]
     database = "prod"
-    table = "users"
+    name = "users"
     column = "company_id"
     ```
 === "Helm chart"
     ```yaml
     shardedTables:
       - database: prod
-        table: users
+        name: users
         column: company_id
     ```
 

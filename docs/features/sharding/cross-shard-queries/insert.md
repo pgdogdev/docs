@@ -36,7 +36,7 @@ Unless [two-phase commit](../2pc.md) is enabled, inserts into omnisharded tables
 ```postgresql
 BEGIN;
 INSERT INTO cities (id, city_name, country_code, created_at)
-VALUES ($1, $2, $3, now())
+VALUES ($1, $2, $3, now());
 -- You will receive an ack or an error from all shards here.
 COMMIT;
 ```

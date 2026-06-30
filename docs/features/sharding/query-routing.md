@@ -5,22 +5,22 @@ icon: material/call-split
 
 PgDog has a powerful parser that can extract sharding hints directly from SQL queries. Queries that refer to a column in one of the [sharded tables](../../configuration/pgdog.toml/sharded_tables.md) are sent directly to the corresponding database in the [configuration](../../configuration/pgdog.toml/databases.md).
 
-Direct-to-shard queries are foundational to horizontal database scaling. The more queries can be routed to just one database, the more requests can be served by the entire sharded database cluster.
+Direct-to-shard queries are foundational to horizontal database scaling. The more queries that can be routed to just one database, the more requests the entire sharded database cluster can serve.
 
 ## How it works
 
-Under the hood, PgDog is using the [pg_query](https://docs.rs/pg_query) library, which provides direct access to the native PostgreSQL parser. This allows PgDog to read and understand all valid SQL queries and commands.
+Under the hood, PgDog uses the [pg_query](https://docs.rs/pg_query) library, which provides direct access to the native PostgreSQL parser. This allows PgDog to read and understand all valid SQL queries and commands.
 
 <center>
   <img src="/images/intro.png" width="90%" alt="How direct-to-shard queries work" class="theme-aware-image" />
   <p>Direct-to-shard queries go to one shard at a time.</p>
 </center>
 
-PgDog is deployed as a proxy between Postgres shards and the application and takes care of routing queries between them. Each SQL command is different and is handled differently by our query router, as documented below.
+PgDog is deployed as a proxy between Postgres shards and the application, and takes care of routing queries between them. Each SQL command is different and is handled differently by the query router, as documented below.
 
 ## SELECT
 
-To route `SELECT` queries, the query router looks for a sharding key in the `WHERE` clause. For example, if your database is sharded by the `user_id` column, all queries that filter rows by that column, either directly or through a foreign key, can be sent to a single shard:
+To route SELECT queries, the query router looks for a sharding key in the `WHERE` clause. For example, if your database is sharded by the `user_id` column, all queries that filter rows by that column, either directly or through a foreign key, can be sent to a single shard:
 
 ```postgresql
 SELECT * FROM payments
@@ -30,9 +30,9 @@ WHERE
   payments.user_id = $1; -- Sharding key.
 ```
 
-Both regular queries and [prepared statements](../connection-pooler/prepared-statements.md) are supported. So if your database driver is using placeholders instead of actual values, PgDog will extract the sharding key value from the extended protocol messages.
+Both regular queries and [prepared statements](../connection-pooler/prepared-statements.md) are supported. If your database driver uses placeholders instead of actual values, PgDog will extract the sharding key value from the extended protocol messages.
 
-The sharding key doesn't have to appear in the top-level statement: PgDog's parser will recurse into subqueries and CTEs, if any, and will find all matching filters, for example:
+The sharding key doesn't have to appear in the top-level statement: PgDog's parser will recurse into subqueries and CTEs, if any, and find all matching filters. For example:
 
 ```postgresql
 SELECT * FROM (SELECT * FROM users WHERE tenant_id = $1 /* sharding key */) t;
@@ -40,12 +40,12 @@ SELECT * FROM (SELECT * FROM users WHERE tenant_id = $1 /* sharding key */) t;
 
 ### Supported syntax
 
-The `SELECT` query can express complex filtering logic and not all of it is currently supported. The following filters in the `WHERE` will work:
+The `SELECT` query can express complex filtering logic, and not all of it is currently supported. The following filters in the `WHERE` clause will work:
 
 | Filter | Example |
 |-|-|
-| Column equals to a value | `payments.user_id = $1` |
-| Column matches against a list | `payments.user_id IN ($1, $2, $3)`
+| Column equals a value | `payments.user_id = $1` |
+| Column matches a list | `payments.user_id IN ($1, $2, $3)` |
 
 All other variations will be ignored and the query will be sent to [all shards](cross-shard-queries/index.md).
 
@@ -53,9 +53,9 @@ All other variations will be ignored and the query will be sent to [all shards](
     This is an area of constant improvement. Check back here for updates or [create an issue](https://github.com/pgdogdev/pgdog/issues/) to request
     support for a particular filter or query you are using.
 
-If the query has multiple sharding keys, all of them will be extracted and converged to a set of unique shard numbers.
+If the query has multiple sharding keys, all of them will be extracted and reduced to a set of unique shard numbers.
 
-For example, when filtering by a list of values, e.g., `WHERE user_id IN ($1, $2, $3)`, if all of them map to a single shard, the query will be sent to that shard only. If they map to two or more shards, it will be sent to all corresponding shards [concurrently](cross-shard-queries/index.md).
+For example, when filtering by a list of values, e.g., `WHERE user_id IN ($1, $2, $3)`, the query will be sent only to that shard if all values map to a single shard. If they map to two or more shards, it will be sent to all corresponding shards [concurrently](cross-shard-queries/index.md).
 
 ## INSERT
 
@@ -65,22 +65,22 @@ Insert queries are routed using the values in the `VALUES` clause, for example:
 INSERT INTO payments (user_id, amount) VALUES ($1, $2) RETURNING *
 ```
 
-If the query is inserting a row into a [sharded table](../../configuration/pgdog.toml/sharded_tables.md), the query router will extract the sharding key, and route the query to the corresponding shard. Just like for [SELECT](#select) queries, both [prepared statements](../connection-pooler/prepared-statements.md) and regular queries are supported.
+If the query is inserting a row into a [sharded table](../../configuration/pgdog.toml/sharded_tables.md), the query router will extract the sharding key and route the query to the corresponding shard. As with [SELECT](#select) queries, both [prepared statements](../connection-pooler/prepared-statements.md) and regular queries are supported.
 
 ### Supported syntax
 
-PgDog can automatically detect the sharding key in an `INSERT` statement, whether it specifies column names or not. This works because PgDog fetches the table definitions at proxy startup and knows which columns a particular table contains.
+PgDog can automatically detect the sharding key in an INSERT statement, whether it specifies column names or not. This works because PgDog fetches the table definitions at proxy startup and knows which columns a particular table contains:
 
 ```postgresql
--- user_id is the sharding key ($1)
+-- user_id is the sharding key ($1).
 INSERT INTO payments (user_id, amount) VALUES ($1, $2);
 
 -- user_id is automatically detected as parameter $1
--- using schema inference
+-- using the table schema.
 INSERT INTO payments VALUES ($1, $2);
 ```
 
-If an `INSERT` statement contains multiple tuples, PgDog is able to rewrite it into individual, separate statements and send them, concurrently, to their respective shards. This feature is still experimental and **disabled** by default. You can enable it in [`pgdog.toml`](../../configuration/pgdog.toml/rewrite.md):
+If an INSERT statement contains multiple tuples, PgDog can rewrite it into separate statements and send them concurrently to their respective shards. This feature is still experimental and **disabled** by default. You can enable it in [`pgdog.toml`](../../configuration/pgdog.toml/rewrite.md):
 
 === "pgdog.toml"
     ```toml
@@ -93,7 +93,7 @@ If an `INSERT` statement contains multiple tuples, PgDog is able to rewrite it i
       splitInserts: rewrite
     ```
 
-Once enabled, PgDog will transform multi-tuple queries automatically, for example:
+Once enabled, PgDog will transform multi-tuple queries automatically and send them to their respective shards, for example:
 
 === "Original statement"
     ```postgresql
@@ -109,9 +109,9 @@ Once enabled, PgDog will transform multi-tuple queries automatically, for exampl
 ### Subqueries and CTEs
 
 !!! warning "Not supported yet"
-    Subqueries and CTEs are not currently supported for sharded `INSERT` statements.
+    Subqueries and CTEs are not presently supported for sharded INSERT statements.
 
-Currently, subqueries fetching data from _other_ shards are not supported in `INSERT` statements. For example, the following pattern _will not_, currently, work with PgDog:
+Currently, subqueries fetching data from _other_ shards are not supported in INSERT statements. For example, the following pattern _will not_ work with PgDog:
 
 ```postgresql
 INSERT INTO users (tenant_id, email) VALUES ($1, (SELECT email FROM signups LIMIT 1));
@@ -122,13 +122,13 @@ This is because PgDog needs to split up the execution of these statements and ex
 
 ## UPDATE and DELETE
 
-Both UPDATE and DELETE queries work similarly to [SELECT](#select) queries. The query router looks inside the `WHERE` clause for sharding keys, and routes the query to the corresponding shard, for example:
+Both UPDATE and DELETE queries work similarly to [SELECT](#select) queries. The query router looks inside the `WHERE` clause for sharding keys and routes the query to the corresponding shard, for example:
 
 ```postgresql
-UPDATE users SET email = $1 WHERE tenant_id = $2 AND id = $3;
+UPDATE users SET email = $1 WHERE tenant_id = $2 /* sharding key */ AND id = $3;
 ```
 
-If no `WHERE` clause is present, or it's filtering on a column not used for sharding, the query is sent to all shards [concurrently](cross-shard-queries/index.md), for example:
+If no `WHERE` clause is present, or if it filters on a column not used for sharding, the query is sent to all shards [concurrently](cross-shard-queries/index.md), for example:
 
 ```postgresql
 UPDATE users SET banned = true WHERE created_at <= NOW(); -- Not a sharding key.
@@ -137,28 +137,31 @@ UPDATE users SET banned = true; -- Missing WHERE clause.
 
 ### Sharding key updates
 
-Unlike Citus, PgDog supports mutating a sharding key column with `UPDATE` statements. Under the hood, it will move the row between shards, deleting it from the original shard and inserting it into the new one. See [sharding key updates](cross-shard-queries/update.md#sharding-key-updates) for more details.
+Unlike Citus, PgDog supports mutating a sharding key column with an UPDATE statement. Under the hood, it will move the row between shards, deleting it from the original shard and inserting it into the new one. See [sharding key updates](cross-shard-queries/update.md#sharding-key-updates) for more details.
 
 ## Foreign keys
 
-While it's best to choose a sharding column present in all tables, it is sometimes not desirable or possible to do so. For example, it's redundant to store a foreign key in a table that has a transitive relationship to another table:
+While it's best to choose a sharding column that's present in all tables, it is sometimes not desirable or possible to do so. For example, it's redundant to store a foreign key in a table that has a transitive relationship to another table:
 
 <center>
   <img src="/images/fk.png" width="90%" alt="How foreign keys work" class="theme-aware-image" />
   <p>Transitive foreign key relationships require special handling.</p>
 </center>
 
-In this example, the `order_items` table has a foreign key to `orders`, which in turn refers to `users`. This makes `order_items` related to `users` as well, but it doesn't need a foreign key to that table. However, this also means that table doesn't have a sharding key.
+In this example, the `order_items` table has a foreign key to `orders`, which in turn refers to `users`. This makes `order_items` related to `users` as well, but it doesn't need a foreign key to that table. However, this also means the table doesn't have its own sharding key.
 
 To make querying the `order_items` table in a sharded database possible, the following workarounds are available:
 
 | Workaround | Description |
 |-|-|
-| Add sharding key column | Add the sharding key column to the table and backfill it with corresponding values. |
+| Add the sharding key column | Add the sharding key column to the table and backfill it with corresponding values. |
 | [Manual routing](manual-routing.md) | Provide sharding hints to the query router via SQL comments or `SET` commands. |
-| Use joins | For [SELECT](#select) queries only, refer to the table as part of a join to a table that has the sharding key column. All other queries would need to use [manual routing](manual-routing.md).|
+| Use joins | For [SELECT](#select) queries only, refer to the table as part of a join to another table that has the sharding key column. All other queries, e.g., INSERT, DELETE, etc., would need to use [manual routing](manual-routing.md).|
 
-Adding the sharding key column is often best, because it makes writing queries a lot easier. The sharding key is usually a compact data type, like a `BIGINT` or a `UUID`, so it doesn't take up much space, and can be backfilled relatively quickly. If backfilling, make sure to do so in small batches, so as to reduce impact on database performance.
+Adding the sharding key column is often the best choice because it makes writing queries much easier. The sharding key is usually a compact data type, like a `BIGINT` or a `UUID`, so it doesn't take up much space and can be backfilled relatively quickly.
+
+!!! note "Backfilling"
+    If backfilling the sharding key column, make sure to do so in small batches to reduce the impact on database performance.
 
 ### Sharding configuration
 
@@ -169,20 +172,17 @@ If most or all of your tables have the sharding key and the column name is the s
     [[sharded_tables]]
     database = "prod"
     column = "user_id"
-    data_type = "bigint"
     ```
 === "Helm chart"
     ```yaml
     shardedTables:
       - database: prod
         column: user_id
-        dataType: bigint
     ```
 
 This will match all queries referring to all tables with the `user_id` column and route them to a shard accordingly.
 
-For the table storing the actual data referred to by the foreign keys, you can make another
-entry in the config, this time with the table name explicitly stated:
+For the table storing the actual data referred to by the foreign keys, you can add another entry to the configuration, this time with the table name explicitly stated:
 
 === "pgdog.toml"
     ```toml
@@ -190,7 +190,6 @@ entry in the config, this time with the table name explicitly stated:
     database = "prod"
     name = "users"
     column = "id"
-    data_type = "bigint"
     ```
 === "Helm chart"
     ```yaml
@@ -198,10 +197,9 @@ entry in the config, this time with the table name explicitly stated:
       - database: prod
         name: users
         column: id
-        dataType: bigint
     ```
 
-The latter will match queries referring to the `users.id` column only. Together with the `user_id` entry, all tables that contain the sharding key will be supported by the query router for direct-to-shard queries.
+The second entry will match queries referring to the `users.id` column only. Together with the `user_id` entry, all tables that contain the sharding key will be supported by the query router for direct-to-shard queries.
 
 ## Read more
 

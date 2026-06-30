@@ -4,28 +4,32 @@ icon: material/multicast
 
 # Cross-shard queries
 
-If a client can't or doesn't specify a sharding key in the query, PgDog will send that query to all shards in parallel, and combine the results automatically. To the client, this looks like the query was executed by a single database.
+If a client can't or doesn't specify a sharding key in the query, PgDog will send that query to all shards concurrently and combine the results automatically. To the client, this looks like the query was executed by a single database.
 
-<center style="margin-top: 2rem;">
-    <img src="/images/cross-shard.png" width="80%" alt="Cross-shard queries" />
+<center>
+    <img src="/images/cross-shard.png" width="90%" alt="Cross-shard queries" class="theme-aware-image" />
+    <p>Cross-shard queries are sent to all shards concurrently.</p>
 </center>
 
-## How it works
+While this sounds simple on the surface, the actual implementation is anything but. It's described below, along with edge cases that are not yet supported.
 
-PgDog understands the Postgres protocol and query language. It can connect to multiple database servers, send the query to all of them, and collect [`DataRow`](#under-the-hood) messages as they are returned by each connection.
+## Cross-shard basics
+
+PgDog understands the Postgres protocol and SQL query language. It can connect to multiple database servers, send the query to all of them, and collect [rows](#under-the-hood) as they are returned by each connection.
 
 Once all servers finish executing the request, PgDog processes the result, performs any requested sorting, aggregation or row disambiguation, and sends the complete result back to the client, as if all rows came from one database server.
 
 Just like with [direct-to-shard](../query-routing.md) queries, each SQL command is handled differently, as documented below:
 
-- [`SELECT`](select.md)
-- [`INSERT`](insert.md)
-- [`UPDATE`, `DELETE`](update.md)
-- [`CREATE`, `ALTER`, `DROP`](ddl.md) (and other DDL statements)
-- [`COPY`](copy.md)
+| Command | Summary |
+|-|-|
+| [SELECT](select.md) | PgDog implements a scatter/gather query engine to fetch rows from multiple shards concurrently. |
+| [INSERT](insert.md) | Statements targeting [omnisharded](omnishards.md) are sent to all shards concurrently. Sharded tables with automatic [primary key](../unique-ids.md) generation are sent to one shard only. |
+| [UPDATE and DELETE](update.md) | Statements are sent to all shards concurrently. Sharding key updates are partially supported. |
+| [DDL statements, e.g., CREATE, ALTER, DROP](ddl.md) | DDL is sent to all shards concurrently, to make sure the schema is identical on all shards. |
+| [COPY command](copy.md) | Rows sent via COPY are automatically distributed between all shards using the configured [sharding function](../sharding-functions.md). |
 
-
-## Under the hood
+### Under the hood
 
 PgDog implements the PostgreSQL wire protocol, which is well documented and stable. The messages sent by Postgres clients and servers contain all the necessary information about data types, column names and executed statements, which PgDog can use to present multi-database results as a single stream of data.
 
@@ -39,7 +43,7 @@ The following protocol messages are especially relevant:
 
 The protocol has two formats for encoding tuples: text and binary. Text format is equivalent to calling the `to_string()` method on native types, while binary encoding sends them in network-byte order. For example:
 
-=== "Data"
+=== "Query"
     ```postgresql
     SELECT 1::bigint, 2::integer, 'three'::VARCHAR;
     ```
@@ -50,7 +54,7 @@ The protocol has two formats for encoding tuples: text and binary. Text format i
     | `INTEGER` | `"2"` | `00 00 00 02` |
     | `VARCHAR` | `"three"` | `three` |
 
-Since PgDog needs to process rows before sending them to the client, we implemented parsing both formats for [most data types](select.md#supported-data-types).
+Since PgDog needs to process rows before sending them to the client, we implemented parsing both formats for most [data types](select.md#supported-data-types).
 
 
 ## Disabling cross-shard queries
@@ -72,10 +76,8 @@ When this setting is enabled and a query doesn't have a sharding key, instead of
 ## Read more
 
 {{ next_steps_links([
-    ("Sharding functions", "../sharding-functions.md", "Control how rows are distributed across shards."),
-    ("Cross-shard SELECT", "select.md", "Query data across all shards with automatic merging."),
-    ("Cross-shard INSERT", "insert.md", "Insert rows that get routed to the correct shard."),
-    ("Cross-shard UPDATE and DELETE", "update.md", "Modify or remove rows in tables spanning multiple shards."),
-    ("DDL, e.g. CREATE TABLE", "ddl.md", "Run schema changes across all shards at once."),
-    ("COPY command", "copy.md", "Bulk load data across shards with the COPY protocol."),
+    ("SELECT", "select.md", "Query data from all shards."),
+    ("INSERT", "insert.md", "Create rows that get routed to the correct shard."),
+    ("UPDATE and DELETE", "update.md", "Modify or remove rows in tables spanning multiple shards."),
+    ("DDL", "ddl.md", "Make schema changes across all shards concurrently."),
 ]) }}

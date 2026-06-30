@@ -167,7 +167,7 @@ This behavior is configurable in [pgdog.toml](../../configuration/pgdog.toml/gen
     readWriteSplit: exclude_primary
     ```
 
-#### Failover for reads
+### Failover for reads
 
 In case one of your replicas fails, you can configure the primary to serve read queries temporarily while you (or your cloud vendor) bring the replica back up. This is configurable, like so:
 
@@ -180,6 +180,22 @@ In case one of your replicas fails, you can configure the primary to serve read 
     ```yaml
     readWriteSplit: include_primary_if_replica_banned
     ```
+
+### Replicas optional
+
+Migrating applications to use replicas can take some time, especially if some queries are replica lag-sensitive, e.g., a read query issued immediately after a write. To make it easier to migrate to PgDog, you can disable replicas for reads, while explicitly opting specific queries in via [manual routing](manual-routing.md):
+
+=== "pgdog.toml"
+    ```toml
+    [general]
+    read_write_split = "prefer_primary"
+    ```
+=== "Helm chart"
+    ```yaml
+    readWriteSplit: prefer_primary
+    ```
+
+Enabling this will make PgDog send all queries to the primary unless specified otherwise with a [query comment](manual-routing.md#query-comments) or a [`SET` command](manual-routing.md#parameters).
 
 ## Learn more
 

@@ -249,7 +249,7 @@ Schemas are evaluated in order specified in the statement, and the first schema 
 
 ### DDL
 
-Unlike other sharding functions, schema-based sharding will also route DDL (e.g., `CREATE TABLE`, `CREATE INDEX`, etc.) queries to their respective shard, as long as the entity name is fully qualified or `search_path` is set:
+Unlike column-based sharding functions, schema-based sharding will also route DDL (e.g., `CREATE TABLE`, `CREATE INDEX`, etc.) queries to their respective shard, as long as the entity name is fully qualified or `search_path` is set:
 
 ```postgresql
 CREATE TABLE customer_b.users (

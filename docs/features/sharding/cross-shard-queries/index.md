@@ -2,7 +2,7 @@
 icon: material/multicast
 ---
 
-# Cross-shard queries overview
+# Cross-shard queries
 
 If a client can't or doesn't specify a sharding key in the query, PgDog will send that query to all shards in parallel, and combine the results automatically. To the client, this looks like the query was executed by a single database.
 

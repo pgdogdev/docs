@@ -7,32 +7,32 @@ Sharding a PostgreSQL database splits it, with all its tables and indices, betwe
 
 ## Terminology
 
-Some terms and expressions used in the documentation may be new to some readers. They are defined below.
+Some terms and expressions used in the documentation may be new to some readers. They are defined below:
 
 | Term | Definition |
 |------|------------|
-| Shard | PostgreSQL database(s) that contains a portion of the entire dataset. |
+| Shard | PostgreSQL database(s) that contains a portion of the entire dataset. In most deployments, that's an independent PostgreSQL server. |
 | Sharding function | A function that takes some data and computes a shard number for where this data should be placed. |
 | Shard number | A number between 0 and _N_ where _N_ is the total number of shards in the cluster. |
 | Primary | A database that serves write queries like `INSERT`, `UPDATE`, `DELETE`, etc. |
 | Replica | A database that has the same data as a primary and can only serve `SELECT` queries. |
 
 
-### Shards
+### Database shards
 
 Each shard is responsible for a subset of the total data in the database cluster. Each shard can have multiple replica databases and only one primary. The primary is responsible for serving writes, like creating and updating rows, while replica databases are responsible for serving read queries.
 
-When we refer to "shards" in this documentation, we mean primary and replica databases collectively responsible for a subset of the database data.
+When we refer to "shards" in this documentation, we mean primary and replica databases collectively responsible for a subset of the database data. PgDog can simulteneously manage sharding and load balancing queries, so a database shard can actually encompass a primary and replicas without leaking that abstraction to the application.
 
 ### Sharding function
 
-A [sharding function](sharding-functions.md) is responsible for splitting data between shards. It's typically based on some kind of hash, divided by the total number of shards in the cluster, to obtain the shard number. The hash ensures that data is distributed uniformly between shards, no matter what that data is.
+A [sharding function](sharding-functions.md) is responsible for splitting data between shards. It's typically based on some kind of hash, divided by the total number of shards in the cluster, to obtain the shard number. The hash ensures that data is distributed uniformly between shards, no matter what that data is, for example:
 
 ```
 shard_number = hash(data) % num_shards
 ```
 
-Alternatively, a sharding function can map the sharding keys directly to a shard number. This is done when the number of keys is relatively small and they represent large collections of evenly distributed data. Examples include country codes for geographic data or tenant IDs for multitenant applications.
+PgDog supports many different sharding functions, including a list-based and value-based function which can map the sharding keys directly to a shard number. This is done in situations where the number of keys is relatively small and they represent large collections of evenly distributed data, e.g., country codes for geographic data or tenant IDs for multitenant applications.
 
 ## Read more
 

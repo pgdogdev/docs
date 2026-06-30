@@ -32,7 +32,7 @@ Unlike those proxies, PgDog handles features that usually force a pooler to pin 
 
 PgDog is also multithreaded, so a single instance can serve many more clients while still relying on the same small number of Postgres connections.
 
-You can read more about how the connection pooler works [here](features/connection-pooler/transaction-mode.md).
+You can read more about how the connection pooler works [here](features/connection-pooler/index.md).
 
 ## Load balancer
 

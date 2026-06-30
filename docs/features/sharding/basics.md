@@ -22,7 +22,7 @@ Some terms and expressions used in the documentation may be new to some readers.
 
 Each shard is responsible for a subset of the total data in the database cluster. Each shard can have multiple replica databases and only one primary. The primary is responsible for serving writes, like creating and updating rows, while replica databases are responsible for serving read queries.
 
-When we refer to "shards" in this documentation, we mean primary and replica databases collectively responsible for a subset of the database data. PgDog can simulteneously manage sharding and load balancing queries, so a database shard can actually encompass a primary and replicas without leaking that abstraction to the application.
+When we refer to "shards" in this documentation, we mean primary and replica databases collectively responsible for a subset of the database data. PgDog can simultaneously manage sharding and load balancing queries, so a database shard can actually encompass a primary and replicas without leaking that abstraction to the application.
 
 ### Sharding function
 

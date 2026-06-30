@@ -3,7 +3,7 @@ icon: material/function
 ---
 # Sharding functions
 
-The sharding function determine how to route SQL queries to one or more shard numbers. They can use arbitrary input data to make this decision, and PgDog supports multiple sharding functions. Once a shard number is determined, PgDog will send the query to one or more databases configured in [`pgdog.toml`](../../configuration/pgdog.toml/databases.md).
+The sharding functions determine how to route SQL queries to one or more shard numbers. They can use arbitrary input data to make this decision, and PgDog supports multiple sharding functions. Once a shard number is determined, PgDog will send the query to one or more databases configured in [`pgdog.toml`](../../configuration/pgdog.toml/databases.md).
 
 ## Supported functions
 
@@ -81,7 +81,7 @@ To match a specific table/column combination, you can specify the table name as 
         column: company_id
     ```
 
-This makes PgDog's shrading configuration flexible and forgving of the realities of running PostreSQL in production. As long as you can find and configure all required sharding keys, query routing will work as expected.
+This makes PgDog's sharding configuration flexible and forgiving of the realities of running PostgreSQL in production. As long as you can find and configure all required sharding keys, query routing will work as expected.
 
 !!! note "Multiple sharding functions"
     Since sharding is configured for each table or column name, this allows storing tables
@@ -127,31 +127,7 @@ This example will route all queries with `user_id` equal to `1`, `2`, and `3` to
 
 !!! note "Required configuration"
     The `[[sharded_tables]]` configuration entry is still required for list-based sharding. It specifies the data type of the column, which tells PgDog how to parse its value at runtime.
-
-#### Fallback shard
-
-If you don't want to specify an exhaustive list of values, PgDog accepts a default (or fallback) mapping which will match all queries that are not otherwise configured using other `[[sharded_mapping]]` entries:
-
-=== "pgdog.toml"
-    ```toml
-    [[sharded_mappings]]
-    database = "prod"
-    column = "user_id"
-    kind = "default"
-    shard = 1
-    ```
-=== "Helm chart"
-    ```yaml
-    shardedMappings:
-      - database: prod
-        column: user_id
-        kind: default
-        shard: 1
-    ```
-
-This is identical to `PARTITION OF [...] DEFAULT` behavior in PostgreSQL.
     
-
 ### Range-based sharding
 
 Sharding by range is similar to [list](#list-based-sharding) sharding, except instead of specifying the values explicitly, you can specify a bounding range. All values that are included in the range will be sent to the specified shard, for example:
@@ -182,6 +158,29 @@ This example will route queries that refer to the `user_id` column, with values 
 !!! note "Required configuration"
     The `[[sharded_tables]]` configuration entry is still required for range-based sharding. It specifies the data type of the column, which tells PgDog how to parse its value at runtime.
 
+
+### Fallback shard
+
+If you don't want to specify an exhaustive list of values, PgDog accepts a default (or fallback) mapping which will match all queries that are not otherwise configured using other `[[sharded_mapping]]` entries:
+
+=== "pgdog.toml"
+    ```toml
+    [[sharded_mappings]]
+    database = "prod"
+    column = "user_id"
+    kind = "default"
+    shard = 1
+    ```
+=== "Helm chart"
+    ```yaml
+    shardedMappings:
+      - database: prod
+        column: user_id
+        kind: default
+        shard: 1
+    ```
+
+This is identical to `PARTITION OF [...] DEFAULT` behavior in PostgreSQL.
 
 ## Supported data types
 

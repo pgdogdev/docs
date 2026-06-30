@@ -6,7 +6,7 @@ icon: material/set-split
 
 Sharding splits up a PostgreSQL database with all its tables and indices between multiple servers. Each machine runs its own, independent PostgreSQL server, while PgDog takes care of routing queries and moving data between databases.
 
-Applications are not be aware of sharding and should continue to work as if they were using regualar Postgres. PgDog's role is to make that possible.
+Applications are not aware of sharding and should continue to work as if they were using regular Postgres. PgDog's role is to make that possible.
 
 A lot of the features described in this section are stable, tested and are powering large, production databases. Others are still experimental and are marked accordingly. If you have any questions about how sharding works in PgDog, join our [Discord](https://discord.gg/CcBZkjSJdd).
 
@@ -29,7 +29,7 @@ PgDog is a query router. It can extract sharding hints directly from the SQL que
 |-|-|
 | [**Direct-to-shard queries**](query-routing.md) | Sharding key(s) are extracted directly from the query text and the query is sent to one shard only. |
 | [**Cross-shard queries**](cross-shard-queries/index.md) | Queries which don't have a sharding key are sent to all shards, with the results collected and transformed, as if they are coming from one database. |
-| [**Manually routed queries**](manual-routing.md) | Queries are routed explicitely using a query comment, or separately with a `SET` command, to a specific shard. |
+| [**Manually routed queries**](manual-routing.md) | Queries are routed explicitly using a query comment, or separately with a `SET` command, to a specific shard. |
 | [**COPY commands**](cross-shard-queries/copy.md) | Data sent with the `COPY` command is automatically sharded between all databases. |
 
 ### Data consistency

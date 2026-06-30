@@ -36,11 +36,18 @@ This will spawn a background task that will copy all tables in the [publication]
 
 To copy data from database `"prod"` to database `"prod_sharded"` and the `"all_tables"` publication, execute the following command:
 
-```
-COPY_DATA prod prod_sharded all_tables;
-```
+=== "Admin command"
+    ```
+    COPY_DATA prod prod_sharded all_tables;
+    ```
+=== "Output"
+    ```
+     task_id | replication_slot
+    ---------+-----------------------------
+     12      | __pgdog_repl_a1b2c3d4e5f6...
+    ```
 
-The name of the replication slot will be automatically generated.
+`COPY_DATA` returns immediately with the background `task_id` and the auto-generated replication slot name. Track the task with [`SHOW TASKS`](../../../administration/tasks.md) and stop it with `STOP_TASK <task_id>`. The slot name is not provided, so it is generated for you.
 
 ### CLI
 
@@ -63,6 +70,9 @@ Required (*) and optional parameters for this command are as follows:
 | `--replication-slot` | Name of the replication slot to use (and create if it doesn't exist) for syncing real-time changes. |
 | `--replicate-only` | Don't copy data, just stream changes from the replication slot. |
 | `--sync-only` | Perform the initial data sync only and exit. |
+| `--skip-schema-sync` | Don't run the pre-data schema sync first (assume the destination schema already exists). |
+
+Unlike the `COPY_DATA` admin command, the CLI runs in the **foreground** as a separate `pgdog` process: it blocks while it copies the data and then keeps streaming changes until you stop it with `Ctrl-C` (which winds the task down gracefully), or until you pass `--sync-only` to copy and exit. It does not return a `task_id` and is not visible in [`SHOW TASKS`](../../../administration/tasks.md).
 
 ## How it works
 
@@ -238,7 +248,26 @@ SELECT
   pg_current_wal_lsn()
 FROM pg_replication_slots;
 ```
-The replication delay between the two database clusters is measured in bytes. When that number reaches zero, the two databases are byte-for-byte identical, and traffic can be [cut over](cutover.md) to the destination database.
+The replication delay between the two database clusters is measured in bytes. When that number reaches zero, the two databases are byte-for-byte identical.
+
+`COPY_DATA` keeps streaming changes indefinitely, keeping the destination in sync with the source. To monitor or stop the background task, see the task-level view below.
+
+### Monitoring the task
+
+When started from the admin database, `COPY_DATA` runs as a background task. List all tasks, their current status, and elapsed time with:
+
+=== "Admin command"
+    ```
+    SHOW TASKS;
+    ```
+=== "Output"
+    ```
+     id | scope | type                         | status  | inner_status | elapsed
+    ----+-------+------------------------------+---------+--------------+----------
+     12 | root  | reshard prod -> prod_sharded | running | replicating  | 00:02:14
+    ```
+
+`COPY_DATA` runs the same pipeline as `RESHARD` but leaves the traffic in place, so it appears with a `reshard` type and progresses through `syncing data` to `replicating`. Stop it with `STOP_TASK <task_id>`. See [Background tasks](../../../administration/tasks.md) for the full column and status reference.
 
 ## Troubleshooting
 
@@ -311,7 +340,7 @@ See [Integer primary keys](#integer-primary-keys) for the other common reason to
 
 ### Replication slot not cleaned up after stop or crash
 
-If `COPY_DATA` is stopped via `STOP_TASK` or PgDog exits unexpectedly, the **permanent** replication slot will remain on the source. Postgres will not recycle WAL until it is dropped. Clean it up manually:
+Stopping a task gracefully with `STOP_TASK` winds the replication stream down and drops its **permanent** replication slot for you. However, if PgDog exits unexpectedly (crash, `SIGKILL`, lost connection) the slot can remain on the source. Postgres will not recycle WAL until it is dropped, so clean it up manually:
 
 ```postgresql
 SELECT pg_drop_replication_slot('slot_name');

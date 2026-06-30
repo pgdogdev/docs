@@ -32,6 +32,13 @@ The admin database name is [configurable](../configuration/pgdog.toml/admin.md).
 | `SHOW QUERY_CACHE` | List statements currently in the AST cache used for query routing. |
 | [`MAINTENANCE`](maintenance_mode.md) | Pause all queries to synchronize configuration changes across multiple instances of PgDog. |
 | [`SHOW REPLICATION`](replication.md) | Show the status of PostgreSQL replication for each database, including replica lag. |
+| [`RESHARD`](../features/sharding/resharding/index.md) | Reshard a database online and cut over traffic automatically. Returns a background `task_id`. |
+| [`COPY_DATA`](../features/sharding/resharding/move.md) | Copy and reshard data to a destination cluster, then stream changes. Returns a background `task_id`. |
+| [`SCHEMA_SYNC`](../features/sharding/resharding/schema.md) | Synchronize schema for a given phase between source and destination. Returns a background `task_id`. |
+| `REPLICATE` | Stream changes from source to destination (schema and data must already be synced). Returns a background `task_id`. |
+| [`CUTOVER`](../features/sharding/resharding/cutover.md) | Cut traffic over to the destination cluster for a running replication task. |
+| [`SHOW TASKS`](tasks.md) | List background tasks (resharding, copy, replication, schema sync) with their status and elapsed time. |
+| [`STOP_TASK`](tasks.md#stopping-a-task) | Stop a running background task by its `task_id`. |
 
 ## Shutting down PgDog
 

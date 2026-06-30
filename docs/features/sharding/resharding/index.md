@@ -35,6 +35,25 @@ RESHARD <source> <destination> <publication>;
 
 The `<source>` and `<destination>` parameters accept the name of the source and destination databases respectively. The `<publication>` parameter expects the name of the Postgres [publication](schema.md#publication) for the tables that need to be resharded.
 
+`RESHARD` returns a `task_id` and runs in the background. You can track its progress with [`SHOW TASKS`](../../../administration/tasks.md), and stop it with `STOP_TASK <task_id>`. When `RESHARD` is used, traffic cutover happens automatically as the final step.
+
+### Running the steps manually
+
+Instead of `RESHARD`, you can run the process one step at a time. This gives you control over *when* traffic is cut over. Each step can be run either as an [admin database](../../../administration/index.md) command or as a `pgdog` CLI command:
+
+| Step | Admin database | CLI |
+|-|-|-|
+| [Schema sync](schema.md) | `SCHEMA_SYNC <phase> <source> <destination> <publication>` | `pgdog schema-sync ...` |
+| [Move & reshard data](move.md) | `COPY_DATA <source> <destination> <publication>` | `pgdog data-sync ...` |
+| [Cutover traffic](cutover.md) | `CUTOVER [<task_id>]` | _admin database only_ |
+
+The two run differently:
+
+- **Admin database commands** run as background tasks *inside the running PgDog*. They return a `task_id` immediately, are tracked with [`SHOW TASKS`](../../../administration/tasks.md), and are controlled with [`STOP_TASK`](../../../administration/tasks.md#stopping-a-task) and [`CUTOVER`](cutover.md).
+- **CLI commands** run as a separate, one-off `pgdog` process in the **foreground**: they block until the operation finishes and are stopped with `Ctrl-C`. They do not appear in `SHOW TASKS`.
+
+Unlike `RESHARD`, the manual path does **not** cut over automatically: the data move copies the data and keeps streaming changes indefinitely, and you switch traffic explicitly with [`CUTOVER`](cutover.md).
+
 !!! note "Traffic cutover"
     Traffic cutover requires careful synchronization to avoid data loss and a split-brain situation. The `RESHARD` command supports this for **single node** PgDog deployments only. The [Enterprise Edition](../../../enterprise_edition/index.md) provides a control plane, which supports traffic cutover with multiple PgDog containers.
 

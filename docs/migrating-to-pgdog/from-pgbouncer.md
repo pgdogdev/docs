@@ -162,9 +162,9 @@ Settings that control general connection pooler operations.
 | [`max_client_conn`](https://www.pgbouncer.org/config.html#max_client_conn) | N/A | PgDog doesn't place an upper bound on the number of client connections. |
 | [`max_db_connections`](https://www.pgbouncer.org/config.html#max_db_connections) | N/A | PgDog doesn't have a global database connection limit. Individual pools configure their own limits. |
 | [`server_round_robin`](https://www.pgbouncer.org/config.html#server_round_robin) | N/A | PgDog has its own [load balancing](../features/load-balancer/index.md) algorithms that are configured separately. |
-| [`track_extra_parameters`](https://www.pgbouncer.org/config.html#track_extra_parameters) | N/A | PgDog tracks [all parameters](../features/transaction-mode.md#session-state) by default, including those that PgBouncer doesn't. |
+| [`track_extra_parameters`](https://www.pgbouncer.org/config.html#track_extra_parameters) | N/A | PgDog tracks [all parameters](../features/connection-pooler/transaction-mode.md#session-state) by default, including those that PgBouncer doesn't. |
 | [`stats_period`](https://www.pgbouncer.org/config.html#stats_period) | [`stats_period`](../configuration/pgdog.toml/general.md#stats_period) | - |
-| [`max_prepared_statements`](https://www.pgbouncer.org/config.html#max_prepared_statements) | [`prepared_statements_limit`](../configuration/pgdog.toml/general.md#prepared_statements_limit) | PgDog's [prepared statements](../features/prepared-statements.md) limit is soft and is only enforced on server connections. |
+| [`max_prepared_statements`](https://www.pgbouncer.org/config.html#max_prepared_statements) | [`prepared_statements_limit`](../configuration/pgdog.toml/general.md#prepared_statements_limit) | PgDog's [prepared statements](../features/connection-pooler/prepared-statements.md) limit is soft and is only enforced on server connections. |
 | [`unix_socket_dir`](https://www.pgbouncer.org/config.html#unix_socket_dir) | N/A | PgDog doesn't support UNIX sockets. |
 | [`unix_socket_mode`](https://www.pgbouncer.org/config.html#unix_socket_mode) | N/A | Same as above. |
 | [`unix_socket_group`](https://www.pgbouncer.org/config.html#unix_socket_group) | N/A | Same as above. |
@@ -227,7 +227,7 @@ Various connection-related and DNS-related settings.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| [`server_reset_query`](https://www.pgbouncer.org/config.html#server_reset_query) | N/A | Server state is [managed](../features/transaction-mode.md#session-state) by PgDog and different reset queries are used, depending on circumstances. |
+| [`server_reset_query`](https://www.pgbouncer.org/config.html#server_reset_query) | N/A | Server state is [managed](../features/connection-pooler/transaction-mode.md#session-state) by PgDog and different reset queries are used, depending on circumstances. |
 | [`server_reset_query_always`](https://www.pgbouncer.org/config.html#server_reset_query_always) | N/A | Same as above. |
 | [`server_check_query`](https://www.pgbouncer.org/config.html#server_check_query) | N/A | Not currently configurable. PgDog runs an empty query (`;`) by default. |
 | [`server_check_delay`](https://www.pgbouncer.org/config.html#server_check_delay) | N/A | Not currently supported. |

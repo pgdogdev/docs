@@ -35,6 +35,33 @@ To enable encryption on the client, set the `sslmode` connection parameter. If y
 postgres://user:password@host:port/database?sslmode=prefer
 ```
 
+#### Rejecting unencrypted connections
+
+PgDog can reject connections from clients that choose not to use TLS encryption:
+
+=== "pgdog.toml"
+    ```toml
+    [general]
+    tls_client_required = true
+    ```
+=== "Helm chart"
+    ```
+    tlsClientRequired: true
+    ```
+
+This is helpful to enforce a security protocol but, in some rare scenarios, could limit which clients are allowed to connect. Most Postgres client drivers ship with TLS support bundled in so, in practice, enabling this feature is not going to be a problem.
+
+#### Self-signed certificate
+
+If you're deploying PgDog using our [Helm chart](../installation.md#kubernetes), you can configure it to generate a self-signed TLS certificate at deploy time:
+
+=== "Helm chart"
+    ```yaml
+    tlsGenerateSelfSignedCert: true
+    ```
+
+This is useful for quickly deploying TLS in development or staging. For production deployments, you may want to load your own certificate that your clients can validate instead.
+
 ### Connection modes
 
 PostgreSQL supports 4 modes for establishing encrypted connections, documented below:
@@ -82,6 +109,64 @@ If you use `verify_ca` or `verify_full` and your certificate is not signed by a 
     ```yaml
     tlsServerCaCertificate: /path/to/ca/certificate.pem
     ```
+
+### Deploying on AWS RDS
+
+PgDog is commonly deployed in front of AWS RDS or Aurora. To make it easier to setup secure TLS, we are bundling the [RDS certificate bundle](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html#UsingWithRDS.SSL.CertificatesDownload) into the Helm chart and making it available to PgDog at runtime:
+
+=== "Helm chart"
+    ```yaml
+    rdsCertificateBundle:
+      enabled: true
+    ```
+=== "AWS GovCloud"
+    If deploying into the AWS GovCloud (US), you can change the bundle accordingly:
+
+    ```yaml
+    rdsCertificateBundle:
+      type: govcloud
+    ```
+    
+
+Once the bundle is loaded, you can switch to `verify_ca` (or `verify_full`) for server connections which will ensure that connections from PgDog to RDS are always encrypted _and_ authenticated:
+
+=== "pgdog.toml"
+    ```toml
+    [general]
+    tls_verify = "verify_full"
+    ```
+=== "Helm chart"
+    ```yaml
+    tlsVerify: verify_full
+    ```
+
+
+## Mutual TLS
+
+!!! note "New"
+    This is a new feature. Please report any issues you may run into.
+
+Mutual TLS (also known as **mTLS**) allows PgDog to authenticate connections received from the client using a mutually agreed upon certificate. If the client doesn't provide the right certificate (or doesn't have one), PgDog will reject the connection. This can be enabled by setting the client CA certificate in [`pgdog.toml`](../configuration/pgdog.toml/general.md):
+
+=== "pgdog.toml"
+    ```toml
+    [general]
+    tls_client_ca_certificate = "/path/to/client/ca.pem"
+    ```
+=== "Helm chart"
+    ```yaml
+    tlsClientCaCertificate: /path/to/client/ca.pem
+    ```
+
+The certificate provided by the client doesn't have to be self-signed. In fact, any certificate signed by any of the certs in the chain loaded via `tls_client_ca_certificate` is an acceptable anchor. This allows an internal CA (Certificate Authority) to issue unique certificates to each application, while also making them short-lived (e.g., 30 days expiration) to satisfy security or compliance requirements.
+
+## TLS in practice
+
+PgDog terminates TLS from clients and opens a separate connection to Postgres. Traffic can be encrypted on both network hops, but it is not end-to-end encryption in the cryptographic sense: PgDog decrypts client traffic so it can read PostgreSQL protocol messages, route queries, and manage connections.
+
+For the client side, configure applications to use TLS when connecting to PgDog. Use `sslmode=verify-full` when clients should can PgDog's certificate and hostname. If you want PgDog to authenticate clients during the TLS handshake, set [`tls_client_ca_certificate`](#mutual-tls).
+
+For the server side, set `tls_verify` setting to `"verify_full"` so PgDog can validate the Postgres server certificate and hostname on each connection. It does not currently present a client TLS certificate to Postgres, so mutual TLS between PgDog and PostgreSQL is not currently supported.
 
 ## Performance
 

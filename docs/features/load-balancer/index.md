@@ -9,7 +9,7 @@ icon: material/lan
 
 # Load balancer overview
 
-PgDog understands the PostgreSQL wire protocol and uses its SQL parser to understand queries. This allows it to split read queries from write queries and distribute traffic evenly between databases.
+PgDog understands the PostgreSQL wire protocol and uses the native PostgreSQL parser to understand queries. This allows it to split read queries from write queries and distribute traffic evenly between databases.
 
 Applications can connect to a single PgDog [endpoint](#single-endpoint), without having to manually manage multiple connection pools.
 
@@ -18,13 +18,15 @@ Applications can connect to a single PgDog [endpoint](#single-endpoint), without
 When a query is received by PgDog, it will inspect it using the native Postgres SQL parser. If the query is a `SELECT` and the [configuration](../../configuration/pgdog.toml/databases.md) contains both primary and replica databases, PgDog will send it to one of the replicas. For all other queries, PgDog will send them to the primary.
 
 <center>
-  <img src="/images/replicas.png" width="80%" alt="Load balancer" />
+  <img src="/images/replicas.png" width="95%" alt="Load balancer" class="theme-aware-image" />
+  <p>Load balancer topology</p>
 </center>
 
 Applications don't have to manually route queries between databases or maintain several connection pools internally.
 
-!!! note "SQL compatibility"
-    PgDog's query parser is powered by the `pg_query` library, which extracts the Postgres native SQL parser directly from its source code. This makes it **100% compatible** with the PostgreSQL query language and allows PgDog to understand all valid PostgreSQL queries.
+### SQL compatibility
+
+PgDog's query parser is powered by the `pg_query` library, which extracts the Postgres native SQL parser directly from its source code. This makes it **100% compatible** with the PostgreSQL query language and allows PgDog to understand all valid PostgreSQL queries.
 
 ## Load distribution
 
@@ -165,7 +167,7 @@ This behavior is configurable in [pgdog.toml](../../configuration/pgdog.toml/gen
     readWriteSplit: exclude_primary
     ```
 
-#### Failover for reads
+### Failover for reads
 
 In case one of your replicas fails, you can configure the primary to serve read queries temporarily while you (or your cloud vendor) bring the replica back up. This is configurable, like so:
 
@@ -178,6 +180,22 @@ In case one of your replicas fails, you can configure the primary to serve read 
     ```yaml
     readWriteSplit: include_primary_if_replica_banned
     ```
+
+### Replicas optional
+
+Migrating applications to use replicas can take some time, especially if some queries are replica lag-sensitive, e.g., a read query issued immediately after a write. To make it easier to migrate to PgDog, you can disable replicas for reads, while explicitly opting specific queries in via [manual routing](manual-routing.md):
+
+=== "pgdog.toml"
+    ```toml
+    [general]
+    read_write_split = "prefer_primary"
+    ```
+=== "Helm chart"
+    ```yaml
+    readWriteSplit: prefer_primary
+    ```
+
+Enabling this will make PgDog send all queries to the primary unless specified otherwise with a [query comment](manual-routing.md#query-comments) or a [session parameter](manual-routing.md#parameters).
 
 ## Learn more
 

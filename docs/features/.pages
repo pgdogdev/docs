@@ -1,9 +1,9 @@
 nav:
   - 'index.md'
+  - 'connection-pooler'
   - 'load-balancer'
   - 'sharding'
   - 'plugins'
-  - 'transaction-mode.md'
   - '...'
   - 'mirroring.md'
   - 'multi-tenancy.md'

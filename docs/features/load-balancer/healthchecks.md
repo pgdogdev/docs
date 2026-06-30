@@ -9,7 +9,8 @@ All databases load balanced by PgDog are regularly checked with health checks. A
 If a replica database fails a health check, it's temporarily removed from the load balancer, preventing it from serving queries for a configurable period of time.
 
 <center>
-  <img src="/images/healthchecks.png" width="80%" alt="Healthchecks"/>
+  <img src="/images/healthchecks.png" width="80%" alt="Healthchecks" class="theme-aware-image" />
+  <p>Health checks prevent broken databases from serving queries.</p>
 </center>
 
 ## How it works
@@ -23,8 +24,7 @@ PgDog performs two kinds of health checks to ensure applications don't accidenta
 
 If a connection or database fails a health check, it is **temporarily removed** from the load balancer and cannot serve any more queries. This prevents applications from continuously hitting a broken database until it's restarted by an administrator.
 
-!!! note "99.99% uptime"
-    This strategy is very effective at reducing error rates in busy applications. If you are operating a large number of databases, hardware failures are relatively common and an effective load balancer is required to maintain 99.99% database uptime.
+This strategy is very effective at reducing error rates in busy applications. If you are operating a large number of databases, hardware failures are relatively common and an effective load balancer is required to maintain 99.99% database uptime.
 
 ### Connection health check
 
@@ -85,6 +85,13 @@ When PgDog is first started, it's possible that the database or the network is n
 
 The **default** value for this setting is **5 seconds** (`5_000` milliseconds).
 
+!!! note "Disabling health checks"
+    If you want to disable database health checks, you can set the `idle_healthcheck_delay` setting to a large number, e.g. 100 years, in milliseconds:
+
+    ```toml
+    [general]
+    idle_healthcheck_delay = 3155760000000
+    ```
 
 ### Primary database exception
 
@@ -108,10 +115,7 @@ The amount of time the database is banned from serving traffic is controlled wit
 
 The **default** value is **5 minutes** (`300_000` milliseconds).
 
-!!! note
-    A database will not be placed back into the load balancer until it passes a health check again.
-
-    Make sure that `idle_healthcheck_interval` is set to a lower value than `ban_timeout`, so health checks have time to run before you expect the database to resume serving traffic.
+A database will not be placed back into the load balancer until it passes a health check again. Make sure that `idle_healthcheck_interval` is set to a lower value than `ban_timeout`, so health checks have time to run before you expect the database to resume serving traffic.
 
 ### False positives
 
@@ -170,7 +174,10 @@ This is configurable on startup only and will spin up an HTTP server on `http://
 
 This health check looks at all configured connection pools, and if **at least one** is online, responds with `HTTP/1.1 200 OK`. If _all_ connection pools are down because of failed health checks, PgDog will respond with `HTTP/1.1 502 Bad Gateway`.
 
-!!! note "Handling a lot of requests"
-    The HTTP health check uses existing internal state to answer requests and doesn't send queries to the connection pools. This makes it very quick and inexpensive, which ensures that massively distributed load balancers (like the AWS NLB) don't cause an unexpected influx of requests to the database.
+#### Handling a lot of requests
+
+The HTTP health check uses existing internal state to answer requests and doesn't send queries to the connection pools. This makes it very quick and inexpensive, which ensures that massively distributed load balancers (like the AWS NLB) don't cause an unexpected influx of requests to the database.
+
+#### HTTPS
 
 To make configuration easier, the health check endpoint doesn't support HTTPS, so make sure to configure your load balancer to use plain HTTP only.

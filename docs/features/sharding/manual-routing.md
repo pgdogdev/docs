@@ -51,7 +51,7 @@ The comment can appear anywhere in the query, as long as it's syntactically vali
 
 Since parsing comments is not free, this method is best used for infrequent commands, like schema migrations or queries executed manually by an administrator. For faster query routing, consider supplying the sharding key [directly](query-routing.md) in the query.
 
-Additionally, using query comments with a high-cardinality value, like the `pgdog_sharding_key`, may substantially increase the size of the [prepared statements](../prepared-statements.md) cache. To avoid this, consider the [`SET`](#set) command instead.
+Additionally, using query comments with a high-cardinality value, like the `pgdog_sharding_key`, may substantially increase the size of the [prepared statements](../connection-pooler/prepared-statements.md) cache. To avoid this, consider the [`SET`](#set) command instead.
 
 ## SET
 

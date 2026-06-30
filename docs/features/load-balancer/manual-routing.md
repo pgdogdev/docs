@@ -139,17 +139,17 @@ SET LOCAL "pgdog"."role" TO "primary";
 
 In this example, all transaction statements (including the `BEGIN` statement) will be sent to the primary database. Whether the transaction is committed or reverted, the value of `pgdog.role` will be reset to its previous value.
 
-!!! note "Statement ordering"
-    To make sure PgDog intercepts the routing hint early enough in the transaction flow, you need to send all hints _before_ executing actual queries.
+#### Statement ordering
+To make sure PgDog intercepts the routing hint early enough in the transaction flow, you need to send all hints _before_ executing DDL/DML statements.
 
-    The following flow, for example, _will not_ work:
+The following flow, for example, _will not_ work:
 
-    ```postgresql
-    BEGIN;
-    SELECT * FROM users WHERE id = $1;
-    SET LOCAL pgdog.role TO "primary"; -- The client is already connected to a server.
-    INSERT INTO users (id) VALUES ($1); -- If connected to a replica, this will fail.
-    ```
+```postgresql
+BEGIN;
+SELECT * FROM users WHERE id = $1;
+SET LOCAL pgdog.role TO "primary"; -- The client is already connected to a server.
+INSERT INTO users (id) VALUES ($1); -- If connected to a replica, this will fail.
+```
 
 
 
@@ -171,6 +171,24 @@ If you've configured the desired database role (and/or shard) for each of your a
 
 Once it's disabled, PgDog will rely solely on the `pgdog.role` and `pgdog.shard` parameters to make its routing decisions.
 
-### Session state & `SET`
+### Session state and SET
 
-The query parser is used to intercept and interpret `SET` commands. If the parser is disabled and your application uses `SET` commands to configure the connection, PgDog will not be able to guarantee that all connections have the correct session settings in [transaction mode](../transaction-mode.md).
+The query parser is used to intercept and interpret `SET` commands. If the parser is disabled and your application uses `SET` commands to configure the connection, PgDog will not be able to guarantee that all connections have the correct session settings in [transaction mode](../connection-pooler/transaction-mode.md).
+
+You can keep the parser enabled for handling `SET` commands only as follows:
+
+=== "pgdog.toml"
+    ```toml
+    [general]
+    query_parser = "session_control"
+    ```
+=== "Helm chart"
+    ```yaml
+    queryParser: session_control
+    ```
+
+The internal implementation is using a very fast Regex to detect `SET` commands and will turn on the query parser for that statement only. The regex supports comments as well, so the following example will be detected:
+
+```postgresql
+/* api: users.create */ SET application_name TO 'sidekiq';
+```

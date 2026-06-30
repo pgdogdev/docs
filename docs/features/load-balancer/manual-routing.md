@@ -180,11 +180,11 @@ You can keep the parser enabled for handling `SET` commands only as follows:
 === "pgdog.toml"
     ```toml
     [general]
-    query_parser = "session_state"
+    query_parser = "session_control"
     ```
 === "Helm chart"
     ```yaml
-    queryParser: session_state
+    queryParser: session_control
     ```
 
 The internal implementation is using a very fast Regex to detect `SET` commands and will turn on the query parser for that statement only. The regex supports comments as well, so the following example will be detected:

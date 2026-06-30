@@ -4,43 +4,44 @@ icon: material/table-search
 
 # Cross-shard SELECT
 
-A cross-shard `SELECT` query doesn't have one or has several sharding keys, which requires it to be executed by all shards. PgDog can perform it in parallel, assembling the results from each shard automatically. This makes it a powerful scatter/gather engine, with data nodes powered by PostgreSQL.
+A cross-shard SELECT query doesn't have one, or has multiple, sharding keys which requires it to be executed by multiple database shards. PgDog can perform this in parallel, assembling the results from each shard automatically. This makes it a powerful scatter/gather engine, with data nodes powered by PostgreSQL.
 
 ## How it works
 
-When PgDog receives a `SELECT` query with no (or multiple) sharding keys, it connects to all databases and sends the query to all of them in parallel.
+When PgDog receives a SELECT query with no (or multiple) sharding keys, it connects to all databases and sends the query to all of them in parallel.
 
-If the result needs post-processing, e.g., to support [sorting](#sorting) or [aggregation](#aggregates), it will buffer the rows in memory and perform the necessary operations. Otherwise, PgDog will stream the rows directly to the client.
+If the result needs post-processing, e.g., to support [sorting](#sorting) or [aggregation](#aggregates), it will buffer the rows in memory and perform the necessary operations. If not, it will stream the rows directly to the application.
 
-!!! note "Predicate push-down"
-    PgDog pushes all filtering, sorting and aggregation statements to the database. If the query is correctly constructed, the shards will return very few rows, allowing searches of vast quantities of data without causing out-of-memory errors or latency issues in the proxy.
+### Predicate push-down
+
+PgDog pushes all filtering, sorting and aggregation statements to the database. If the query is correctly constructed, the shards will return very few rows, allowing searches of vast quantities of data without causing out-of-memory errors or latency issues in the proxy.
 
 ## Supported features
 
 The SQL language allows for powerful data filtration and manipulation. While we aim to support most operations, currently, support for some cross-shard operations is limited as documented below:
 
-| Operation | Supported | Limitations |
+| Operation | Support | Limitations |
 |-|-|-|
-| `SELECT` columns | :material-check: | None. |
-| `ORDER BY` | :material-check: | Columns must be part of the returned tuples. See [sorting](#sorting). |
-| `DISTINCT` / `DISTINCT BY`| :material-check: | Columns must be part of the returned tuples. |
-| `GROUP BY` | :material-wrench: | Columns must be part of the returned tuples. See [aggregates](#aggregates). |
-| `LIMIT` | :material-check: | None. |
+| SELECT columns | :material-check: | |
+| `ORDER BY` | Partial support | Columns must be part of the returned tuples. See [sorting](#sorting). |
+| `DISTINCT` / `DISTINCT BY`| Partial support | Columns must be part of the returned tuples. |
+| `GROUP BY` | Partial support | Columns must be part of the returned tuples. See [aggregates](#aggregates). |
+| `LIMIT` | :material-check: | |
 | `OFFSET` | :material-check: | Rows are filtered in-memory, so paginating becomes linearly more expensive with the number of pages. |
-| CTEs | :material-wrench: | CTE must refer to data located on the same shard. |
-| Window functions | :material-close: | Not currently supported. |
-| Subqueries | :material-wrench: | Subqueries must refer to data located on the same shard. |
+| CTEs | Partial support | CTE queries must refer to data located on the same shard, e.g., same sharding keys or [omnisharded](../omnishards.md) tables. |
+| Window functions | :material-close: | Not currently supported, but is on the roadmap. |
+| Subqueries | Partial support | Just like CTEs, subqueries must refer to data located on the same shard, e.g., same sharding keys or [omnisharded](../omnishards.md) tables. |
 
 ## Sorting
 
-If the query contains an `ORDER BY` clause, PgDog can sort the rows returned from all shards automatically. This works by buffering data returned from all servers and sorting it in memory.
+If the query contains an `ORDER BY` clause, PgDog can sort the rows returned from all shards. This works by buffering data returned from all servers and sorting it in memory.
 
 Currently, two forms of the `ORDER BY` SQL syntax are supported:
 
 | Syntax |  Example | Notes |
 |-|-|-|
 | Order by column name |  `ORDER BY id, email` | The column must be present in the returned tuples. |
-| Order by column position  | `ORDER BY 1, 2` |  The column is referenced by its position in the returned tuples. |
+| Order by column position  | `ORDER BY 1, 2` | |
 
 Sorting by multiple columns is supported, including opposing sorting directions, for example:
 
@@ -51,9 +52,12 @@ ORDER BY
     created_at DESC
 ```
 
-Note that columns in the `ORDER BY` clause are retrieved from the table. PgDog cannot sort by columns it doesn't receive from the databases.
+Note that columns in the `ORDER BY` clause are retrieved from the table. PgDog cannot sort by columns it doesn't receive from the database shards.
 
-### Functions
+### Sorting by functions
+
+!!! warning "Not currently supported"
+    PgDog doesn't currently support sorting rows by the result of a SQL function.
 
 PgDog currently doesn't support sorting results using a function, for example:
 
@@ -61,7 +65,7 @@ PgDog currently doesn't support sorting results using a function, for example:
 SELECT email FROM users ORDER BY coalesce(email, '')
 ```
 
-To make this work, we need to implement all SQL functions inside PgDog. This is on the roadmap, but not currently a priority since the query can be easily rewritten to execute the function inside the database:
+To make this work, we need to implement a lot of the SQL functions inside PgDog. This is on the roadmap, but not currently a top priority since the query can be easily rewritten to execute the function inside the database:
 
 ```postgresql
 SELECT
@@ -85,7 +89,7 @@ FROM users ORDER BY
 
 ### ORMs
 
-ORMs like SQLAlchemy or ActiveRecord, more often than not, will write queries that work with PgDog out of the box. This is because they tend to fetch entire rows and use fully-qualified names in all parts of the statement, including the `ORDER BY` clause.
+ORMs like SQLAlchemy, ActiveRecord, Prisma, etc., more often than not, will generate queries that work with PgDog out of the box. This is because they tend to fetch entire rows and use fully-qualified names in all parts of the statement, including the `ORDER BY` clause.
 
 For example, this is what a [`first`](https://apidock.com/rails/ActiveRecord/FinderMethods/first) Rails/ActiveRecord query looks like:
 
@@ -101,14 +105,14 @@ Aggregates are transformative functions: instead of returning rows as-is, they r
 
 If an aggregate function is supported (see list of supported functions below), this is handled by PgDog automatically:
 
-| Aggregate functions | Supported | Notes |
+| Aggregate functions | Support | Notes |
 |-|-|-|
-| `count`, `count(*)` | :material-check: | Works for most [data types](#supported-data-types). |
-| `max`, `min`, `avg`, `sum` | :material-check: | Works for most [data types](#supported-data-types). |
-| `stddev`, `variance` | :material-check: | Works for most [data types](#supported-data-types).|
+| `count()`, `count(*)` | :material-check: | Works for most [data types](#supported-data-types). |
+| `max()`, `min()`, `avg()`, `sum()` | :material-check: | Works for most [data types](#supported-data-types). |
+| `stddev()`, `variance()` | :material-check: | Works for most [data types](#supported-data-types). Results are [approximated](#rewriting-queries). |
 | `percentile_disc`, `percentile_cont` | :material-close: | Not currently supported and very expensive to calculate on large datasets. |
-| `*_agg` | :material-close: | Not currently supported. |
-| `json_*` | :material-close: | Not currently supported.  |
+| `*_agg` | :material-close: | Not currently supported, but is on the roadmap. |
+| `json_*` | :material-close: | Not currently supported, but is on the roadmap.  |
 
 Aggregate functions have to appear in the target clause of the statement (`SELECT [...]`), and can also be combined with sorting, for example:
 
@@ -119,18 +123,21 @@ GROUP BY 2
 ORDER BY 1 DESC
 ```
 
-#### `HAVING` clause
+#### HAVING clause
+
+!!! warning "Not currently supported"
+    The `HAVING` clause is not currently supported but is on the roadmap.
 
 The `HAVING` clause requires additional filtering of the results and is not currently supported. See [#695](https://github.com/pgdogdev/pgdog/issues/695) for more details.
 
 
-### Rewriting queries
+## Rewriting queries
 
 For some aggregate functions to work as expected, each shard may need to return columns and intermediate calculations not present in the original query.
 
-For example, to get an average of a column, we need to fetch the row `count`, multiply it by the `avg` of the column on each shard, and divide it by the total `count` of rows on all shards.
+For example, to get an average of a column, we need to fetch the row count from each shard, multiply it by the average of the column on each shard, and divide it by the total count of rows on all shards.
 
-If the `count` function isn't present in the query, PgDog will automatically rewrite the query to add it. This allows queries, like the following example, to just work without modifications:
+If the `count()` function is needed to compute an aggregate but isn't present in the query, PgDog will automatically rewrite the query to add it. This allows queries, like the following example, to just work without modifications:
 
 === "Original"
     ```postgresql
@@ -145,13 +152,13 @@ PgDog automatically removes the `count` column from the returned rows, so applic
 
 The following aggregate functions take advantage of this feature:
 
-- `avg`
-- `stddev`
-- `variance`
+| Function | Description |
+|-|-|
+| `avg()` | Calculate the average of a column across multiple shards. |
+| `stddev()` | Uses an approximation of actual standard deviation. |
+| `variance()` | Same as `stddev()`, the result is approximated. |
 
-#### Configuration
-
-This feature is **enabled** by default and requires no additional configuration.
+This feature is **enabled** by default for all cross-shard SELECT queries and requires no additional configuration.
 
 ## Supported data types
 
@@ -168,5 +175,5 @@ The following table lists the data types supported by PgDog for ordering and agg
 | `UUID` | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  | :material-check-circle-outline: |
 | `VECTOR` | Only by L2 | :material-check-circle-outline: | :material-check-circle-outline:  | :material-check-circle-outline:  |
 
-!!! note "pgvector data types"
+!!! note "pgvector"
     `VECTOR` type doesn't have a fixed OID in Postgres because it comes from an extension (`pgvector`). We infer it from the `<->` operator used in the `ORDER BY` clause.

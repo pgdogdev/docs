@@ -37,6 +37,6 @@ PgDog supports many different sharding functions, including a list-based and val
 ## Read more
 
 {{ next_steps_links([
-    ("Sharding functions", "sharding-functions.md", "Control how rows are distributed across shards."),
-    ("Direct-to-shard queries", "query-routing.md", "Route queries directly to the correct shard."),
+    ("Sharding functions", "sharding-functions.md", "Control how rows or tables are distributed across shards."),
+    ("Direct-to-shard queries", "query-routing.md", "Route queries directly to the right shard without application changes."),
 ]) }}

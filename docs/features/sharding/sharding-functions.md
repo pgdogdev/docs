@@ -41,7 +41,9 @@ The sharding functions are configurable in [`pgdog.toml`](../../configuration/pg
         column: tenant_id
     ```
 
-By default, PgDog uses the hash-based function which can, theoretically, handle any data type. PgDog currently supports sharding on all integers, text (incl. `VARCHAR`), and UUID columns. By default, the sharded tables configuration uses integer, and you can specify a different data type as follows:
+By default, PgDog uses the hash-based function which distributes data evenly, on average, between all shards. PgDog currently supports sharding on all integers (incl. `BIGINT`, `INTEGER`, and `SMALLINT`), text (incl. `VARCHAR`), and UUID columns.
+
+By default, the sharded tables configuration uses the integer data type, but you can specify a different one as follows:
 
 === "pgdog.toml"
     ```toml

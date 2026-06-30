@@ -195,7 +195,7 @@ Migrating applications to use replicas can take some time, especially if some qu
     readWriteSplit: prefer_primary
     ```
 
-Enabling this will make PgDog send all queries to the primary unless specified otherwise with a [query comment](manual-routing.md#query-comments) or a [`SET` command](manual-routing.md#parameters).
+Enabling this will make PgDog send all queries to the primary unless specified otherwise with a [query comment](manual-routing.md#query-comments) or a [session parameter](manual-routing.md#parameters).
 
 ## Learn more
 

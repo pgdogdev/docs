@@ -108,27 +108,27 @@ To enable this sharding function on a table or column, you need to specify addit
 
 === "pgdog.toml"
     ```toml
-    [[sharded_mappings]]
+    [[sharded_tables]]
     database = "prod"
     column = "user_id"
-    kind = "list"
+    data_type = "bigint"
+
+    [[sharded_tables.mapping]]
     values = [1, 2, 3]
     shard = 0
     ```
 === "Helm chart"
     ```yaml
-    shardedMappings:
+    shardedTables:
       - database: prod
         column: user_id
-        kind: list
-        values: [1, 2, 3]
-        shard: 0
+        dataType: bigint
+        mapping:
+          - values: [1, 2, 3]
+            shard: 0
     ```
 
 This example will route all queries with `user_id` equal to `1`, `2`, and `3` to shard zero. Unlike [hash](#column-based-sharding) sharding, a value <-> shard mapping is usually required for _all_ values of the sharding key. If a value is used that doesn't have a mapping and a [fallback](#fallback-shard) routing configuration isn't specified, the query will be sent to [all shards](cross-shard-queries/index.md).
-
-!!! note "Required configuration"
-    The `[[sharded_tables]]` configuration entry is still required for list-based sharding. It specifies the data type of the column, which tells PgDog how to parse its value at runtime.
 
 ### Range-based sharding
 
@@ -136,30 +136,29 @@ Sharding by range is similar to [list](#list-based-sharding) sharding, except in
 
 === "pgdog.toml"
     ```toml
-    [[sharded_mappings]]
+    [[sharded_tables]]
     database = "prod"
     column = "user_id"
-    kind = "range"
+    data_type = "bigint"
+
+    [[sharded_tables.mapping]]
     start = 1
     end = 100
     shard = 0
     ```
 === "Helm chart"
     ```yaml
-    shardedMappings:
+    shardedTables:
       - database: prod
         column: user_id
-        kind: range
-        start: 1
-        end: 100
-        shard: 0
+        dataType: bigint
+        mapping:
+          - start: 1
+            end: 100
+            shard: 0
     ```
 
 This example will route queries that refer to the `user_id` column with values between 1 and 100 (exclusively) to shard zero. For open-ended ranges, you can specify either the `start` or the `end` value. The start value is included in the range, while the end value is excluded (same as PostgreSQL partitions).
-
-!!! note "Required configuration"
-    The `[[sharded_tables]]` configuration entry is still required for range-based sharding. It specifies the data type of the column, which tells PgDog how to parse its value at runtime.
-
 
 ### Fallback shard
 

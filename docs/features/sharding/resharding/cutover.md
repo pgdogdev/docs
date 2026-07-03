@@ -18,7 +18,7 @@ The cutover can be executed by running a command on the [admin database](../../.
 CUTOVER [<task_id>];
 ```
 
-Without a `task_id`, PgDog cuts over the first running replication task. To target a specific task, pass its id (as reported by [`SHOW TASKS`](../../../administration/tasks.md)):
+Without a `task_id`, PgDog cuts over the first running replication task. To target a specific task, pass its ID (as reported by [`SHOW TASKS`](../../../administration/tasks.md)):
 
 ```
 CUTOVER 12;
@@ -34,7 +34,7 @@ Under typical conditions, the whole process takes less than a second, so applica
 
 `CUTOVER` is only needed when you run resharding manually (via [`COPY_DATA`](move.md) / [`REPLICATE`](../../../administration/index.md)). If you use the `RESHARD` command, the cutover step is executed automatically and you don't need to perform any additional steps.
 
-`CUTOVER` only works on a migration that was started on **this** PgDog through the admin database (`COPY_DATA`, `REPLICATE`, or `RESHARD`). A migration started with the `pgdog data-sync` CLI runs in a separate process and **cannot** be cut over with `CUTOVER` command automatically.
+`CUTOVER` only works on a migration that was started on this PgDog through the admin database (`COPY_DATA`, `REPLICATE`, or `RESHARD`). A migration started with the `pgdog data-sync` CLI runs in a separate process and cannot be cut over automatically with the `CUTOVER` command.
 
 In order to cut over a CLI migration by hand: once replication has caught up (check the log output of running the CLI), swap the source and destination in `pgdog.toml` and `users.toml`, run [`RELOAD`](../../../administration/index.md) on the serving instance, then stop the CLI. Pause writes ([`MAINTENANCE`](../../../administration/maintenance_mode.md)) while you do this to avoid losing in-flight transactions; there's no automatic rollback with this path. Then stop the CLI replication process and resume writes.
 
@@ -156,11 +156,11 @@ With the reverse replication set up, it is now safe to move traffic to the desti
 
 ## After the cutover
 
-Once the cutover completes, the reverse [replication stream](#reverse-replication) keeps the original cluster up to date with every write that now lands on the new cluster. It runs as a background task — find it in [`SHOW TASKS`](../../../administration/tasks.md) (its `type` is `replication`). While it is running, you can either roll back to the original cluster or, once you're satisfied, finalize the migration.
+Once the cutover completes, the reverse [replication stream](#reverse-replication) keeps the original cluster up to date with every write that now lands on the new cluster. It runs as a background task. Find it in [`SHOW TASKS`](../../../administration/tasks.md) (its `type` is `replication`). While it is running, you can either roll back to the original cluster or, once you're satisfied, finalize the migration.
 
 ### Rolling back
 
-To restore traffic to the original cluster, run a `CUTOVER` against the reverse replication task, passing its id from `SHOW TASKS`:
+To restore traffic to the original cluster, run a `CUTOVER` against the reverse replication task, passing its ID from `SHOW TASKS`:
 
 ```
 CUTOVER <task_id>;
@@ -169,7 +169,7 @@ CUTOVER <task_id>;
 This performs the same atomic swap in reverse: the source and destination are swapped back in `pgdog.toml` and `users.toml`, and traffic returns to the original cluster. Because the reverse stream kept the original cluster in sync, no data written to the new cluster is lost. The task's status in `SHOW TASKS` shows `rolling back` while this happens.
 
 !!! note "Restoring the configuration files"
-    The rollback swaps the configuration back in memory (and on disk when [`cutover_save_config`](#swap-the-configuration) is enabled). If you enabled `cutover_save_config`, the configuration as it was *before* the original cutover is also preserved in the `pgdog.bak.toml` and `users.bak.toml` backups, so you can always restore the previous state by hand.
+    The rollback swaps the configuration back in memory (and on disk when [`cutover_save_config`](#swap-the-configuration) is enabled). If you enabled `cutover_save_config`, the configuration as it was before the original cutover is also preserved in the `pgdog.bak.toml` and `users.bak.toml` backups, so you can always restore the previous state by hand.
 
 ### Finalizing the migration
 
@@ -179,7 +179,7 @@ When you're confident the new cluster is healthy and no longer need the ability 
 STOP_TASK <task_id>;
 ```
 
-This winds the reverse stream down gracefully and **drops the replication slot** it created, so Postgres can resume recycling WAL. After this point rollback is no longer possible — the migration is complete.
+This winds the reverse stream down gracefully and drops the replication slot it created, so Postgres can resume recycling WAL. After this point rollback is no longer possible; the migration is complete.
 
 !!! warning "Don't leave reverse replication running indefinitely"
     Until the reverse replication task is stopped, its permanent replication slot prevents the new (now source) cluster from recycling WAL, which accumulates on disk. Issue `STOP_TASK` once you've decided not to roll back.

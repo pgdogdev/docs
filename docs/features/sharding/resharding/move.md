@@ -47,7 +47,7 @@ To copy data from database `"prod"` to database `"prod_sharded"` and the `"all_t
      12      | __pgdog_repl_a1b2c3d4e5f6...
     ```
 
-`COPY_DATA` returns immediately with the background `task_id` and the auto-generated replication slot name. Track the task with [`SHOW TASKS`](../../../administration/tasks.md) and stop it with `STOP_TASK <task_id>`. The slot name is not provided, so it is generated for you.
+`COPY_DATA` returns immediately with the background `task_id` and the auto-generated replication slot name. Track the task with [`SHOW TASKS`](../../../administration/tasks.md) and stop it with `STOP_TASK <task_id>`.
 
 ### CLI
 
@@ -72,7 +72,7 @@ Required (*) and optional parameters for this command are as follows:
 | `--sync-only` | Perform the initial data sync only and exit. |
 | `--skip-schema-sync` | Don't run the pre-data schema sync first (assume the destination schema already exists). |
 
-Unlike the `COPY_DATA` admin command, the CLI runs in the **foreground** as a separate `pgdog` process: it blocks while it copies the data and then keeps streaming changes until you stop it with `Ctrl-C` (which winds the task down gracefully), or until you pass `--sync-only` to copy and exit. It does not return a `task_id` and is not visible in [`SHOW TASKS`](../../../administration/tasks.md).
+Unlike the `COPY_DATA` admin command, the CLI runs in the foreground as a separate `pgdog` process: it blocks while it copies the data and then keeps streaming changes until you stop it with `SIGINT` (or `SIGTERM`, which winds the task down gracefully), or until you pass `--sync-only` to copy and exit. It does not return a `task_id` and is not visible in [`SHOW TASKS`](../../../administration/tasks.md).
 
 ## How it works
 

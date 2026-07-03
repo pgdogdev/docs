@@ -13,7 +13,7 @@ SHOW TASKS;
 ```
 
 !!! note "Admin database tasks only"
-    `SHOW TASKS` lists the background tasks running *inside this PgDog process* — the ones started by the admin database commands above. The equivalent [CLI commands](../features/sharding/resharding/index.md#running-the-steps-manually) (`pgdog data-sync`, `pgdog schema-sync`) run as a separate, one-off `pgdog` process in the foreground: they block until they finish and are stopped with `Ctrl-C`, so they neither return a `task_id` nor appear here.
+    `SHOW TASKS` lists the background tasks running inside the same PgDog process. The equivalent [CLI commands](../features/sharding/resharding/index.md#running-the-steps-manually) (`pgdog data-sync`, `pgdog schema-sync`) spawn their own process in the foreground instead, and block until they finish or are stopped with `SIGINT` (or `SIGTERM`).
 
 === "Output"
     ```
@@ -39,20 +39,20 @@ SHOW TASKS;
      elapsed_ms   | 191569
     ```
 
-The most recently started task is listed first.
+Tasks are ordered by creation date, starting at the oldest.
 
 ## Columns
 
 | Column | Description |
 |-|-|
-| `id` | The task's id. This is the handle you pass to [`STOP_TASK`](#stopping-a-task) and [`CUTOVER`](../features/sharding/resharding/cutover.md). Only **root** rows carry an id; subtasks share their root's id and leave this column empty. |
+| `id` | The task ID. This is the handle you pass to [`STOP_TASK`](#stopping-a-task) and [`CUTOVER`](../features/sharding/resharding/cutover.md). Only root tasks have an ID; subtasks share their parent's ID and leave this column empty. |
 | `scope` | `root` for a top-level task, `subtask` for a step it spawned (e.g. the `copy_data` and `replication` steps of a `reshard`). |
-| `type` | What the task is, usually with the source and destination databases — e.g. `reshard`, `copy_data`, `replication`, `replication ... (reverse)`, `schema_sync(pre)`. |
+| `type` | What the task is, usually with the source and destination databases, e.g., `reshard`, `copy_data`, `replication`, `replication [...] (reverse)`, `schema_sync(pre)`. |
 | `status` | The lifecycle status of the task. See [Statuses](#statuses). |
-| `inner_status` | Fine-grained progress within the current status. See [Progress](#progress). For a finished or failed task, this keeps the last progress it reported. |
+| `inner_status` | Fine-grained progress within the current status. See [Progress](#progress). For a finished or failed task, this shows the last progress it reported. |
 | `started_at` | When the task started. |
-| `updated_at` | When the task last changed status or progress. For a terminal task this is when it finished. |
-| `elapsed` / `elapsed_ms` | How long the task ran. For a terminal task this is the total run time (measured to `updated_at`), not a clock that keeps ticking. |
+| `updated_at` | When the task last changed status or progress. For a finished task this is when it finished. |
+| `elapsed` / `elapsed_ms` | How long the task ran. For a completed task this is the total run time (measured to `updated_at`). |
 
 ## Statuses
 
@@ -68,7 +68,7 @@ The `status` column describes where the task is in its lifecycle:
 | `failed: <error>` | The task errored. The error message is included in the status. |
 | `panicked: <error>` | The task hit an unexpected internal error. |
 
-`finished`, `cancelled`, `failed`, and `panicked` are **terminal**. Terminal tasks stay listed with their final status (and last progress) for a while so you can inspect the outcome, then they're pruned automatically.
+`finished`, `cancelled`, `failed`, and `panicked` are terminal. Terminal tasks stay listed with their final status (and last progress) for a while so you can inspect the outcome, then they're pruned automatically.
 
 ## Progress
 
@@ -81,12 +81,12 @@ The `inner_status` column shows what the task is doing within its current `statu
 | `replication` | `replicating` → `cutting over` (or `rolling back` for a reverse stream) / `stopping` |
 | `schema_sync` | `loading schema` → `syncing tables` → `creating indexes` (or `syncing cutover schema`) |
 
-## Finding the right id
+## Finding the right ID
 
-`STOP_TASK` and `CUTOVER` always operate on the **root** `id`:
+`STOP_TASK` and `CUTOVER` always operate on the parent ID:
 
-- A `RESHARD` or `COPY_DATA` shows as a `root` task with its child steps listed as `subtask` rows. Target the root id, not a subtask — subtask rows have an empty `id` on purpose.
-- After a cutover, the [reverse replication](../features/sharding/resharding/cutover.md#after-the-cutover) stream appears as its own `root` task of type `replication ... (reverse)`. Use its id to [roll back](../features/sharding/resharding/cutover.md#rolling-back) (`CUTOVER <id>`) or to [finalize the migration](../features/sharding/resharding/cutover.md#finalizing-the-migration) (`STOP_TASK <id>`).
+- A `RESHARD` or `COPY_DATA` shows as a `root` task with its child steps listed as `subtask` rows. Target the root ID, not a subtask; subtask rows have an empty `id` on purpose.
+- After a cutover, the [reverse replication](../features/sharding/resharding/cutover.md#after-the-cutover) stream appears as its own `root` task of type `replication ... (reverse)`. Use its ID to [roll back](../features/sharding/resharding/cutover.md#rolling-back) (`CUTOVER <id>`) or to [finalize the migration](../features/sharding/resharding/cutover.md#finalizing-the-migration) (`STOP_TASK <id>`).
 
 ## Spotting issues
 

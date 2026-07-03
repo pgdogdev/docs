@@ -39,7 +39,7 @@ The `<source>` and `<destination>` parameters accept the name of the source and 
 
 ### Running the steps manually
 
-Instead of `RESHARD`, you can run the process one step at a time. This gives you control over *when* traffic is cut over. Each step can be run either as an [admin database](../../../administration/index.md) command or as a `pgdog` CLI command:
+Instead of `RESHARD`, you can run the process one step at a time. This gives you control over when traffic is cut over. Each step can be run either as an [admin database](../../../administration/index.md) command or as a `pgdog` CLI command:
 
 | Step | Admin database | CLI |
 |-|-|-|
@@ -49,10 +49,10 @@ Instead of `RESHARD`, you can run the process one step at a time. This gives you
 
 The two run differently:
 
-- **Admin database commands** run as background tasks *inside the running PgDog*. They return a `task_id` immediately, are tracked with [`SHOW TASKS`](../../../administration/tasks.md), and are controlled with [`STOP_TASK`](../../../administration/tasks.md#stopping-a-task) and [`CUTOVER`](cutover.md).
-- **CLI commands** run as a separate, one-off `pgdog` process in the **foreground**: they block until the operation finishes and are stopped with `Ctrl-C`. They do not appear in `SHOW TASKS`.
+- **Admin database commands** run as background tasks inside the running PgDog. They return a `task_id` immediately, are tracked with [`SHOW TASKS`](../../../administration/tasks.md), and are controlled with [`STOP_TASK`](../../../administration/tasks.md#stopping-a-task) and [`CUTOVER`](cutover.md).
+- **CLI commands** run as a separate, one-off `pgdog` process in the foreground: they block until the operation finishes and are stopped with `SIGINT` (or `SIGTERM`). They do not appear in `SHOW TASKS`.
 
-Unlike `RESHARD`, the manual path does **not** cut over automatically: the data move copies the data and keeps streaming changes indefinitely, and you switch traffic explicitly with [`CUTOVER`](cutover.md).
+Unlike `RESHARD`, the manual path does not cut over automatically: the data move copies the data and keeps streaming changes indefinitely, and you switch traffic explicitly with [`CUTOVER`](cutover.md).
 
 !!! note "Traffic cutover"
     Traffic cutover requires careful synchronization to avoid data loss and a split-brain situation. The `RESHARD` command supports this for **single node** PgDog deployments only. The [Enterprise Edition](../../../enterprise_edition/index.md) provides a control plane, which supports traffic cutover with multiple PgDog containers.

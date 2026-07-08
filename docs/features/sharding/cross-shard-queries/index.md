@@ -24,7 +24,7 @@ Just like with [direct-to-shard](../query-routing.md) queries, each SQL command 
 | Commands | Summary |
 |-|-|
 | [SELECT](select.md) | PgDog implements a scatter/gather query engine to fetch rows from multiple shards concurrently. |
-| [INSERT](insert.md) | Statements targeting [omnisharded](omnishards.md) tables are sent to all shards concurrently. Sharded tables with automatic [primary key](../unique-ids.md) generation are sent to one shard only. |
+| [INSERT](insert.md) | Statements targeting [omnisharded](../omnishards.md) tables are sent to all shards concurrently. Sharded tables with automatic [primary key](../unique-ids.md) generation are sent to one shard only. |
 | [UPDATE and DELETE](update.md) | Statements are sent to all shards concurrently. Sharding key updates are partially supported. |
 | [DDL statements, e.g., CREATE, ALTER, DROP](ddl.md) | DDL is sent to all shards concurrently, to make sure the schema is identical on all shards. |
 | [COPY command](copy.md) | Rows sent via COPY are automatically distributed between all shards using the configured [sharding function](../sharding-functions.md). |

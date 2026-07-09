@@ -77,7 +77,7 @@ The whole process happens entirely online, and doesn't require database reboots 
 PostgreSQL replication works on the basis of slots. They are virtual annotations in the Write-Ahead Log which prevent Postgres from recycling WAL segments and deleting the history of changes made to the database.
 
 <center>
-    <img src="/images/resharding-slot-2.png" width="75%" alt="Replication slot" />
+    <img src="/images/resharding-slot-2.png" width="75%" alt="Replication slot" class="theme-aware-image" />
 </center>
 
 With logical replication, any client that speaks the protocol (like PgDog) can connect to the server and stream changes made to the database, starting at the position marked by the slot.
@@ -98,7 +98,7 @@ Tables are copied from source to destination database using standard PostgreSQL 
 If you are running PostgreSQL 16 or later and have configured replicas on the source database, PgDog can copy multiple tables in parallel, dramatically accelerating this process.
 
 <center>
-    <img src="/images/resharding-16x.png" width="75%" alt="Parallel table copy" />
+    <img src="/images/resharding-16x.png" width="75%" alt="Parallel table copy" class="theme-aware-image" />
 </center>
 
 To set this up, make sure to add your read replicas to [`pgdog.toml`](../../../configuration/pgdog.toml/databases.md), for example:

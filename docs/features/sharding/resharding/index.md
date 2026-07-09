@@ -13,7 +13,8 @@ Resharding changes the number of shards in an existing database cluster in order
 To make this an online process, with zero downtime or data loss, PgDog hooks into the logical replication protocol used by PostgreSQL and reroutes messages between nodes to create and update rows in real-time.
 
 <center style="margin-top: 40px;">
-  <img src="/images/resharding-arch-1.png" width="80%" height="auto" alt="Mirroring">
+  <img src="/images/resharding-arch-1.png" width="80%" height="auto" alt="Resharding architecture" class="theme-aware-image">
+  <p>Resharding architecture</p>
 </center>
 
 ## Resharding process

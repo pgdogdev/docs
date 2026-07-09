@@ -135,7 +135,8 @@ If `cutover_timeout_action` is set to `"cutover"` instead, PgDog will flip the t
 To allow for rollbacks in case of any issues, prior to allowing queries on the new database, PgDog creates logical replication streams from the new database back to the original database. This replicates any writes made to the new database back to the source, keeping the two databases in-sync until the operator is satisfied that the new database is performing adequately.
 
 <center>
-    <img src="/images/reverse-replication.png" width="60%" alt="Reverse replication" />
+    <img src="/images/reverse-replication.png" width="80%" alt="Reverse replication" class="theme-aware-image" />
+    <p>Reverse logical replication</p>
 </center>
 
 The reverse replication is created while the queries to both databases are paused, so it doesn't require any additional data copying or synchronization.

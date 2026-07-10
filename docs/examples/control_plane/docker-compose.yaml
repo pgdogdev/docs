@@ -1,5 +1,5 @@
 x-pgdog: &pgdog
-  image: ghcr.io/pgdogdev/pgdog-enterprise:v2026-06-24
+  image: ghcr.io/pgdogdev/pgdog-enterprise:v2026-07-09
   command:
     [
       "pgdog",
@@ -43,7 +43,7 @@ services:
     image: redis:7
 
   control:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-06-24
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-07-09
     ports:
       - "8099:8080"
     environment:

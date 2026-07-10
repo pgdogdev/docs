@@ -10,15 +10,22 @@ The control plane can send notifications to a Slack channel. Notifications inclu
 
 Slack integration is **disabled** by default and can be enabled with configuration:
 
-```yaml title="values.yaml"
-control:
-  config:
-    slack:
-      bot_token: "xoxb-[...]"
-      channel: "C0123456789"
-```
+=== "Helm chart"
+    ```yaml title="values.yaml"
+    control:
+      config:
+        slack:
+          bot_token: "xoxb-[...]"
+          channel: "C0123456789"
+    ```
+=== "control.toml"
+    ```toml
+    [slack]
+    bot_token = "xoxb-[...]"
+    channel = "C0123456789"
+    ```
 
-The following parameters can be configured via the [Helm chart](../installation.md):
+The following parameters can be configured via the [Helm chart](installation.md):
 
 | Parameters | Description |
 |-|-|

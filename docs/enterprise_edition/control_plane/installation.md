@@ -94,9 +94,11 @@ ingress:
 
 ## OAuth2
 
-OAuth2 authentication is supported out of the box for GitHub and Google providers. Either one can be configured as follows:
+OAuth2 authentication is supported out of the box for GitHub and Google providers.
 
-=== "GitHub"
+### GitHub
+
+=== "Helm chart"
     ```yaml title="values.yaml"
     control:
       config:
@@ -108,7 +110,20 @@ OAuth2 authentication is supported out of the box for GitHub and Google provider
             allowed_orgs:
               - acme-corp
     ```
-=== "Google"
+=== "control.toml"
+    ```toml
+    [auth]
+    redirect_base_url = "https://control.acme.com"
+
+    [auth.github]
+    client_id = "Iv1.0123456789abcdef"
+    client_secret = "shhh"
+    allowed_orgs = ["acme-corp"]
+    ```
+
+### Google
+
+=== "Helm chart"
     ```yaml title="values.yaml"
     control:
       config:
@@ -119,6 +134,16 @@ OAuth2 authentication is supported out of the box for GitHub and Google provider
             client_secret: shhh
             allowed_domains:
               - acme.com
+    ```
+=== "control.toml"
+    ```toml
+    [auth]
+    redirect_base_url = "https://control.acme.com"
+
+    [auth.google]
+    client_id = "0123456789-abc.apps.googleusercontent.com"
+    client_secret = "shhh"
+    allowed_domains = ["acme.com"]
     ```
 
 The client secret can be alternatively set as an environment variable:
@@ -151,25 +176,48 @@ The `Secret` resource should be in the same namespace as the chart release:
 
 The secret can then be referenced in `values.yaml`:
 
-=== "GitHub"
+#### GitHub
+
+=== "Helm chart"
     ```yaml title="values.yaml"
-    github:
-      client_id: Iv1.0123456789abcdef
-      allowed_orgs:
-        - acme-corp
-      secret:
-        name: pgdog-oauth-secrets
-        clientSecretKey: github-client-secret
+    control:
+      config:
+        auth:
+          github:
+            client_id: Iv1.0123456789abcdef
+            allowed_orgs:
+              - acme-corp
+            secret:
+              name: pgdog-oauth-secrets
+              clientSecretKey: github-client-secret
     ```
-=== "Google"
+=== "control.toml"
+    ```toml
+    [auth.github]
+    client_id = "Iv1.0123456789abcdef"
+    allowed_orgs = ["acme-corp"]
+    ```
+
+#### Google
+
+=== "Helm chart"
     ```yaml title="values.yaml"
-    google:
-      client_id: 0123456789-abc.apps.googleusercontent.com
-      allowed_domains:
-        - acme.com
-      secret:
-        name: pgdog-oauth-secrets
-        clientSecretKey: google-client-secret
+    control:
+      config:
+        auth:
+          google:
+            client_id: 0123456789-abc.apps.googleusercontent.com
+            allowed_domains:
+              - acme.com
+            secret:
+              name: pgdog-oauth-secrets
+              clientSecretKey: google-client-secret
+    ```
+=== "control.toml"
+    ```toml
+    [auth.google]
+    client_id = "0123456789-abc.apps.googleusercontent.com"
+    allowed_domains = ["acme.com"]
     ```
 
 The same method can be used to store the `client_id` (using `clientIdKey` as key).
@@ -180,17 +228,38 @@ The same method can be used to store the `client_id` (using `clientIdKey` as key
 
 Both accept a list, so you can allow more than one:
 
-=== "GitHub"
+#### GitHub
+
+=== "Helm chart"
     ```yaml title="values.yaml"
-    github:
-      allowed_orgs:
-        - acme-corp
-        - acme-labs
+    control:
+      config:
+        auth:
+          github:
+            allowed_orgs:
+              - acme-corp
+              - acme-labs
     ```
-=== "Google"
+=== "control.toml"
+    ```toml
+    [auth.github]
+    allowed_orgs = ["acme-corp", "acme-labs"]
+    ```
+
+#### Google
+
+=== "Helm chart"
     ```yaml title="values.yaml"
-    google:
-      allowed_domains:
-        - acme.com
-        - acme.io
+    control:
+      config:
+        auth:
+          google:
+            allowed_domains:
+              - acme.com
+              - acme.io
+    ```
+=== "control.toml"
+    ```toml
+    [auth.google]
+    allowed_domains = ["acme.com", "acme.io"]
     ```

@@ -8,18 +8,24 @@ Autoscaling automatically adjusts PgDog settings when the number of processes (e
 
 ## Configuration
 
-Autoscaling is **disabled** by default. To enable it, add the following settings to the [control plane](../installation.md) Helm [chart](https://github.com/pgdogdev/helm-ee):
+Autoscaling is **disabled** by default. To enable it, add the following settings to the [control plane](installation.md) Helm [chart](https://github.com/pgdogdev/helm-ee):
 
-```yaml title="values.yaml"
-control:
-  config:
-    autoscaling:
-      pool_size: true
-```
+=== "Helm chart"
+    ```yaml title="values.yaml"
+    control:
+      config:
+        autoscaling:
+          pool_size: true
+    ```
+=== "control.toml"
+    ```toml
+    [autoscaling]
+    pool_size = true
+    ```
 
 ## How it works
 
-When a PgDog process connects to the [control plane](../../control_plane/index.md), the control plane provides it with the total number of processes that are part of the same deployment. PgDog then automatically adjusts its configuration by dividing all pool-related configuration values by that number, for example:
+When a PgDog process connects to the [control plane](index.md), the control plane provides it with the total number of processes that are part of the same deployment. PgDog then automatically adjusts its configuration by dividing all pool-related configuration values by that number, for example:
 
 === "Configuration"
     ```toml title="pgdog.toml"
@@ -99,12 +105,12 @@ The following configuration options are supported for pool size autoscaling:
 
 | Section | Configuration |
 |-|-|
-| [`[general]`](../../../configuration/pgdog.toml/general.md) | [`default_pool_size`](../../../configuration/pgdog.toml/general.md#default_pool_size) (alias: `max_pool_size`) |
-| [`[general]`](../../../configuration/pgdog.toml/general.md) | [`min_pool_size`](../../../configuration/pgdog.toml/general.md#min_pool_size) |
-| [`[[databases]]`](../../../configuration/pgdog.toml/databases.md) | [`pool_size`](../../../configuration/pgdog.toml/databases.md#pool_size) |
-| [`[[databases]]`](../../../configuration/pgdog.toml/databases.md) | [`min_pool_size`](../../../configuration/pgdog.toml/databases.md#min_pool_size) |
-| [`[[users]]`](../../../configuration/users.toml/users.md) | [`pool_size`](../../../configuration/users.toml/users.md#pool_size) |
-| [`[[users]]`](../../../configuration/users.toml/users.md) | [`min_pool_size`](../../../configuration/users.toml/users.md#min_pool_size) |
+| [`[general]`](../../configuration/pgdog.toml/general.md) | [`default_pool_size`](../../configuration/pgdog.toml/general.md#default_pool_size) (alias: `max_pool_size`) |
+| [`[general]`](../../configuration/pgdog.toml/general.md) | [`min_pool_size`](../../configuration/pgdog.toml/general.md#min_pool_size) |
+| [`[[databases]]`](../../configuration/pgdog.toml/databases.md) | [`pool_size`](../../configuration/pgdog.toml/databases.md#pool_size) |
+| [`[[databases]]`](../../configuration/pgdog.toml/databases.md) | [`min_pool_size`](../../configuration/pgdog.toml/databases.md#min_pool_size) |
+| [`[[users]]`](../../configuration/users.toml/users.md) | [`pool_size`](../../configuration/users.toml/users.md#pool_size) |
+| [`[[users]]`](../../configuration/users.toml/users.md) | [`min_pool_size`](../../configuration/users.toml/users.md#min_pool_size) |
 
 ## Orchestrator integration
 
@@ -112,7 +118,7 @@ Autoscaling actions are performed entirely using the internal PgDog <-> control 
 
 ### Kubernetes
 
-If using autoscaling and deploying PgDog with our [Helm chart](../../../installation.md), make sure to set the pool-related settings to reflect the _total_ number of connections. For example, if deploying 3 replicas and the total pool size across the 3 pods is 600 connections, set it accordingly in `values.yaml`:
+If using autoscaling and deploying PgDog with our [Helm chart](../../installation.md), make sure to set the pool-related settings to reflect the _total_ number of connections. For example, if deploying 3 replicas and the total pool size across the 3 pods is 600 connections, set it accordingly in `values.yaml`:
 
 ```yaml title="values.yaml"
 defaultPoolSize: 600

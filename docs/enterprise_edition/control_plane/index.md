@@ -45,17 +45,18 @@ PgDog nodes that are part of the same deployment should use the same token. It c
     A control plane deployment is capable of managing several PgDog deployments. It's not necessary (although possible) to have one control plane per PgDog deployment.
 
 
-### Connection flow
+## Architecture
 
 <center>
-    <img src="/images/control_plane.png" width="65%" alt="Control plane">
+    <img src="/images/control_plane.png" width="65%" alt="Control plane" class="theme-aware-image">
+    <p>Control plane <-> PgDog connection architecture</p>
 </center>
 
 PgDog initiates a connection to the control plane on startup. This happens in the background and doesn't block queries.
 
 Upon connecting, PgDog will send its node identifier (set in the `NODE_ID` environment variable, or randomly generated) to register with the control plane, and will start uploading telemetry and poll for commands.
 
-#### Error handling
+### Error handling
 
 Since most PgDog functions (including sharding) are configuration-driven, the control plane connection is **not required**
 for PgDog to start or serve queries.
@@ -78,5 +79,5 @@ PgDog transmits the following information to the control plane:
 
 {{ next_steps_links([
     ("Installation", "installation.md", "Deploy the control plane alongside your PgDog nodes and connect them together."),
-    ("Features", "features/index.md", "Explore control plane features like alerts, configuration management, instances, metrics, and Slack integration."),
+    ("Features", "alerts.md", "Explore control plane features like alerts, configuration management, instances, metrics, and Slack integration."),
 ]) }}

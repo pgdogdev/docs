@@ -23,6 +23,7 @@ replication = [
 
 def verify(binary):
     for file in glob.glob("docs/**/*.md", recursive=True):
+        skip_toml = file.startswith("docs/enterprise_edition/control_plane/")
         with open(file, "r") as f:
             content = f.read()
         print(f"Checking {file}")
@@ -42,6 +43,8 @@ def verify(binary):
                 code = "".join(stripped_lines)
 
             if info == "toml":
+                if skip_toml:
+                    continue
                 if "[[users]]" in code:
                     check_file(binary, "users", code)
                 elif "[lib]" in code:

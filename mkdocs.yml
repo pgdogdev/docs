@@ -100,6 +100,10 @@ plugins:
         'features/session-mode.md': 'features/connection-pooler/session-mode.md'
         'features/prepared-statements.md': 'features/connection-pooler/prepared-statements.md'
         'features/pub_sub.md': 'features/connection-pooler/pub_sub.md'
+        'enterprise_edition/control_plane/features/index.md': 'enterprise_edition/control_plane/index.md'
+        'enterprise_edition/control_plane/features/alerts.md': 'enterprise_edition/control_plane/alerts.md'
+        'enterprise_edition/control_plane/features/autoscaling.md': 'enterprise_edition/control_plane/autoscaling.md'
+        'enterprise_edition/control_plane/features/slack.md': 'enterprise_edition/control_plane/slack.md'
 
 extra:
   social:

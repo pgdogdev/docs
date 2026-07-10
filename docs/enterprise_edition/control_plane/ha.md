@@ -26,16 +26,26 @@ Whichever instance acquires the lease first will report itself as `"Ready"` to t
 
 This feature is **disabled** by default. It can be enabled and configured in the Helm chart:
 
-```yaml title="values.yaml"
-control:
-  config:
-    leader:
-      enabled: true
-      lease_name: "control2"
-      lease_duration_secs: 15
-      lease_interval_secs: 5
-      release_timeout_secs: 5
-```
+=== "Helm chart"
+    ```yaml title="values.yaml"
+    control:
+      config:
+        leader:
+          enabled: true
+          lease_name: "control2"
+          lease_duration_secs: 15
+          renew_interval_secs: 5
+          release_timeout_secs: 5
+    ```
+=== "control.toml"
+    ```toml
+    [leader]
+    enabled = true
+    lease_name = "control2"
+    lease_duration_secs = 15
+    renew_interval_secs = 5
+    release_timeout_secs = 5
+    ```
 
 Most of these settings have sane defaults:
 
@@ -44,7 +54,7 @@ Most of these settings have sane defaults:
 | `enabled` | Toggle leader election on or off. It is disabled by default (`false`). |
 | `lease_name` | The name of the `Lease` resource. Change it if you're planning to deploy more than one control plane per namespace. |
 | `lease_duration_secs` | Lease duration. Longer values prevent lease takeover due to clock skew, but slow down redeployments after unexpected pod termination. |
-| `lease_interval_secs` | How often the control plane leader attempts to renew the lease. |
+| `renew_interval_secs` | How often the control plane leader attempts to renew the lease. |
 | `release_timeout_secs` | How long the control plane will wait while shutting down gracefully for the lease to be released. |
 
 ### Default deployment

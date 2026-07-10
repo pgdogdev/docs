@@ -4,7 +4,7 @@ icon: material/alert-circle-outline
 
 # Alerts
 
-Since the control plane has access to real-time PgDog [metrics](../../../features/metrics.md), it can detect outliers and trigger automatic alerts.
+Since the control plane has access to real-time PgDog [metrics](../../features/metrics.md), it can detect outliers and trigger automatic alerts.
 
 ## How it works
 
@@ -27,19 +27,34 @@ The following incident management providers are supported:
 
 Alerts are **disabled** by default. To enable them, configure a provider's API key and set thresholds for each supported metric you would like to monitor:
 
-```yaml title="values.yaml"
-control:
-  config:
-    alerts:
-      evaluation_window_secs: 300
-      thresholds:
-        clients_waiting: 10
-        cpu: 90.0
-        memory: 2048
-        server_connections: 100
-      incident_io:
-        api_key: inc_live_xxx
-```
+=== "Helm chart"
+    ```yaml title="values.yaml"
+    control:
+      config:
+        alerts:
+          evaluation_window_secs: 300
+          thresholds:
+            clients_waiting: 10
+            cpu: 90.0
+            memory: 2048
+            server_connections: 100
+          incident_io:
+            api_key: inc_live_xxx
+    ```
+=== "control.toml"
+    ```toml
+    [alerts]
+    evaluation_window_secs = 300
+
+    [alerts.thresholds]
+    clients_waiting = 10
+    cpu = 90.0
+    memory = 2048
+    server_connections = 100
+
+    [alerts.incident_io]
+    api_key = "inc_live_xxx"
+    ```
 
 #### Parameters
 
@@ -47,7 +62,7 @@ control:
     Thresholds have no defaults. If a threshold is not configured, its metric will not be monitored.
 
 
-The following parameters are configurable via the [Helm chart](../installation.md):
+The following parameters are configurable via the [Helm chart](installation.md):
 
 | Parameter | Description | Unit |
 |-|-|-|

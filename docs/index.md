@@ -8,9 +8,10 @@ PgDog is a connection pooler, load balancer and database sharder for PostgreSQL.
 
 ## Getting started
 
-PgDog is an open source project. You can download its code from our [repository](https://github.com/pgdogdev/pgdog) on GitHub. If you're deploying PgDog to your cloud account (or on prem), you can either use the [compiled binaries](https://github.com/pgdogdev/pgdog/releases) we provide or build it from source.
+PgDog is an open source project. You can download its code from our [repository](https://github.com/pgdogdev/pgdog) in GitHub. If you're deploying PgDog to your cloud (or on prem), you can use our [Docker image](installation.md) (and Helm chart), the [compiled binaries](https://github.com/pgdogdev/pgdog/releases) (incl. a `.deb` package), or build it from source.
 
-Every commit in the `main` branch and weekly tagged releases have corresponding images in our [Docker](https://github.com/orgs/pgdogdev/packages/container/package/pgdog) repository, for example:
+### Docker image 
+Every commit in the `main` branch, and weekly tagged releases, have corresponding images in our [Docker](https://github.com/orgs/pgdogdev/packages/container/package/pgdog) repository, for example:
 
 ```bash
 docker run ghcr.io/pgdogdev/pgdog:v0.1.46

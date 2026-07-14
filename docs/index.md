@@ -14,7 +14,7 @@ PgDog is an open source project. You can download its code from our [repository]
 Every commit in the `main` branch, and weekly tagged releases, have corresponding images in our [Docker](https://github.com/orgs/pgdogdev/packages/container/package/pgdog) repository, for example:
 
 ```bash
-docker run ghcr.io/pgdogdev/pgdog:v0.1.46
+docker run ghcr.io/pgdogdev/pgdog:v0.1.48
 ```
 
 You can read more about how to deploy PgDog [here](installation.md).

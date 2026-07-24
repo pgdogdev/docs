@@ -632,6 +632,16 @@ Available options:
 
 Default: **`abort`**
 
+## Memory
+
+### `jemalloc_background_thread`
+
+Enable jemalloc's background purge threads so freed memory is returned to the OS after bursts of large allocations, instead of accumulating as retained dirty pages. Equivalent to setting the `_RJEM_MALLOC_CONF=background_thread:true` environment variable, without requiring it.
+
+Has no effect on builds where jemalloc is not the active allocator (e.g. `msvc`).
+
+Default: **`false`** (disabled)
+
 ## Logging
 
 ### `log_format`

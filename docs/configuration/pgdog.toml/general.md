@@ -305,10 +305,13 @@ Available options:
 - `include_primary`
 - `exclude_primary`
 - `include_primary_if_replica_banned`
+- `prefer_primary`
 
 `include_primary` uses the primary database as well as the replicas to serve read queries. `exclude_primary` will send all read queries to replicas, leaving the primary to serve only writes.
 
 `include_primary_if_replica_banned` strategy will only send reads to the primary if one or more replicas have been banned. This is useful in case you want to use the primary as a failover for reads.
+
+`prefer_primary` will route all queries to the primary unless you explicitely set the `pgdog.role` session parameter or the `/* pgdog_role */` comment to `replica`.
 
 Default: **`include_primary`**
 

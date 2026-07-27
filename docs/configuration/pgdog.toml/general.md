@@ -474,6 +474,21 @@ Limit on the number of statements saved in the statement cache used to accelerat
 
 Default: **`1_000`**
 
+### `query_cache_memory_limit`
+
+Approximate memory budget, in bytes, for the statement cache. Entries are evicted in LRU order once the sum of their sizes exceeds the budget. Unlike the count-based [`query_cache_limit`](#query_cache_limit), this bounds memory usage regardless of query size and complexity. Setting this to `0` disables the memory cap.
+
+!!! note
+    Entry sizes are measured with jemalloc. On builds without jemalloc, the budget is approximated from query text length.
+
+Default: **`0`** (disabled)
+
+### `query_cache_ttl`
+
+Time-to-idle, in seconds, for statement cache entries. An entry not accessed within this window is removed by the maintenance sweep. Setting this to `0` disables idle expiry.
+
+Default: **`0`** (disabled)
+
 ### `query_parser_enabled`
 
 !!! warning "Deprecated setting"

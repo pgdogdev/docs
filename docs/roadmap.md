@@ -49,7 +49,7 @@ Query engine provides a uniform view over multiple shards. Clients can use regul
 | Cross-shard CTEs | :material-calendar-check: | [#380](https://github.com/pgdogdev/pgdog/issues/380) |
 | Cross-shard subqueries | :material-calendar-check: | [#381](https://github.com/pgdogdev/pgdog/issues/381) |
 | Cross-shard joins | :material-calendar-check: | [#94](https://github.com/pgdogdev/pgdog/issues/94) |
-| [Cross-shard transactions](features/sharding/2pc.md) | :material-wrench: | Supports [two-phase commit](features/sharding/2pc.md). Not benchmarked yet. |
+| [Cross-shard transactions](features/sharding/2pc/index.md) | :material-wrench: | Supports [two-phase commit](features/sharding/2pc/index.md). Not benchmarked yet. |
 | [Omnisharded tables](features/sharding/omnishards.md) | :material-wrench: | Unsharded tables with identical data on all shards. |
 | Rewrite queries | :material-wrench: | Alter queries to support aggregate/sorting by rows not returned in result set. |
 | [`COPY`](features/sharding/cross-shard-queries/copy.md) | :material-check-circle-outline: | Sharding key must be specified in the statement and the data. Supports text, CSV, and binary formats only. |

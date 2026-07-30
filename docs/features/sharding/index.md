@@ -34,7 +34,7 @@ PgDog is a query router. It can extract sharding hints directly from the SQL que
 
 ### Data consistency
 
-To make sure data is atomically written in cross-shard transactions, PgDog supports PostgreSQL's prepared transactions and [two-phase commit](2pc.md).
+To make sure data is atomically written in cross-shard transactions, PgDog supports PostgreSQL's prepared transactions and [two-phase commit](2pc/index.md).
 
 ## Managing data
 

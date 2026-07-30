@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
 This query will be sent to all shards, creating the table in all databases.
 
 !!! note
-    If [two-phase commit](../2pc.md) is enabled, you can use transactions to guarantee
+    If [two-phase commit](../2pc/index.md) is enabled, you can use transactions to guarantee
     that the table is created on all shards atomically. If an error occurs on one or more of the databases, the whole transaction will be rolled back. This ensures the schema is consistent on all shards.
 
 ### Migrating a specific shard

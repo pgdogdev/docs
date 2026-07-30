@@ -79,4 +79,4 @@ Statements with multiple tuples can be [rewritten automatically](cross-shard-que
 
 ## DDL
 
-[DDL statements](cross-shard-queries/ddl.md) (e.g., `CREATE TABLE`) are sent to all shards in parallel. If [two-phase commit](2pc.md) is enabled, these statements have a high chance to be atomic.
+[DDL statements](cross-shard-queries/ddl.md) (e.g., `CREATE TABLE`) are sent to all shards in parallel. If [two-phase commit](2pc/index.md) is enabled, these statements have a high chance to be atomic.

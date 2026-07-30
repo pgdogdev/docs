@@ -8,7 +8,7 @@ icon: material/table-cog
 
 ## Atomicity
 
-DDL statements should be atomic across all shards. This is to protect against a single shard failing to create a table or index, which could result in an inconsistent schema. PgDog can use [two-phase commit](../2pc.md) to ensure this is the case, however that means that all DDL statements must be executed inside a transaction, for example:
+DDL statements should be atomic across all shards. This is to protect against a single shard failing to create a table or index, which could result in an inconsistent schema. PgDog can use [two-phase commit](../2pc/index.md) to ensure this is the case, however that means that all DDL statements must be executed inside a transaction, for example:
 
 ```postgresql
 BEGIN;

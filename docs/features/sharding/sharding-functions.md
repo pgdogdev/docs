@@ -303,5 +303,5 @@ Schema-based sharding is straightforward to deploy and use, since it has clear d
     ("Direct-to-shard queries", "query-routing.md", "Route queries to a single shard whenever the sharding key is known."),
     ("Cross-shard queries", "cross-shard-queries/index.md", "Run queries that span multiple shards."),
     ("COPY command", "cross-shard-queries/copy.md", "Bulk load data across shards with the COPY protocol."),
-    ("Two-phase commit", "2pc.md", "Atomic transactions spanning multiple shards."),
+    ("Two-phase commit", "2pc/index.md", "Atomic transactions spanning multiple shards."),
 ]) }}

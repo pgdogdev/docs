@@ -14,7 +14,7 @@ UPDATE users SET is_admin = true WHERE email LIKE '%@pgdog.dev';
 
 ## Consistency
 
-Much like cross-shard [`INSERT`](insert.md) statements, any updates to multiple rows on multiple databases outside a [two-phase](../2pc.md) transaction are not guaranteed to be atomic. It's always best to send updates inside a transaction, like so:
+Much like cross-shard [`INSERT`](insert.md) statements, any updates to multiple rows on multiple databases outside a [two-phase](../2pc/index.md) transaction are not guaranteed to be atomic. It's always best to send updates inside a transaction, like so:
 
 ```postgresql
 BEGIN;

@@ -1,6 +1,7 @@
 ---
 icon: material/check-all
 ---
+
 # Two-phase commit
 
 Two-phase commit takes advantage of [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html) in Postgres to provide eventually consistent cross-shard writes. When enabled, transactions spanning multiple shards have a very high chance of being atomic.

@@ -51,6 +51,6 @@ If the query fetches rows from more than one shard, PgDog will also ignore any `
 ## Read more
 
 {{ next_steps_links([
-    ("Two-phase commit", "../2pc.md", "Atomic transactions spanning multiple shards."),
+    ("Two-phase commit", "../2pc/index.md", "Atomic transactions spanning multiple shards."),
     ("Omnisharded tables", "../omnishards.md", "Tables replicated to every shard for fast local joins."),
 ]) }}

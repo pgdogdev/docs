@@ -31,7 +31,7 @@ The `rewrite` section controls PgDog's automatic SQL rewrites for sharded databa
 | `primary_key` | Behavior when an `INSERT` is missing a `BIGINT` primary key: `error` rejects the statement,<br>`rewrite` auto-injects `pgdog.unique_id()` for missing keys,<br>`ignore` allows the INSERT without modification. | `"ignore"` |
 
 !!! note "Two-phase commit"
-    Consider enabling [two-phase commit](../../features/sharding/2pc.md) when either feature is set to `rewrite`. Without it, rewrites are committed shard-by-shard and can leave partial changes if a transaction fails.
+    Consider enabling [two-phase commit](../../features/sharding/2pc/index.md) when either feature is set to `rewrite`. Without it, rewrites are committed shard-by-shard and can leave partial changes if a transaction fails.
 
 ## Runtime overrides
 

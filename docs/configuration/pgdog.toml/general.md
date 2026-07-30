@@ -431,19 +431,19 @@ Default: **`false`** (disabled)
 
 ### `two_phase_commit`
 
-Enable [two-phase commit](../../features/sharding/2pc.md) for write, cross-shard transactions.
+Enable [two-phase commit](../../features/sharding/2pc/index.md) for write, cross-shard transactions.
 
 Default: **`false`** (disabled)
 
 ### `two_phase_commit_auto`
 
-Enable automatic conversion of single-statement write transactions to use [two-phase commit](../../features/sharding/2pc.md).
+Enable automatic conversion of single-statement write transactions to use [two-phase commit](../../features/sharding/2pc/index.md).
 
 Default: **`true`** (enabled)
 
 ### `two_phase_commit_wal_dir`
 
-Directory where the [two-phase commit](../../features/sharding/2pc.md) write-ahead log is stored.
+Directory where the [two-phase commit](../../features/sharding/2pc/index.md) write-ahead log is stored.
 
 !!! note "Requires restart"
     This setting cannot be changed at runtime.

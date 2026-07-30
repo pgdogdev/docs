@@ -1,6 +1,7 @@
 ---
 icon: material/check-all
 ---
+
 # Two-phase commit
 
 Two-phase commit takes advantage of [prepared transactions](https://www.postgresql.org/docs/current/sql-prepare-transaction.html) in Postgres to provide eventually consistent cross-shard writes. When enabled, transactions spanning multiple shards have a very high chance of being atomic.
@@ -30,7 +31,7 @@ Alternatively, if you're running on managed Postgres (e.g., AWS RDS), this param
 !!! note
      Changes to this parameter require a server restart to take effect.
 
-Once prepared transactions are enabled in Postgres, two-phase commit can be enabled in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
+Once prepared transactions are enabled in Postgres, two-phase commit can be enabled in [`pgdog.toml`](../../../configuration/pgdog.toml/general.md):
 
 === "pgdog.toml"
     ```toml
@@ -92,7 +93,7 @@ This feature allows for easier migrations to sharded databases, without requirin
 
 While it's often desirable to ensure cross-shard writes are atomic, rewriting single-statement transactions to use 4 statements has some performance overhead. For this reason, this feature is **disabled** by default.
 
-If your writes are idempotent and can be safely retried, or your application doesn't have consistency requirements, you don't need to use this. Otherwise, you can enable it in [`pgdog.toml`](../../configuration/pgdog.toml/general.md):
+If your writes are idempotent and can be safely retried, or your application doesn't have consistency requirements, you don't need to use this. Otherwise, you can enable it in [`pgdog.toml`](../../../configuration/pgdog.toml/general.md):
 
 === "pgdog.toml"
     ```toml
@@ -111,6 +112,7 @@ Two-phase commit is used for writes only. Read transactions are finished using n
 ## Read more
 
 {{ next_steps_links([
-    ("Omnisharded tables", "omnishards.md", "Tables replicated to every shard for fast local joins."),
-    ("Cross-shard queries", "cross-shard-queries/index.md", "Run queries that span multiple shards transparently."),
+    ("Crash recovery", "crash-recovery.md", "Recover in-flight two-phase transactions if PgDog crashes."),
+    ("Omnisharded tables", "../omnishards.md", "Tables replicated to every shard for fast local joins."),
+    ("Cross-shard queries", "../cross-shard-queries/index.md", "Run queries that span multiple shards transparently."),
 ]) }}

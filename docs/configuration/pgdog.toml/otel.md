@@ -79,6 +79,7 @@ corresponding `pgdog.toml` values (or supply a value when the setting is omitted
 | `OTEL_METRIC_EXPORT_INTERVAL` | Push interval in milliseconds. Equivalent to `push_interval`. |
 | `OTEL_SERVICE_NAME` | Sets the `service.name` resource attribute. Takes precedence over any value set via `OTEL_RESOURCE_ATTRIBUTES`. _Default:_ `pgdog`. |
 | `OTEL_RESOURCE_ATTRIBUTES` | Comma-separated `key=value` pairs added as resource attributes on every metric (e.g. `env=prod,region=us-east-1`). Values may be percent-encoded. |
+| `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | Controls the aggregation temporality used for exported metrics. Accepts cumulative (values accumulate over the lifetime of the process), delta (values report the change since the last export). Use delta for backends like Datadog that expect delta temporality. Default: cumulative. | |
 | `PGDOG_OTEL_NAMESPACE` | Metric name prefix. Equivalent to `namespace`. |
 | `DD_API_KEY` | Datadog API key. Equivalent to `datadog_api_key`. |
 

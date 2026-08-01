@@ -483,9 +483,9 @@ Approximate memory budget, in bytes, for the statement cache. Entries are evicte
 
 Default: **`0`** (disabled)
 
-### `query_cache_ttl`
+### `query_cache_idle_timeout`
 
-Time-to-idle, in seconds, for statement cache entries. An entry not accessed within this window is removed by the maintenance sweep. Setting this to `0` disables idle expiry.
+Idle timeout, in milliseconds, for statement cache entries. An entry not accessed within this window is removed by the maintenance sweep. Setting this to `0` disables idle expiry.
 
 Default: **`0`** (disabled)
 

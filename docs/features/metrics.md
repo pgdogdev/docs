@@ -34,8 +34,9 @@ You can connect to the admin database using any PostgreSQL client. It supports c
 
 ## OpenMetrics
 
-[OpenMetrics](https://openmetrics.io/) is a standard for displaying metrics that can be ingested by a multitude of agents, e.g., Datadog, Prometheus, etc. The metrics are shown in a human-readable text format
-and available from an HTTP endpoint.
+[OpenMetrics](https://openmetrics.io/) is a standard for displaying metrics that can be ingested by a multitude of agents, e.g., Datadog, Prometheus, etc. The metrics are shown in a human-readable text format and available from an HTTP endpoint.
+
+We maintain multiple examples of OpenMetrics integrations, including [DataDog](https://github.com/pgdogdev/pgdog/tree/main/examples/datadog) and [Grafana using Prometheus](https://github.com/pgdog/pgdog/tree/main/examples/grafana_prometheus).
 
 ### Configuration
 

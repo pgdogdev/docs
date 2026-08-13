@@ -45,6 +45,29 @@ This limit is strictly enforced on server connections: if a prepared statement n
 
 Since clients re-use prepared statements, this limit isn't enforced for clients: they can prepare as many statements as they wish (and you have memory for). Each statement keeps a counter of when it's used by a client. If the counter reaches zero, i.e., all clients either closed it explicitly or disconnected, the statement is removed from the global cache.
 
+## Statement TTL
+
+Postgres builds an execution plan when a statement is prepared and keeps it for the lifetime of the statement. Since PgDog
+keeps server connections open for a long time, a plan can stay in use long after the data it was built for has changed.
+
+A TTL makes PgDog close statements on server connections after some time. The next client that uses the statement prepares
+it again, and Postgres builds a fresh plan:
+
+```toml
+[general]
+prepared_statements_ttl = 300_000
+prepared_statements_ttl_jitter = 30_000
+```
+
+Clients usually prepare their whole statement set at once, so all their statements would expire at the same moment. The
+[jitter](../../configuration/pgdog.toml/general.md#prepared_statements_ttl_jitter) spreads the expiration of each statement
+randomly around the TTL.
+
+The TTL is enforced per server connection. The global cache and the client statement names are untouched, so clients don't
+see any errors or extra work.
+
+By default the TTL is disabled and statements stay prepared for the lifetime of the server connection.
+
 ## Tracking used statements
 
 The number of prepared statements and what they are can be tracked by executing this command on the [admin database](../../administration/index.md):
@@ -56,7 +79,7 @@ The number of prepared statements and what they are can be tracked by executing 
     ```
 === "Output"
     ```
-       name    |                       statement                       | rewrite | used_by | memory_used 
+       name    |                       statement                       | rewrite | used_by | memory_used
     -----------+-------------------------------------------------------+---------+---------+-------------
      __pgdog_1 | SELECT abalance FROM pgbench_accounts WHERE aid = $1; |         |       4 |         144
     (1 row)

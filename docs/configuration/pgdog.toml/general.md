@@ -387,6 +387,29 @@ limit will be removed.
 
 Default: **`none`** (unlimited)
 
+### `prepared_statements_ttl`
+
+How long a statement can stay prepared on a server connection, in milliseconds. When the TTL expires, PgDog closes the
+statement on that connection. The next client that uses it prepares it again, so Postgres builds a new execution plan
+instead of keeping a stale one.
+
+The TTL only affects server connections. The [global cache](../../features/connection-pooler/prepared-statements.md) and
+the client statement names are not changed, so clients see no errors.
+
+Set to `0` or omit the setting to let statements stay prepared forever.
+
+Default: **`none`** (disabled)
+
+### `prepared_statements_ttl_jitter`
+
+Maximum random adjustment applied to `prepared_statements_ttl`, in milliseconds. Each statement gets an expiration point
+sampled uniformly from `[ttl - jitter, ttl + jitter]`, chosen when the statement is prepared.
+
+Clients usually prepare their whole statement set at once. Without jitter, all statements expire at the same moment, again
+and again. Keep this value at a meaningful fraction of the TTL. It is clamped to just below the TTL.
+
+Default: **`30_000`** (30 seconds)
+
 ## Pub/sub
 
 ### `pub_sub_channel_size`

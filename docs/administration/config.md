@@ -44,6 +44,8 @@ The following configuration parameters are available and their current values:
 | `port` [:material-link:](../configuration/pgdog.toml/general.md#port) | `6432` |
 | `prepared_statements` [:material-link:](../configuration/pgdog.toml/general.md#prepared_statements) | `extended` |
 | `prepared_statements_limit` [:material-link:](../configuration/pgdog.toml/general.md#prepared_statements_limit) | `500` |
+| `prepared_statements_ttl` [:material-link:](../configuration/pgdog.toml/general.md#prepared_statements_ttl) | `default` |
+| `prepared_statements_ttl_jitter` [:material-link:](../configuration/pgdog.toml/general.md#prepared_statements_ttl_jitter) | `30000` |
 | `pub_sub_channel_size` [:material-link:](../configuration/pgdog.toml/general.md#pub_sub_channel_size) | `4098` |
 | `query_cache_limit` | `500` |
 | `query_log` | `default` |

@@ -591,6 +591,23 @@ Available options:
 
 Default: **`auto`**
 
+### `canonicalize_type_information`
+
+Controls whether PgDog attempts to maintain a canonical set of identifiers for
+custom types. Types that are not built-in to PostgreSQL have a unique identifier
+(OID) assigned upon creation. The same type may end up having different OIDs
+across shards.
+
+If this setting is enabled, any queries that reference the `pg_type` table or
+cast to `regtype` will be routed to shard 0. PgDog will then map any OIDs
+to/from that canonical set when messages are sent to individual shards.
+
+This setting is disabled by default. It is recommended that it be enabled for
+users who are using sharding, and use any types from extensions or types created
+with `CREATE TYPE`.
+
+Default: **`false`** (disabled)
+
 ### `cutover_traffic_stop_threshold`
 
 Replication lag threshold (in bytes) at which PgDog will pause traffic automatically during a [traffic cutover](../../features/sharding/resharding/cutover.md#pause-queries).

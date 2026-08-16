@@ -217,6 +217,10 @@
   line-height: 1.75;
   color: var(--pg-text);
 }
+/* The clipboard toast sits on an inverted background, so invert its text too. */
+.md-dialog__inner.md-typeset {
+  color: var(--md-default-bg-color);
+}
 .md-typeset h1 {
   font-size: 1.9rem;
   font-weight: 800;

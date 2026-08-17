@@ -127,6 +127,12 @@ Overrides the [`idle_timeout`](general.md#idle_timeout) setting. Idle server con
 
 Sets the `default_transaction_read_only` connection parameter to `on` on all server connections to this database. Clients can still override it with `SET`.
 
+### `lb_weight`
+
+Relative weight used by the [`weighted_round_robin`](../../features/load-balancer/index.md#weighted-round-robin) load balancing strategy. Higher values receive proportionally more read traffic; a value of `0` excludes this database from rotation as long as at least one other candidate has a positive weight, while still remaining available as a failover target. Ignored by other [`load_balancing_strategy`](general.md#load_balancing_strategy) values.
+
+Default: **`255`**
+
 ### `server_lifetime`
 
 Overrides the [`server_lifetime`](general.md#server_lifetime) setting. Server connections older than this will be closed when returned to the pool.

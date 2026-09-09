@@ -1,0 +1,155 @@
+services:
+  # Databases
+  shard_0:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  shard_1:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  shard_2:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7
+
+  # Control plane with Raft
+  control:
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:9b3698eb
+    ports:
+      - "8099:8080"
+    environment:
+      RUST_LOG: warn
+      CONTROL_CONFIG: /etc/pgdog-control/control.toml
+    configs:
+      - source: control_config
+        target: /etc/pgdog-control/control.toml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/healthz || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      redis:
+        condition: service_started
+
+  # The dog!
+  pgdog:
+    image: ghcr.io/pgdogdev/pgdog-enterprise:9b3698eb
+    command:
+      [
+        "pgdog",
+        "--config",
+        "/etc/pgdog/pgdog.toml",
+        "--users",
+        "/etc/secrets/pgdog/users.toml",
+      ]
+    mem_limit: 1g
+    environment:
+      PGPASSWORD: postgres
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "psql -h 127.0.0.1 -p 6432 -U postgres -d postgres -tAc 'SELECT 1' || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+      control:
+        condition: service_healthy
+    ports:
+      - "6432:6432"
+    configs:
+      - source: pgdog_config
+        target: /etc/pgdog/pgdog.toml
+      - source: pgdog_users
+        target: /etc/secrets/pgdog/users.toml
+
+configs:
+  control_config:
+    content: |
+      [redis]
+      url = "redis://redis:6379"
+
+      [raft]
+      cluster_name = "pgdog"
+      storage_path = "/tmp/raft.redb"
+      token = "raft-auth-token"
+
+      [[raft.members]]
+      id = 1
+      address = "127.0.0.1:8080"
+
+  pgdog_config:
+    content: |
+      [general]
+      port = 6432
+      load_schema = "on"
+
+      [[databases]]
+      name = "postgres"
+      host = "shard_0"
+      shard = 0
+      port = 5432
+
+      [[databases]]
+      name = "postgres"
+      host = "shard_1"
+      shard = 1
+      port = 5432
+
+      [[databases]]
+      name = "postgres"
+      host = "shard_2"
+      shard = 2
+      port = 5432
+
+      [control]
+      endpoint = "http://control:8080"
+      token = "pgdog"
+
+      [admin]
+      user = "pgdog"
+      password = "pgdog"
+
+      [query_stats]
+      enabled = true
+
+      [qos]
+      enabled = true
+
+  pgdog_users:
+    content: |
+      [[users]]
+      name = "postgres"
+      password = "postgres"
+      database = "postgres"

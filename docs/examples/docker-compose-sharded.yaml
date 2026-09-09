@@ -2,6 +2,10 @@ services:
   # Databases
   shard_0:
     image: postgres:17
+    # entrypoint: ["/bin/sh", "-c", "exec docker-entrypoint.sh postgres >/dev/null 2>&1"]
+    configs:
+      - source: postgres_setup
+        target: /docker-entrypoint-initdb.d/setup.sql
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -13,6 +17,10 @@ services:
       retries: 5
   shard_1:
     image: postgres:17
+    # entrypoint: ["/bin/sh", "-c", "exec docker-entrypoint.sh postgres >/dev/null 2>&1"]
+    configs:
+      - source: postgres_setup
+        target: /docker-entrypoint-initdb.d/setup.sql
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -24,6 +32,10 @@ services:
       retries: 5
   shard_2:
     image: postgres:17
+    # entrypoint: ["/bin/sh", "-c", "exec docker-entrypoint.sh postgres >/dev/null 2>&1"]
+    configs:
+      - source: postgres_setup
+        target: /docker-entrypoint-initdb.d/setup.sql
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -45,6 +57,7 @@ services:
       - "8099:8080"
     environment:
       RUST_LOG: warn
+      RAFT_NODE_ID: "pgdog-control-1"
       CONTROL_CONFIG: /etc/pgdog-control/control.toml
     configs:
       - source: control_config
@@ -82,7 +95,11 @@ services:
       timeout: 5s
       retries: 5
     depends_on:
-      postgres:
+      shard_0:
+        condition: service_healthy
+      shard_1:
+        condition: service_healthy
+      shard_2:
         condition: service_healthy
       control:
         condition: service_healthy
@@ -95,6 +112,34 @@ services:
         target: /etc/secrets/pgdog/users.toml
 
 configs:
+  # Shared SQL for all shards; runs only when initializing an empty data directory.
+  postgres_setup:
+    content: |
+      -- sharded table
+      CREATE TABLE users (
+        id BIGINT PRIMARY KEY,
+        email VARCHAR NOT NULL,
+        tenant_id BIGINT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
+      -- omnisharded table
+      CREATE TABLE settings (
+        id BIGINT PRIMARY KEY,
+        name VARCHAR NOT NULL,
+        value VARCHAR NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
+      -- sharded table with reference to omnisharded table
+      CREATE TABLE user_settings (
+        id BIGINT PRIMARY KEY,
+        user_id BIGINT NOT NULL REFERENCES users(id),
+        tenant_id BIGINT NOT NULL,
+        setting_id BIGINT NOT NULL REFERENCES settings(id),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
   control_config:
     content: |
       [redis]
@@ -133,6 +178,14 @@ configs:
       shard = 2
       port = 5432
 
+      [[sharded_tables]]
+      database = "postgres"
+      column = "tenant_id"
+
+      [rewrite]
+      primary_key = "rewrite_omni_global"
+      split_inserts = "rewrite"
+
       [control]
       endpoint = "http://control:8080"
       token = "pgdog"
@@ -153,3 +206,4 @@ configs:
       name = "postgres"
       password = "postgres"
       database = "postgres"
+      schema_admin = true

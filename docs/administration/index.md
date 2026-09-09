@@ -25,6 +25,7 @@ The admin database name is [configurable](../configuration/pgdog.toml/admin.md).
 | `SHOW STATS` | Connection pools statistics. |
 | `SHOW PEERS` | List of PgDog processes running on the same network. Requires service discovery to be enabled. |
 | `RELOAD` | Reload configuration from disk. See [pgdog.toml](../configuration/pgdog.toml/general.md) and [users.toml](../configuration/users.toml/users.md) for which options can be changed at runtime. |
+| `FORCE_RELOAD` | Reload configuration from disk and terminates any in-flight transactions. Guarantees that all transactions following the completion of this command are sent to the new connection pools. |
 | `RECONNECT` | Re-create all server connections using existing configuration. |
 | `PAUSE` | Pause all pools. Clients will wait for connections until pools are resumed. Can be used for gracefully restarting PostgreSQL servers. |
 | `RESUME` | Resume all pools. Clients are able to check out connections again. |

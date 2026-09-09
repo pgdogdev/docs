@@ -1,0 +1,209 @@
+services:
+  # Databases
+  shard_0:
+    image: postgres:17
+    # entrypoint: ["/bin/sh", "-c", "exec docker-entrypoint.sh postgres >/dev/null 2>&1"]
+    configs:
+      - source: postgres_setup
+        target: /docker-entrypoint-initdb.d/setup.sql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  shard_1:
+    image: postgres:17
+    # entrypoint: ["/bin/sh", "-c", "exec docker-entrypoint.sh postgres >/dev/null 2>&1"]
+    configs:
+      - source: postgres_setup
+        target: /docker-entrypoint-initdb.d/setup.sql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  shard_2:
+    image: postgres:17
+    # entrypoint: ["/bin/sh", "-c", "exec docker-entrypoint.sh postgres >/dev/null 2>&1"]
+    configs:
+      - source: postgres_setup
+        target: /docker-entrypoint-initdb.d/setup.sql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7
+
+  # Control plane with Raft
+  control:
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:9b3698eb
+    ports:
+      - "8099:8080"
+    environment:
+      RUST_LOG: warn
+      RAFT_NODE_ID: "pgdog-control-1"
+      CONTROL_CONFIG: /etc/pgdog-control/control.toml
+    configs:
+      - source: control_config
+        target: /etc/pgdog-control/control.toml
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/healthz || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      redis:
+        condition: service_started
+
+  # The dog!
+  pgdog:
+    image: ghcr.io/pgdogdev/pgdog-enterprise:9b3698eb
+    command:
+      [
+        "pgdog",
+        "--config",
+        "/etc/pgdog/pgdog.toml",
+        "--users",
+        "/etc/secrets/pgdog/users.toml",
+      ]
+    mem_limit: 1g
+    environment:
+      PGPASSWORD: postgres
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "psql -h 127.0.0.1 -p 6432 -U postgres -d postgres -tAc 'SELECT 1' || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      shard_0:
+        condition: service_healthy
+      shard_1:
+        condition: service_healthy
+      shard_2:
+        condition: service_healthy
+      control:
+        condition: service_healthy
+    ports:
+      - "6432:6432"
+    configs:
+      - source: pgdog_config
+        target: /etc/pgdog/pgdog.toml
+      - source: pgdog_users
+        target: /etc/secrets/pgdog/users.toml
+
+configs:
+  # Shared SQL for all shards; runs only when initializing an empty data directory.
+  postgres_setup:
+    content: |
+      -- sharded table
+      CREATE TABLE users (
+        id BIGINT PRIMARY KEY,
+        email VARCHAR NOT NULL,
+        tenant_id BIGINT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
+      -- omnisharded table
+      CREATE TABLE settings (
+        id BIGINT PRIMARY KEY,
+        name VARCHAR NOT NULL,
+        value VARCHAR NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
+      -- sharded table with reference to omnisharded table
+      CREATE TABLE user_settings (
+        id BIGINT PRIMARY KEY,
+        user_id BIGINT NOT NULL REFERENCES users(id),
+        tenant_id BIGINT NOT NULL,
+        setting_id BIGINT NOT NULL REFERENCES settings(id),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+
+  control_config:
+    content: |
+      [redis]
+      url = "redis://redis:6379"
+
+      [raft]
+      cluster_name = "pgdog"
+      storage_path = "/tmp/raft.redb"
+      token = "raft-auth-token"
+
+      [[raft.members]]
+      id = 1
+      address = "127.0.0.1:8080"
+
+  pgdog_config:
+    content: |
+      [general]
+      port = 6432
+      load_schema = "on"
+
+      [[databases]]
+      name = "postgres"
+      host = "shard_0"
+      shard = 0
+      port = 5432
+
+      [[databases]]
+      name = "postgres"
+      host = "shard_1"
+      shard = 1
+      port = 5432
+
+      [[databases]]
+      name = "postgres"
+      host = "shard_2"
+      shard = 2
+      port = 5432
+
+      [[sharded_tables]]
+      database = "postgres"
+      column = "tenant_id"
+
+      [rewrite]
+      primary_key = "rewrite_omni_global"
+      split_inserts = "rewrite"
+
+      [control]
+      endpoint = "http://control:8080"
+      token = "pgdog"
+
+      [admin]
+      user = "pgdog"
+      password = "pgdog"
+
+      [query_stats]
+      enabled = true
+
+      [qos]
+      enabled = true
+
+  pgdog_users:
+    content: |
+      [[users]]
+      name = "postgres"
+      password = "postgres"
+      database = "postgres"
+      schema_admin = true

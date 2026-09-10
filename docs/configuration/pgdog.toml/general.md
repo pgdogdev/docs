@@ -282,6 +282,7 @@ Which strategy to use for load balancing read queries. See [load balancer](../..
 * `random`
 * `least_active_connections`
 * `round_robin`
+* `weighted_round_robin`
 
 Default: **`random`**
 

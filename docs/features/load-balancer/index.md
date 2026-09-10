@@ -35,6 +35,7 @@ The load balancer is configurable and can distribute read queries between replic
 * [Round robin](#round-robin) (default)
 * [Random](#random)
 * [Least active connections](#least-active-connections)
+* [Weighted round robin](#weighted-round-robin)
 
 Choosing the best strategy depends on your query workload and the size of the databases. Each strategy has its pros and cons. If you're not sure, using the **round robin** strategy usually works well for most deployments.
 
@@ -92,6 +93,47 @@ This algorithm is useful when you want to "bin pack" the replica cluster. It ass
 === "Helm chart"
     ```yaml
     loadBalancingStrategy: least_active_connections
+    ```
+
+### Weighted round robin
+
+Give some replicas more traffic than others. Each database gets a weight (`lb_weight`, `0`-`255`, default `255`), and traffic is split roughly in proportion to those weights, spread evenly rather than in bursts.
+
+Set a weight to `0` and that database only gets picked once every positive-weight database is banned or unreachable. That's a clean way to keep a small replica around purely as a backup, or to point almost all traffic at one preferred replica.
+
+Configure it per database with [`lb_weight`](../../configuration/pgdog.toml/databases.md#lb_weight).
+
+##### Configuration
+
+=== "pgdog.toml"
+    ```toml
+    [general]
+    load_balancing_strategy = "weighted_round_robin"
+
+    [[databases]]
+    name = "prod"
+    role = "replica"
+    host = "10.0.0.2"
+    lb_weight = 200
+
+    [[databases]]
+    name = "prod"
+    role = "replica"
+    host = "10.0.0.3"
+    lb_weight = 55
+    ```
+=== "Helm chart"
+    ```yaml
+    loadBalancingStrategy: weighted_round_robin
+    databases:
+      - name: prod
+        role: replica
+        host: 10.0.0.2
+        lbWeight: 200
+      - name: prod
+        role: replica
+        host: 10.0.0.3
+        lbWeight: 55
     ```
 
 

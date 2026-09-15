@@ -22,7 +22,7 @@ The `rewrite` section controls PgDog's automatic SQL rewrites for sharded databa
       shardKey: "error"
       splitInserts: "error"
       primaryKey: "ignore"
-      omniNonDeterministicFUnctions: "ignore"
+      omniNonDeterministicFunctions: "ignore"
     ```
 
 | Setting | Description | Default |

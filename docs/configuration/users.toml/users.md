@@ -170,7 +170,7 @@ Default: **none** (not set)
 
 ### `schema_admin`
 
-Marks this user as a schema administrator. Such user should have sufficient privileges to be able to run DML commands and use replication roles.
+Marks this user as a schema administrator. Such user should have sufficient privileges to be able to run DDL commands and use replication protocol commands (e.g., `CREATE_REPLICATION_SLOT`).
 
 A `schema_admin` database user is required for following features:
 

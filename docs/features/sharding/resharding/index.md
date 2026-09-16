@@ -58,6 +58,18 @@ Unlike `RESHARD`, the manual path does not cut over automatically: the data move
 !!! note "Traffic cutover"
     Traffic cutover requires careful synchronization to avoid data loss and a split-brain situation. The `RESHARD` command supports this for **single node** PgDog deployments only. The [Enterprise Edition](../../../enterprise_edition/index.md) provides a control plane, which supports traffic cutover with multiple PgDog containers.
 
+## Requirements
+
+### Schema admin
+
+During the resharding the following permissions are required for the user used for connecting to the source and destination databases:
+
+- `CREATE` permissions on database and target schemas for creating tables and indexes
+- `REPLICATION` role attribute for creating replication slots and reading the replication stream
+- `SET ON PARAMETER session_replication_role` permission to bypass triggers during replication
+
+Users with these permissions should be defined in `users.toml` and marked as [`schema_admin`](../../../configuration/users.toml/users.md#schema_admin). PgDog will use this user to connect to the source and destination databases, so make sure to specify one for source and destination databases in the configuration (could be the same user or different for each database).
+
 ## Terminology
 
 | Term | Description |

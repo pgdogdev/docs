@@ -17,6 +17,12 @@ This configuration controls which users are allowed to connect to PgDog. This is
     name = "bob"
     database = "prod"
     password = "opensesame"
+
+    [[users]]
+    name = "migrator"
+    database = "prod"
+    password = "hunter_prod"
+    schema_admin = true
     ```
 === "Helm chart"
     ```yaml
@@ -27,6 +33,10 @@ This configuration controls which users are allowed to connect to PgDog. This is
       - name: bob
         database: prod
         password: opensesame
+      - name: migrator
+        database: prod
+        password: hunter_prod
+        schemaAdmin: true
     ```
 
 ### `name`
@@ -157,3 +167,12 @@ Default: **none** (not set)
 Overrides [`two_phase_commit_auto`](../pgdog.toml/general.md#two_phase_commit_auto) for this user.
 
 Default: **none** (not set)
+
+### `schema_admin`
+
+Marks this user as a schema administrator. Such user should have sufficient privileges to be able to run DML commands and use replication roles.
+
+A `schema_admin` database user is required for following features:
+
+- [Sharding schema management](../../features/sharding/schema_management/manager.md)
+- [Resharding](../../features/sharding/resharding/index.md#schema-admin)

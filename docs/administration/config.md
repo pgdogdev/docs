@@ -45,7 +45,9 @@ The following configuration parameters are available and their current values:
 | `prepared_statements` [:material-link:](../configuration/pgdog.toml/general.md#prepared_statements) | `extended` |
 | `prepared_statements_limit` [:material-link:](../configuration/pgdog.toml/general.md#prepared_statements_limit) | `500` |
 | `pub_sub_channel_size` [:material-link:](../configuration/pgdog.toml/general.md#pub_sub_channel_size) | `4098` |
+| `query_cache_idle_timeout` [:material-link:](../configuration/pgdog.toml/general.md#query_cache_idle_timeout) | `0` |
 | `query_cache_limit` | `500` |
+| `query_cache_memory_limit` [:material-link:](../configuration/pgdog.toml/general.md#query_cache_memory_limit) | `0` |
 | `query_log` | `default` |
 | `query_timeout` [:material-link:](../configuration/pgdog.toml/general.md#query_timeout) | `1s` |
 | `read_write_split` [:material-link:](../configuration/pgdog.toml/general.md#read_write_split) | `include_primary` |

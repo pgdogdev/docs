@@ -158,28 +158,33 @@ By default, PgDog uses hash-based sharding, with data evenly split between shard
 
 To configure either one, add a `mapping` to the table's `[[sharded_tables]]` entry. Each rule assigns an explicit set of values (list), a bounded range (range), or everything else (default) to a shard. PgDog infers the rule type from the fields you set.
 
-A mapping is a list of rules attached to a `[[sharded_tables]]` entry. TOML gives you two equivalent ways to write that list:
+A mapping is a list of rules attached to a `[[sharded_tables]]` entry. TOML gives you two equivalent ways to write that list. Both forms produce exactly the same configuration, so use whichever is easier to read.
 
-- One `[[sharded_tables.mapping]]` block per rule. The double square brackets are TOML's syntax for an array, so repeating the block simply appends another rule (this is the style used in the examples below). Each block attaches to the most recently defined `[[sharded_tables]]`, so place a table's mapping blocks directly after its entry and before the next `[[sharded_tables]]`.
-- A single inline array, e.g. `mapping = [ { values = [1, 2], shard = 0 }, { shard = 1 } ]`, where each `{ ... }` is one rule.
+### Mapping blocks
 
-Both forms produce exactly the same configuration, so use whichever is easier to read.
+Use one `[[sharded_tables.mapping]]` block per rule. The double square brackets are TOML's syntax for an array, so repeating the block simply appends another rule (this is the style used in the examples below). Each block attaches to the most recently defined `[[sharded_tables]]`, so place a table's mapping blocks directly after its entry and before the next `[[sharded_tables]]`.
+
+### Inline array
+
+Use a single inline array, e.g. `mapping = [ { values = [1, 2], shard = 0 }, { shard = 1 } ]`, where each `{ ... }` is one rule.
+
+### Rule fields
 
 Each rule has a target `shard` plus the fields that define which values it matches:
 
-### `values`
+#### `values`
 
 A set of values that route to this shard. Setting `values` makes the rule a **list** rule (`PARTITION BY LIST`).
 
-### `start`
+#### `start`
 
 The starting value of a range, inclusive. Setting `start` and/or `end` makes the rule a **range** rule (`PARTITION BY RANGE`). Omit `start` for a range that is unbounded below.
 
-### `end`
+#### `end`
 
 The ending value of a range, exclusive. Omit `end` for a range that is unbounded above.
 
-### `shard`
+#### `shard`
 
 The target shard number for matched values. A rule with only `shard` set (no `values`, `start`, or `end`) is the **default** rule: a catch-all for any value not matched by a list or range rule.
 

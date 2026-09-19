@@ -24,6 +24,15 @@ Default: **`6432`**
 !!! note "Requires restart"
     This setting cannot be changed at runtime.
 
+### `listen_backlog`
+
+Maximum number of pending client connections waiting to be accepted on the TCP socket. Increase this to accommodate many clients reconnecting at once. On Linux, the effective value is capped by `net.core.somaxconn`, so increase that limit as well.
+
+!!! note "Requires restart"
+    This setting cannot be changed at runtime.
+
+Default: **`1_024`**
+
 ### `workers`
 
 Number of Tokio threads to spawn at pooler startup. In multi-core systems, the recommended setting is two (2) per
@@ -34,12 +43,21 @@ Default: **`2`**
 !!! note "Requires restart"
     This setting cannot be changed at runtime.
 
+### `background_workers`
+
+Maximum number of background threads used to offload blocking or CPU-intensive tasks, like SCRAM authentication. Set to `0` (default) to run this on the runtime workers instead.
+
+!!! note "Requires restart"
+    The background thread limit is set at startup.
+
+Default: **`0`** (offloading disabled)
+
 ### `default_pool_size`
 
 Default maximum number of server connections per database pool. The pooler will not open more than this many PostgreSQL database connections when serving clients.
 
 !!! note "Recommendation"
-    We strongly recommend keeping this value well below the supported connections of the backend database(s) to allow connections for maintenance in high load scenarios.
+    It's recommended to keep this value below the supported connections of the backend database(s) to allow connections for maintenance in high load scenarios.
 
 Default: **`10`**
 
@@ -49,7 +67,6 @@ Default minimum number of connections per database pool to keep open at all time
 open minimizes cold start time when clients connect to the pooler for the first time.
 
 Default: **`1`**
-
 
 ### `pooler_mode`
 
@@ -61,10 +78,9 @@ Available options:
 - `transaction` (default)
 - `statement`
 
-
 See [transaction mode](../../features/connection-pooler/transaction-mode.md) and [session mode](../../features/connection-pooler/session-mode.md) for more details on each mode.
 
-Default:  **`transaction`**
+Default: **`transaction`**
 
 ## TLS
 
@@ -100,15 +116,28 @@ Default: **`prefer`**
 
 Available options are:
 
-* `none` (disable TLS)
-* `prefer` (no certificate validation)
-* `verify_ca` (validate certificate only)
-* `verify_full` (validate certificate _and_ matching hostname)
+- `none` (disable TLS)
+- `prefer` (no certificate validation)
+- `verify_ca` (validate certificate only)
+- `verify_full` (validate certificate _and_ matching hostname)
 
 ### `tls_server_ca_certificate`
 
 Path to a certificate bundle used to validate the server certificate on TLS connection creation. Used in conjunction with `verify_ca` or `verify_full` in [`tls_verify`](#tls_verify).
 
+### `tls_server_certificate`
+
+Path to the PEM client certificate PgDog presents when connecting to PostgreSQL servers that require mutual TLS (mTLS). Set [`tls_server_private_key`](#tls_server_private_key) as well.
+
+Individual `[[databases]]` entries can override the certificate and private key.
+
+Default: **none** (no client certificate presented to PostgreSQL)
+
+### `tls_server_private_key`
+
+Path to the PEM private key for [`tls_server_certificate`](#tls_server_certificate). Both this and `tls_server_certificate` settings must be provided together.
+
+Default: **none**
 
 ## Healthchecks
 
@@ -141,6 +170,14 @@ Maximum amount of time to wait for a healthcheck query to complete.
 
 Default: **`5_000`** (5s)
 
+### `require_healthcheck_on_discovery`
+
+Require newly added load balancer targets to pass a healthcheck before they can serve queries. This prevents traffic from reaching a newly discovered server before PgDog has checked its health.
+
+This setting should be enabled when using the [autodiscovery](../../enterprise_edition/autodiscovery.md) feature.
+
+Default: **`false`** (disabled)
+
 ### `connection_recovery`
 
 Controls if server connections are recovered or dropped if a client abruptly disconnects.
@@ -161,7 +198,6 @@ Available options:
 
 - `recover`
 - `drop` (default)
-
 
 ## Timeouts
 
@@ -279,9 +315,9 @@ Default: **`0`** (no jitter)
 
 Which strategy to use for load balancing read queries. See [load balancer](../../features/load-balancer/index.md) for more details. Available options are:
 
-* `random`
-* `least_active_connections`
-* `round_robin`
+- `random`
+- `least_active_connections`
+- `round_robin`
 
 Default: **`random`**
 
@@ -321,8 +357,16 @@ Enable load balancer [HTTP health checks](../../features/load-balancer/healthche
 
 Default: **none** (disabled)
 
-
 ## Monitoring
+
+### `openmetrics_host`
+
+IP address of the local interface on which the OpenMetrics HTTP endpoint listens. The endpoint is enabled by setting [`openmetrics_port`](#openmetrics_port).
+
+!!! note "Requires restart"
+    This setting cannot be changed at runtime.
+
+Default: **`0.0.0.0`** (all interfaces)
 
 ### `openmetrics_port`
 
@@ -370,12 +414,12 @@ Default: **`disabled`**
 
 Controls which prepared statement protocols PgDog rewrites for its global cache.
 
-| Setting | Extended named | Extended anonymous | Simple `PREPARE`/`EXECUTE` | Notes |
-|---|---|---|---|---|
-| `disabled` | no | no | no | Statements are forwarded as-is with no rewriting. |
-| `extended` | yes | no | no | Default. Rewrites named extended-protocol statements (`Parse`/`Bind`/`Execute`). |
-| `extended_anonymous` | yes | yes | no | Also rewrites unnamed (anonymous) extended-protocol statements. |
-| `full` | yes | no | yes | Superset of `extended`. Also rewrites simple-protocol `PREPARE`/`EXECUTE`. Requires parsing every query; higher CPU cost. |
+| Setting              | Extended named | Extended anonymous | Simple `PREPARE`/`EXECUTE` | Notes                                                                                                                     |
+| -------------------- | -------------- | ------------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `disabled`           | no             | no                 | no                         | Statements are forwarded as-is with no rewriting.                                                                         |
+| `extended`           | yes            | no                 | no                         | Default. Rewrites named extended-protocol statements (`Parse`/`Bind`/`Execute`).                                          |
+| `extended_anonymous` | yes            | yes                | no                         | Also rewrites unnamed (anonymous) extended-protocol statements.                                                           |
+| `full`               | yes            | no                 | yes                        | Superset of `extended`. Also rewrites simple-protocol `PREPARE`/`EXECUTE`. Requires parsing every query; higher CPU cost. |
 
 Default: **`extended`**
 
@@ -386,6 +430,28 @@ and replaced with the newest one. Additionally, any unused statements in the [gl
 limit will be removed.
 
 Default: **`none`** (unlimited)
+
+### `prepared_statements_ttl`
+
+Maximum time, in milliseconds, a prepared statement may remain prepared on a server connection.
+
+Expired statements are closed and prepared again when used, allowing PostgreSQL to replace stale execution plans.
+
+Omit this setting or set it to `0` to disable expiration.
+
+Expiration times are spread out by [`prepared_statements_ttl_jitter`](#prepared_statements_ttl_jitter).
+
+Default: **none** (disabled)
+
+### `prepared_statements_ttl_jitter`
+
+Maximum random adjustment, in milliseconds, to [`prepared_statements_ttl`](#prepared_statements_ttl).
+
+Each statement receives an expiration time between `ttl - jitter` and `ttl + jitter` when it is prepared.
+
+The effective jitter is capped at `ttl - 1` millisecond. Set to `0` to disable jitter. This setting has no effect when statement expiration is disabled.
+
+Default: **`30_000`** (30 seconds)
 
 ## Pub/sub
 
@@ -528,6 +594,20 @@ If turned on, queries touching [omnisharded](../../features/sharding/omnishards.
 
 Default: **`false`**
 
+### `sharding_lookup_cache_size`
+
+Maximum size, in bytes, of the sharding key lookup cache per database cluster. The cache stores results of `lookup_query` configured in `[[sharded_tables]]`.
+
+When the cache fills, the least recently used entries are evicted. Configuration reloads clear the cache.
+
+Default: **`67_108_864`** (64 MiB)
+
+### `sharding_lookup_timeout`
+
+Maximum time, in milliseconds, a sharding key `lookup_query` may run. If it times out, the statement waiting for that lookup fails.
+
+Default: **`5_000`** (5 seconds)
+
 ### `resharding_copy_format`
 
 Which format to use for `COPY` statements during [resharding](../../features/sharding/resharding/index.md).
@@ -586,7 +666,7 @@ Controls whether PgDog loads the database schema at startup for query routing.
 Available options:
 
 - `on`: always load schema on startup
-- `off`:  disable loading schema
+- `off`: disable loading schema
 - `auto` (default): load schema if number of database shards is greater than 1
 
 Default: **`auto`**
@@ -692,6 +772,28 @@ Default: **`0`** (disabled)
 Number of identical log messages allowed within [`log_dedup_window`](#log_dedup_window) before further duplicates are suppressed. Set to `0` to disable throttling.
 
 Default: **`0`** (disabled)
+
+### `query_log_stdout`
+
+Log client SQL at `INFO` level. Query text is limited by [`log_query_sample_length`](#log_query_sample_length), and control characters are sanitized to keep each entry on one line.
+
+Default: **`false`** (disabled)
+
+### `log_min_duration_parse`
+
+Minimum query parsing duration, in milliseconds, that triggers a `WARN` log with a sample of the query text.
+
+This measures PgDog SQL parser speed, not PostgreSQL execution time.
+
+A value of `0` logs every query parser event.
+
+Default: **none** (disabled)
+
+### `log_query_sample_length`
+
+Maximum number of query-text characters included in query log samples, including slow-parse and oversized-query messages.
+
+Default: **`1_000`** characters
 
 ### `query_size_limit`
 

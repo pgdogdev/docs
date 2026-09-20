@@ -69,5 +69,5 @@ This can be disabled with configuration:
 
 ```toml
 [general]
-system_catalogs_omnisharded = false
+system_catalogs = "sharded" # omnishraded_sticky (default), omnisharded
 ```

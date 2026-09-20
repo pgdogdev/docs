@@ -169,7 +169,7 @@ To configure either one, add a `mapping` to the table's `[[sharded_tables]]` ent
     shardedTables:
       - database: prod
         column: tenant_id
-        mappings:
+        mapping:
           - values: [1, 2, 3, 4, 5]
             shard: 0
           - values: [6, 7, 8]
@@ -206,7 +206,7 @@ To configure either one, add a `mapping` to the table's `[[sharded_tables]]` ent
     shardedTables:
       - database: prod
         column: tenant_id
-        mappings:
+        mapping:
           - start: 1
             end : 5
             shard: 0

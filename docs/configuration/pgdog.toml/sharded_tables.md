@@ -217,11 +217,11 @@ To configure either one, add a `mapping` to the table's `[[sharded_tables]]` ent
 
 !!! note "Configuration format"
 
-    If configuring `pgdog.toml` directly, make sure to specify the `mapping` entries directly below the table they are referring to
+    If configuring `pgdog.toml` directly, make sure to specify the `mapping` entries directly below the table they are referring to.
 
 ### Mapping fields
 
-Each rule has a target `shard` plus the fields that define which values it matches.
+Each rule has a target `shard` and the fields that define which values it matches.
 
 #### `values`
 

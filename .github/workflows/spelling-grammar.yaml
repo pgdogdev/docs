@@ -1,0 +1,50 @@
+name: Spelling and grammar
+
+on:
+    pull_request:
+        branches: [main]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: spelling-grammar-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: Checkout PR
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.pull_request.head.sha }}
+                  fetch-depth: 0
+                  persist-credentials: false
+
+            - name: Prepare PR diff
+              id: diff
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+                  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+              run: bash .github/spelling-grammar/prepare.sh
+
+            - name: Check spelling and grammar
+              if: steps.diff.outputs.changed == 'true'
+              id: codex
+              uses: openai/codex-action@v1
+              with:
+                  openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+                  sandbox: read-only
+                  prompt-file: ${{ runner.temp }}/grammar-prompt.txt
+                  codex-args: '["--output-schema", "${{ github.workspace }}/.github/spelling-grammar/schema.json"]'
+
+            - name: Report suggested fixes
+              if: steps.diff.outputs.changed == 'true'
+              uses: actions/github-script@v7
+              env:
+                  CODEX_RESULT: ${{ steps.codex.outputs.final-message }}
+              with:
+                  script: |
+                      await require('./.github/spelling-grammar/report.cjs')({ core });

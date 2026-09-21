@@ -1,11 +1,19 @@
+---
+icon: material/counter
+---
+
 # Global sequences
+
+!!! note "New feature"
+
+    This feature is new and experimental. Make sure to test it before deploying to production.
 
 The open source edition of PgDog can generate unique, `BIGINT` primary keys in two ways:
 
-1. [Timestmap-based unique ID](../../features/sharding/unique-ids.md)
-2. [Sharded sequences](../../features/sharding/sequences.md)
+1. [Timestamp-based unique ID](../features/sharding/unique-ids.md)
+2. [Sharded sequences](../features/sharding/sequences.md)
 
-However, both methods produce gaps in the numbers, while the [unique ID](../../features/sharding/unique-ids.md) generate very large 64-bit numbers, which may not work with all applications, e.g., JavaScript apps that pass identifiers directly.
+However, both methods produce gaps in the numbers, while the [unique ID](../features/sharding/unique-ids.md) generates very large 64-bit numbers, which may not work with all applications, e.g., JavaScript apps that pass identifiers directly.
 
 Global sequences are powered by [Raft](control_plane/ha.md) and are guaranteed to produce sequential integers, starting at 1, just like regular PostgreSQL sequences.
 
@@ -13,9 +21,9 @@ Global sequences are powered by [Raft](control_plane/ha.md) and are guaranteed t
 
 This feature requires PgDog to be connected to the [control plane](control_plane/index.md). Once configured, the following functions will begin to work automatically:
 
-| Function              | Description                                    |
-| --------------------- | ---------------------------------------------- |
-| `pgdog.nextval(name)` | Return an integer for the given sequence name. |
+| Function              | Description                                                            |
+| --------------------- | ---------------------------------------------------------------------- |
+| `pgdog.nextval(name)` | Return a monotonically increasing integer for the given sequence name. |
 
 === "Example"
 
@@ -33,7 +41,7 @@ This feature requires PgDog to be connected to the [control plane](control_plane
 
 ### Usage
 
-The sequence functions can be called in any query, including INSERT, UPDATE, and DELETE statements. The sequence values can also be automatically injected into INSERT queries targetting [omnisharded](../../features/sharding/omnishards.md) tables:
+The sequence functions can be called in any query, including INSERT, UPDATE, and DELETE statements. The sequence values can also be automatically injected into INSERT queries targeting [omnisharded](../features/sharding/omnishards.md) tables:
 
 === "pgdog.toml"
 
@@ -67,4 +75,6 @@ The name of the sequence is automatically derived from the table and column name
 
 All sequence values are stored in the [Raft](control_plane/ha.md) log, which makes them durable, just like PostgreSQL sequences. For this reason, enabling Raft in the control plane is required for this feature to work.
 
-Due to their distributed and durable nature, global sequences are slower to generate numbers that [Unique ID] and [sharded sequences], and should be used for infrequent writes into tables that otherwise would not be able to support `BIGINT` numbers.
+#### Performance
+
+Due to their distributed and durable nature, global sequences are slower to generate numbers than [Unique ID](../features/sharding/unique-ids.md) and [sharded sequences](../features/sharding/sequences.md), and should be used for infrequent writes into tables that otherwise would not be able to support `BIGINT` numbers.

@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "fixes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["fixes"],
+  "additionalProperties": false
+}

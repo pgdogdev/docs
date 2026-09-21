@@ -34,9 +34,10 @@ This feature requires PgDog to be connected to the [control plane](control_plane
 === "Output"
 
     ```
-    id
-    -------------
-    1
+     id
+    ----
+      1
+    (1 row)
     ```
 
 ### Usage

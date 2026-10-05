@@ -1,3 +1,7 @@
+---
+icon: material/microsoft-azure
+---
+
 # Azure Workload Identity
 
 PgDog supports using temporary credentials provided by Azure Workload Identity to connect to PostgreSQL running on Azure. This uses the [Azure SDK](https://github.com/Azure/azure-sdk-for-rust) and supports fetching credentials from the environment.

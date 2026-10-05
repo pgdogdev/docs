@@ -1,3 +1,7 @@
+---
+icon: material/form-textbox-password
+---
+
 # Password authentication
 
 Since PostgreSQL 14, `scram-sha-256` is widely used to encrypt passwords. PgDog supports this algorithm for both client and server connections. When enabled, applications connecting to PgDog must provide a username and password, either configured in [`users.toml`](../../configuration/users.toml/users.md) or via [passthrough](#passthrough-authentication) authentication.
@@ -50,7 +54,7 @@ PgDog supports multiple password encryption algorithms commonly used by modern P
 
     The SCRAM-SHA-256 algorithm is computationally expensive and will use a considerable amount of CPU time. This is by design, since it makes passwords difficult to brute-force. However, if your application is frequently creating new connections to the database, like serverless apps running on Vercel, Cloudflare workers, etc., this could also have a latency impact.
 
-    If your application is affected by this, consider enabling [TLS](tls.md) and using the `plain` authentication method instead. Modern CPUs implement TLS algorithms in hardware which makes them efficient and fast.
+    If your application is affected by this, consider enabling [TLS](../tls.md) and using the `plain` authentication method instead. Modern CPUs implement TLS algorithms in hardware which makes them efficient and fast.
 
 ### Overriding database credentials
 
@@ -82,7 +86,7 @@ Applications connecting to PgDog will use the `user_one` user, meanwhile PgDog w
 
 ### Securing passwords
 
-If you're using our [Helm chart](/installation.md), `users.toml` will be automatically stored as a `Secret`.
+If you're using our [Helm chart](../../installation.md), `users.toml` will be automatically stored as a `Secret`.
 
 If you're using GitOps tools, e.g., ArgoCD, you can avoid exposing passwords in version control by using the `ExternalSecret` operator, which can store the contents of `users.toml` in a supported SecretStore, e.g., AWS Secrets Manager:
 
@@ -121,7 +125,7 @@ Passthrough authentication is **disabled** by default and can be enabled with co
 
 Since PgDog doesn't store the server password anymore, using passthrough authentication will require clients to send passwords in plain text. Therefore, PgDog will automatically change the `auth_method` to `plain` and ignore the setting configured in `pgdog.toml`.
 
-When a client connects to PgDog for the first time, it will create a connection pool for the database/user pair and the provided password. The database specified by the client must still exist in [`pgdog.toml`](../configuration/pgdog.toml/databases.md).
+When a client connects to PgDog for the first time, it will create a connection pool for the database/user pair and the provided password. The database specified by the client must still exist in [`pgdog.toml`](../../configuration/pgdog.toml/databases.md).
 
 #### Configuration updates
 
@@ -129,7 +133,7 @@ When configuration is changed and reloaded, connection pools created with passth
 
 ### Security
 
-Sending passwords in plain text over unencrypted connections is not great, even if PgDog and Postgres are on the same local network. For this reason, `passthrough_auth = "enabled"` will only work if PgDog is configured to use [TLS encryption](tls.md).
+Sending passwords in plain text over unencrypted connections is not great, even if PgDog and Postgres are on the same local network. For this reason, `passthrough_auth = "enabled"` will only work if PgDog is configured to use [TLS encryption](../tls.md).
 
 If you don't want to set up TLS (it has some impact on latency), you can override this behavior and send passwords via plain text and an unencrypted connection:
 
@@ -171,7 +175,7 @@ When a client connects with a different password to what's currently stored in P
 
 #### Plaintext connections
 
-If passthrough authentication is used without [TLS](tls.md), set it to `"enabled_plain_allow_change"` instead:
+If passthrough authentication is used without [TLS](../tls.md), set it to `"enabled_plain_allow_change"` instead:
 
 === "pgdog.toml"
 

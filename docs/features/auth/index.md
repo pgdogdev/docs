@@ -32,5 +32,5 @@ The following table summarizes the current level of support for client and serve
     ("Configuring users", "/features/auth/configuration/", "Configure users with authentication options and other settings."),
     ("Password authentication", "/features/auth/password/", "Configure password authentication with SCRAM and other support algorithms."),
     ("RDS IAM", "/features/auth/rds-iam/", "Passwordless authentication to RDS PostgreSQL and Aurora databases."),
-    ("mTLS", "/features/auth/mtls/", "Passwordless authentication for client and server connenctions."),
+    ("mTLS", "/features/auth/mtls/", "Passwordless authentication for client and server connections."),
 ]) }}

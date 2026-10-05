@@ -1,10 +1,14 @@
+---
+icon: material/aws
+---
+
 # RDS IAM
 
 PgDog supports using temporary credentials from [AWS IAM](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html) and using those to connect to RDS PostgreSQL (and Aurora) instances.
 
 ## Configuration
 
-To use RDS IAM authentication, configure it on each user in [`users.toml`](../configuration/users.toml/users.md), for example:
+To use RDS IAM authentication, configure it on each user in [`users.toml`](../../configuration/users.toml/users.md), for example:
 
 === "users.toml"
 

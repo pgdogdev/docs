@@ -1,3 +1,7 @@
+---
+icon: material/account-cog
+---
+
 # User configuration
 
 By default, client connections will use password authentication encrypted with SCRAM-SHA-256. This method is secure and recommended for production usage.
@@ -19,7 +23,7 @@ PgDog supports using other methods, e.g., `md5`, `plain` and `trust`, which you 
 
 ## Configuring users
 
-The [`users.toml`](../configuration/users.toml/users.md) configuration file follows a TOML list structure. To allow a user to connect to PgDog, add a `[[users]]` section with the user name, password and a corresponding database name (located in [`pgdog.toml`](../configuration/pgdog.toml/databases.md)) to `users.toml`, for example:
+The [`users.toml`](../../configuration/users.toml/users.md) configuration file follows a TOML list structure. To allow a user to connect to PgDog, add a `[[users]]` section with the user name, password and a corresponding database name (located in [`pgdog.toml`](../../configuration/pgdog.toml/databases.md)) to `users.toml`, for example:
 
 === "users.toml"
 
@@ -105,11 +109,11 @@ The following settings are supported:
 | `pooler_mode`            | `pooler_mode`            | Transaction or session pooling mode.                               |
 | `pool_size`              | `default_pool_size`      | Size of the users connection pool.                                 |
 | `min_pool_size`          | `min_pool_size`          | Minimum number of idle connections in the users pool.              |
-| `two_phase_commit`       | `two_phase_commit`       | Enable/disable [two-phase commit](2pc.md) for this user.           |
-| `two_phase_commit_auto`  | `two_phase_commit_auto`  | Enable/disable [automatic](2pc.md) two-phase-commit for this user. |
+| `two_phase_commit`       | `two_phase_commit`       | Enable/disable [two-phase commit](../sharding/2pc/index.md) for this user.           |
+| `two_phase_commit_auto`  | `two_phase_commit_auto`  | Enable/disable [automatic](../sharding/2pc/index.md) two-phase-commit for this user. |
 | `server_lifetime`        | `server_lifetime`        | Maximum connection age for this user.                              |
 | `server_lifetime_jitter` | `server_lifetime_jitter` | Jitter added to `server_lifetime` for this user.                   |
-| `cross_shard_disabled`   | `cross_shard_disabled`   | Disable [cross-shard](cross-shard/index.md) queries for this user. |
+| `cross_shard_disabled`   | `cross_shard_disabled`   | Disable [cross-shard](../sharding/cross-shard-queries/index.md) queries for this user. |
 
 ### User-only settings
 

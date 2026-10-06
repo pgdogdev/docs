@@ -152,7 +152,7 @@ If you don't want to set up TLS (it has some impact on latency), you can overrid
 
 ### Changing passwords
 
-Connection pools created dynamically with passthrough authentication will have a static password. If that password is changed inside the server (e.g., by running `ALTER USER [...] PASSWORD` command), PgDog will no longer be able to connect to the database. To change the password in PgDog without restarting the proxy, you can configure the passthrough auth passwords to be changeable:
+Connection pools created dynamically with passthrough authentication will have a static password. If that password is changed inside the server (e.g., by running the `ALTER USER [...] PASSWORD` command), PgDog will no longer be able to connect to the database. To change the password in PgDog without restarting the proxy, you can configure the passthrough auth passwords to be changeable:
 
 === "pgdog.toml"
 
@@ -190,7 +190,7 @@ If passthrough authentication is used without [TLS](../tls.md), set it to `"enab
     passthroughAuth: enabled_plain_allow_change
     ```
 
-## Passwords rotation
+## Password rotation
 
 When using passwords, it's common practice to change passwords occasionally to protect the database against unauthorized access.
 

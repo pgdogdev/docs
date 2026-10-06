@@ -40,7 +40,7 @@ Client (application) to PgDog mutual TLS is configured by enabling [TLS](../tls.
 | `tls_client_ca_certificate` | Path to the CA (certificate authority) certificate that signed the certificates the client provides to PgDog upon connecting. |
 | `tls_client_required`       | Rejects any application connections that don't use TLS.                                                                       |
 
-The client CA certificate can be self-signed, i.e., the clients can pass it directly when connecting or it can be used to sign other certificates. It can also be an intermediate, which allows to build chains of trust without exposing your root certificate.
+The client CA certificate can be self-signed, i.e., the clients can pass it directly when connecting or it can be used to sign other certificates. It can also be an intermediate, which allows you to build chains of trust without exposing your root certificate.
 
 ### Users
 
@@ -166,6 +166,7 @@ Much like [client mTLS](#client-mtls), PgDog can authenticate itself when connec
 === "pgdog.toml"
 
     ```toml
+    [general]
     tls_verify = "verify_full"
     tls_server_ca_certificate = "/path/to/ca/cert.pem"
     tls_server_certificate = "/path/to/cert.pem"
@@ -175,7 +176,7 @@ Much like [client mTLS](#client-mtls), PgDog can authenticate itself when connec
 === "Helm chart"
 
     ```yaml
-    tls_verify: verify_full
+    tlsVerify: verify_full
     tlsServerCaCertificate: /path/to/ca/cert.pem
     tlsServerCertificate: /path/to/cert.pem
     tlsServerPrivateKey: /path/to/key.pem

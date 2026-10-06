@@ -192,11 +192,11 @@ If passthrough authentication is used without [TLS](../tls.md), set it to `"enab
 
 ## Password rotation
 
-When using passwords, it's common practice to change passwords occasionally to protect the database against unauthorized access.
+When using passwords, it's common practice to change them occasionally to protect the database against unauthorized access.
 
-PostgreSQL password rotation has been a problem for a while, since it typically requires downtime in order to change the password across your entire stack.
+PostgreSQL password rotation has been a problem for some time because it typically requires downtime in order to change the password across your entire stack.
 
-PgDog makes it somewhat easier by allowing _multiple_ passwords to be specified for any entry in `users.toml`, for example:
+PgDog makes it easier by allowing _multiple_ passwords to be specified for any entry in `users.toml`, for example:
 
 === "pgdog.toml"
 
@@ -218,4 +218,4 @@ PgDog makes it somewhat easier by allowing _multiple_ passwords to be specified 
 
 PgDog will accept connections from applications using all passwords specified in `passwords` and will attempt to connect to Postgres until a password is accepted.
 
-Once the password is successfully rotated everywhere, the old entry can be removed from the configuration, without downtime. This works for SCRAM, md5 and plaintext authentication algorithms, so no additional configuration is required for this feature to work.
+Once the password is successfully rotated everywhere, the old entry can be removed from the configuration without downtime. This works for SCRAM, MD5 and plaintext authentication algorithms and no additional database or application changes are required.

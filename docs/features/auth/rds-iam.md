@@ -84,6 +84,6 @@ In order for this to work correctly, make sure the IAM role used to deploy PgDog
 ## Read more
 
 {{ next_steps_links([
-    ("TLS", "/features/tls/", "Configure encrypted connections applications connecting to PgDog and PgDog's connections to the database."),
+    ("TLS", "/features/tls/", "Configure encrypted connections for applications connecting to PgDog and PgDog's connections to the database."),
     ("mTLS", "/features/auth/mtls/", "Passwordless authentication for application connections to PgDog."),
 ]) }}

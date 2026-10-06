@@ -8,7 +8,7 @@ PostgreSQL servers support many authentication mechanisms. PgDog supports a subs
 
 Additionally, PgDog supports some non-standard algorithms commonly used in the industry, like RDS IAM, Azure Identity, and others. This makes it relatively easy to deploy to a cloud environment without affecting security.
 
-## Supported authentication
+## Supported methods
 
 The following table summarizes the current level of support for client and server connection authentication methods:
 
@@ -30,7 +30,7 @@ The following table summarizes the current level of support for client and serve
 
 {{ next_steps_links([
     ("Configuring users", "/features/auth/configuration/", "Configure users with authentication options and other settings."),
-    ("Password authentication", "/features/auth/password/", "Configure password authentication with SCRAM and other support algorithms."),
+    ("Password authentication", "/features/auth/password/", "Configure password authentication with SCRAM and other supported algorithms."),
     ("RDS IAM", "/features/auth/rds-iam/", "Passwordless authentication to RDS PostgreSQL and Aurora databases."),
     ("mTLS", "/features/auth/mtls/", "Passwordless authentication for client and server connections."),
 ]) }}

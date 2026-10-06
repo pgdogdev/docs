@@ -4,7 +4,7 @@ icon: material/form-textbox-password
 
 # Password authentication
 
-Since PostgreSQL 14, `scram-sha-256` is widely used to encrypt passwords. PgDog supports this algorithm for both client and server connections. When enabled, applications connecting to PgDog must provide a username and password, either configured in [`users.toml`](../../configuration/users.toml/users.md) or via [passthrough](#passthrough-authentication) authentication.
+Since PostgreSQL 14, `scram-sha-256` is widely used to encrypt passwords. PgDog supports this algorithm for both client and server connections. When enabled, applications connecting to PgDog must provide a username and password, either configured in [`users.toml`](../../configuration/users.toml/users.md), or via [passthrough](#passthrough-authentication) authentication.
 
 ## Configuration
 
@@ -82,7 +82,7 @@ PgDog can connect to Postgres using different users and/or passwords than the ap
         serverPassword: different-secret
     ```
 
-Applications connecting to PgDog will use the `user_one` user, meanwhile PgDog will connect to Postgres using the `postgres` user and a different password. Any combinations of these settings are supported, e.g., different passwords and same username, or same username and different passwords.
+Applications connecting to PgDog will use the `user_one` user; meanwhile PgDog will connect to Postgres using the `postgres` user and a different password. Any combinations of these settings are supported, e.g., different passwords and same username, or same username and different passwords.
 
 ### Securing passwords
 

@@ -5,3 +5,4 @@ nav:
   - 'rds-iam.md'
   - 'mtls.md'
   - '...'
+title: Authentication

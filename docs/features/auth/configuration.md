@@ -104,15 +104,15 @@ PgDog supports setting user-specific options in `users.toml`. Some settings are 
 
 The following settings are supported:
 
-| User setting             | Global setting           | Description                                                        |
-| ------------------------ | ------------------------ | ------------------------------------------------------------------ |
-| `pooler_mode`            | `pooler_mode`            | Transaction or session pooling mode.                               |
-| `pool_size`              | `default_pool_size`      | Size of the users connection pool.                                 |
-| `min_pool_size`          | `min_pool_size`          | Minimum number of idle connections in the users pool.              |
-| `two_phase_commit`       | `two_phase_commit`       | Enable/disable [two-phase commit](../sharding/2pc/index.md) for this user.           |
-| `two_phase_commit_auto`  | `two_phase_commit_auto`  | Enable/disable [automatic](../sharding/2pc/index.md) two-phase-commit for this user. |
-| `server_lifetime`        | `server_lifetime`        | Maximum connection age for this user.                              |
-| `server_lifetime_jitter` | `server_lifetime_jitter` | Jitter added to `server_lifetime` for this user.                   |
+| User setting             | Global setting           | Description                                                                            |
+| ------------------------ | ------------------------ | -------------------------------------------------------------------------------------- |
+| `pooler_mode`            | `pooler_mode`            | Transaction or session pooling mode.                                                   |
+| `pool_size`              | `default_pool_size`      | Size of the user's connection pool.                                                    |
+| `min_pool_size`          | `min_pool_size`          | Minimum number of idle connections in the user's pool.                                 |
+| `two_phase_commit`       | `two_phase_commit`       | Enable/disable [two-phase commit](../sharding/2pc/index.md) for this user.             |
+| `two_phase_commit_auto`  | `two_phase_commit_auto`  | Enable/disable [automatic](../sharding/2pc/index.md) two-phase-commit for this user.   |
+| `server_lifetime`        | `server_lifetime`        | Maximum connection age for this user.                                                  |
+| `server_lifetime_jitter` | `server_lifetime_jitter` | Jitter added to `server_lifetime` for this user.                                       |
 | `cross_shard_disabled`   | `cross_shard_disabled`   | Disable [cross-shard](../sharding/cross-shard-queries/index.md) queries for this user. |
 
 ### User-only settings
@@ -144,3 +144,11 @@ In addition to overriding `pgdog.toml` defaults, some settings can only be set o
         poolSize: 10
         statementTimeout: 15000
     ```
+
+## Read more
+
+{{ next_steps_links([
+    ("Password authentication", "/features/auth/password/", "Configure password authentication with SCRAM and other supported algorithms."),
+    ("RDS IAM", "/features/auth/rds-iam/", "Passwordless authentication to RDS PostgreSQL and Aurora databases."),
+    ("mTLS", "/features/auth/mtls/", "Passwordless authentication for client and server connections."),
+]) }}

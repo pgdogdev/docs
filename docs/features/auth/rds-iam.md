@@ -4,7 +4,7 @@ icon: material/aws
 
 # RDS IAM
 
-PgDog supports using temporary credentials from [AWS IAM](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html) and using those to connect to RDS PostgreSQL (and Aurora) instances.
+PgDog supports obtaining temporary credentials from [AWS IAM](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html) and using those to connect to RDS PostgreSQL (and Aurora) instances.
 
 ## Configuration
 
@@ -32,7 +32,7 @@ To use RDS IAM authentication, configure it on each user in [`users.toml`](../..
 
 ### How it works
 
-Under the hood, PgDog is using the [AWS RDS SDK](https://docs.rs/aws-sdk-rds/latest/aws_sdk_rds/) to fetch credentials at runtime. The SDK can retrieve temporary credentials from the environment or from the EC2 IAM API. It will use the assigned role to the EC2 instance or Kubernetes pod to connect to RDS.
+Under the hood, PgDog is using the [AWS RDS SDK](https://docs.rs/aws-sdk-rds/latest/aws_sdk_rds/) to fetch credentials at runtime. The SDK can retrieve temporary credentials from the environment or from the EC2 IAM API. It will use the role assigned to the EC2 instance or Kubernetes pod to connect to RDS.
 
 If you're deploying PgDog in [Kubernetes](../../installation.md#kubernetes) using our Helm chart, you can assign the PgDog container an IAM role with the correct permissions, for example:
 
@@ -45,13 +45,13 @@ serviceAccount:
 
 ### Client authentication
 
-RDS IAM authentication is currently only supported for connections between PgDog and PostgreSQL. Clients need to continue using one of supported authentication mechanisms, e.g., [password](password.md) auth.
+RDS IAM authentication is currently only supported for connections between PgDog and PostgreSQL. Clients need to continue using one of the supported authentication mechanisms, e.g., [password](password.md) auth.
 
 To completely avoid using passwords for user authentication, take a look at [mTLS](mtls.md).
 
 ### Multiple roles
 
-PgDog supports assuming a different role for each user in order to connect to RDS. This is common when deploying PgDog across different AWS accounts or regions.
+PgDog supports assuming different roles for each user in order to connect to RDS. This is common when deploying PgDog across different AWS accounts or regions.
 
 For each user in `users.toml`, you can specify its IAM role (and optionally IAM region) as follows:
 
@@ -80,3 +80,10 @@ For each user in `users.toml`, you can specify its IAM role (and optionally IAM 
     ```
 
 In order for this to work correctly, make sure the IAM role used to deploy PgDog has the correct Trust Policy to assume all roles specified in the configuration.
+
+## Read more
+
+{{ next_steps_links([
+    ("TLS", "/features/tls/", "Configure encrypted connections applications connecting to PgDog and PgDog's connections to the database."),
+    ("mTLS", "/features/auth/mtls/", "Passwordless authentication for application connections to PgDog."),
+]) }}

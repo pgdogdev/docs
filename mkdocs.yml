@@ -90,6 +90,7 @@ plugins:
   - macros
   - redirects:
       redirect_maps:
+        "features/authentication.md": "features/auth/index.md"
         "features/healthchecks.md": "features/load-balancer/healthchecks.md"
         "features/sharding/migrations.md": "features/sharding/schema_management/migrations.md"
         "features/sharding/primary-keys.md": "features/sharding/sequences.md"

@@ -52,7 +52,7 @@ services:
 
   # Control plane with Raft
   control:
-    image: ghcr.io/pgdogdev/pgdog-enterprise/control:9b3698eb
+    image: ghcr.io/pgdogdev/pgdog-enterprise/control:v2026-10-09-1459
     ports:
       - "8099:8080"
     environment:
@@ -73,7 +73,7 @@ services:
 
   # The dog!
   pgdog:
-    image: ghcr.io/pgdogdev/pgdog-enterprise:9b3698eb
+    image: ghcr.io/pgdogdev/pgdog-enterprise:v2026-10-09-1459
     command:
       [
         "pgdog",

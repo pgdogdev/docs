@@ -531,7 +531,8 @@ Default: **`true`** (enabled)
 Directory where the [two-phase commit](../../features/sharding/2pc/index.md) write-ahead log is stored.
 
 !!! note "Requires restart"
-This setting cannot be changed at runtime.
+
+    This setting cannot be changed at runtime.
 
 Default: **`./pgdog_wal`**
 

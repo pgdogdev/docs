@@ -22,10 +22,10 @@ docker run ghcr.io/pgdogdev/pgdog:main
 
 ### SemVer
 
-PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run `v0.1.44` like so:
+PgDog follows SemVer, and for each tagged release, a corresponding tag will be available in the Docker repository. For example, you can run `{{ open_source_tag }}` like so:
 
 ```
-docker run ghcr.io/pgdogdev/pgdog:v0.1.44
+docker run ghcr.io/pgdogdev/pgdog:{{ open_source_tag }}
 ```
 
 ### AWS ECS
@@ -155,7 +155,7 @@ Most configuration options have sensible defaults. This makes single-database co
 
 #### [users.toml](configuration/users.toml/users.md)
 
-This config file contains a mapping between databases, users, and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file will not be able to connect:
+This config file contains a mapping between databases, users, and passwords. Unless you configured [passthrough authentication](features/auth/password.md#passthrough-authentication), users not specified in this file will not be able to connect:
 
 === "users.toml"
     ```toml

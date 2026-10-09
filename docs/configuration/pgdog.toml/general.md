@@ -11,6 +11,7 @@ General settings are relevant to the operations of the pooler itself, or apply t
 The IP address of the local network interface PgDog will bind to listen for connections.
 
 !!! note "Requires restart"
+
     This setting cannot be changed at runtime.
 
 Default: **`0.0.0.0`** (all interfaces)
@@ -22,6 +23,7 @@ The TCP port PgDog will bind to listen for connections.
 Default: **`6432`**
 
 !!! note "Requires restart"
+
     This setting cannot be changed at runtime.
 
 ### `listen_backlog`
@@ -29,6 +31,7 @@ Default: **`6432`**
 Maximum number of pending client connections waiting to be accepted on the TCP socket. Increase this to accommodate many clients reconnecting at once. On Linux, the effective value is capped by `net.core.somaxconn`, so increase that limit as well.
 
 !!! note "Requires restart"
+
     This setting cannot be changed at runtime.
 
 Default: **`1_024`**
@@ -41,6 +44,7 @@ virtual CPU. The value `0` means to spawn no threads and use the current thread 
 Default: **`2`**
 
 !!! note "Requires restart"
+
     This setting cannot be changed at runtime.
 
 ### `background_workers`
@@ -48,6 +52,7 @@ Default: **`2`**
 Maximum number of background threads used to offload blocking or CPU-intensive tasks, like SCRAM authentication. Set to `0` (default) to run this on the runtime workers instead.
 
 !!! note "Requires restart"
+
     The background thread limit is set at startup.
 
 Default: **`0`** (offloading disabled)
@@ -57,6 +62,7 @@ Default: **`0`** (offloading disabled)
 Default maximum number of server connections per database pool. The pooler will not open more than this many PostgreSQL database connections when serving clients.
 
 !!! note "Recommendation"
+
     It's recommended to keep this value below the supported connections of the backend database(s) to allow connections for maintenance in high load scenarios.
 
 Default: **`10`**
@@ -364,6 +370,7 @@ Default: **none** (disabled)
 IP address of the local interface on which the OpenMetrics HTTP endpoint listens. The endpoint is enabled by setting [`openmetrics_port`](#openmetrics_port).
 
 !!! note "Requires restart"
+
     This setting cannot be changed at runtime.
 
 Default: **`0.0.0.0`** (all interfaces)
@@ -384,7 +391,7 @@ Default: **none**
 
 ### `auth_type`
 
-What kind of [authentication](../../features/authentication.md) mechanism to use for client connections.
+What kind of [authentication](../../features/auth/index.md) mechanism to use for client connections.
 
 Currently supported:
 
@@ -398,7 +405,7 @@ Default: **`scram`**
 
 ### `passthrough_auth`
 
-Toggle automatic creation of connection pools given the user name, database and password. See [passthrough authentication](../../features/authentication.md#passthrough-authentication).
+Toggle automatic creation of connection pools given the user name, database and password. See [passthrough authentication](../../features/auth/password.md#passthrough-authentication).
 
 Available options are:
 
@@ -407,6 +414,18 @@ Available options are:
 - `enabled_plain`
 
 Default: **`disabled`**
+
+### `passthrough_auth_debounce_delay`
+
+How long, in milliseconds, to reuse a passthrough authentication check result for the same credentials.
+
+Default: **`1_000`** (1s)
+
+### `auth_token_cache_size`
+
+Maximum number of entries in the client token passthrough authentication cache.
+
+Default: **`1_000`**
 
 ## Prepared statements
 
@@ -512,6 +531,7 @@ Default: **`true`** (enabled)
 Directory where the [two-phase commit](../../features/sharding/2pc/index.md) write-ahead log is stored.
 
 !!! note "Requires restart"
+
     This setting cannot be changed at runtime.
 
 Default: **`./pgdog_wal`**
@@ -543,6 +563,7 @@ Default: **`1_000`**
 ### `query_parser_enabled`
 
 !!! warning "Deprecated setting"
+
     This setting is deprecated. Use [`query_parser`](#query_parser) instead.
 
 Force-enable query parsing to take advantage of its features in non-sharded databases, like [advisory locks](../../features/connection-pooler/transaction-mode.md#advisory-locks) or managing [session state](../../features/connection-pooler/transaction-mode.md#session-state).
@@ -625,6 +646,12 @@ How many parallel `COPY` workers to launch during [resharding](../../features/sh
 
 Default: **`1`**
 
+### `resharding_parallel_within_table_copies`
+
+Number of parallel source reads for each table copy during resharding. Increasing this can speed up copies of TOAST-heavy tables.
+
+Default: **`1`**
+
 ### `resharding_copy_retry_max_attempts`
 
 Maximum number of retries for a failed table copy during resharding (per-table). Retries use exponential backoff starting at [`resharding_copy_retry_min_delay`](#resharding_copy_retry_min_delay), doubling each attempt and capped at 32×.
@@ -652,6 +679,7 @@ Default: **`1_000`** (1s)
 ### `reload_schema_on_ddl`
 
 !!! warning
+
     This setting requires [PgDog Enterprise Edition](../../enterprise_edition/index.md) to work as expected. If using the open source edition,
     it will only work with single-node PgDog deployments, e.g., in local development or CI.
 
@@ -773,6 +801,12 @@ Number of identical log messages allowed within [`log_dedup_window`](#log_dedup_
 
 Default: **`0`** (disabled)
 
+### `query_log`
+
+Path to a file where all queries are logged. Logging every query is slow; avoid using this in production.
+
+Default: **none** (disabled)
+
 ### `query_log_stdout`
 
 Log client SQL at `INFO` level. Query text is limited by [`log_query_sample_length`](#log_query_sample_length), and control characters are sanitized to keep each entry on one line.
@@ -800,6 +834,7 @@ Default: **`1_000`** characters
 Maximum size, in bytes, of a query message (`Query` or `Parse`) received from a client. When a message exceeds this size, the action taken depends on [`query_size_limit_action`](#query_size_limit_action). Other protocol messages (e.g. `Bind`, `CopyData`) are not affected.
 
 !!! note
+
     This setting is useful for protecting the query parser from very large SQL texts that could cause excessive CPU or memory usage.
 
 Default: **none** (disabled)

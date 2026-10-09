@@ -31,7 +31,7 @@ These features are required for PgDog to act as a replacement for PgBouncer and/
 | [Prepared statements](features/connection-pooler/prepared-statements.md) | :material-check-circle-outline:  | |
 | [Metrics](features/metrics.md) | :material-check-circle-outline: | Admin database views contain more columns than PgBouncer. |
 | [Encryption](features/tls.md) | :material-check-circle-outline: | |
-| [Authentication](features/authentication.md) | :material-wrench: | Password authentication only. `scram-sha-256`, `md5` are supported. |
+| [Authentication](features/auth/index.md) | :material-wrench: | Password authentication only. `scram-sha-256`, `md5` are supported. |
 
 ## Sharding
 

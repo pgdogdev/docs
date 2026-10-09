@@ -1,14 +1,15 @@
 ---
 icon: material/power-plug
 ---
+
 # Plugins overview
 
 PgDog comes with a powerful plugin system that allows you to customize the query routing behavior. Plugins are written in Rust, compiled into shared libraries, and loaded at runtime.
 
-
 ## Getting started
 
 #### Rust compiler
+
 Our plugins use the newest features of the Rust compiler. Before proceeding, make sure to update yours to the latest version:
 
 ```
@@ -38,7 +39,7 @@ pgdog-plugin = "0.2.0" # make sure to use the version compatible with your PgDog
 This turns the crate into a shared library, exposing its functions using the C ABI, which PgDog will call at runtime.
 
 !!! note
-    The `pgdog-plugin` crate is published on [crates.io](https://crates.io/crates/pgdog-plugin) and is fully documented. You can find our [Rust docs here](https://docsrs.pgdog.dev), including all dependencies like [`pg_query`](https://docsrs.pgdog.dev/pg_query/index.html).
+The `pgdog-plugin` crate is published on [crates.io](https://crates.io/crates/pgdog-plugin) and is fully documented. You can find our [Rust docs here](https://docsrs.pgdog.dev), including all dependencies like [`pg_query`](https://docsrs.pgdog.dev/pg_query/index.html).
 
 ### Writing plugins
 
@@ -64,7 +65,6 @@ This ensures the following requirements are followed:
 
 See [Safety](#safety) section for more info.
 
-
 ## Functions
 
 ### `init`
@@ -72,7 +72,6 @@ See [Safety](#safety) section for more info.
 This function is executed once at startup, when PgDog loads the plugin. It allows you to initialize any
 kind of internal plugin state. Execution of this function is synchronized, so it's safe to include any thread-unsafe
 functions or initialize synchronization primitives, like mutexes.
-
 
 This function has the following signature:
 
@@ -82,7 +81,6 @@ fn init() {
     // Perform any initialization routines here.
 }
 ```
-
 
 ### `route`
 
@@ -119,7 +117,6 @@ use pgdog_plugin::pg_query;
 use pgdog_plugin::prelude::*;
 ```
 
-
 #### Outputs
 
 The plugin is expected to return a [`Route`](https://docsrs.pgdog.dev/pgdog_plugin/context/struct.Route.html). It can pass the following information back to PgDog:
@@ -129,8 +126,6 @@ The plugin is expected to return a [`Route`](https://docsrs.pgdog.dev/pgdog_plug
 - Should the query be blocked from executing
 
 All of these are optional. If you don't return any of these, the plugin doesn't influence the routing decision at all and can be used for logging queries, or some other purpose.
-
-
 
 ### `fini`
 
@@ -154,17 +149,21 @@ Plugins need to be compiled and placed into a folder on your machine where PgDog
 2. Export the plugin's parent directory into the `LD_LIBRARY_PATH` environment variable, provided to PgDog at runtime
 3. Pass the absolute (or relative) path to the plugin in [`pgdog.toml`](../../configuration/pgdog.toml/plugins.md)
 
-!!! note
+!!! note "Performance"
+
     Make sure to compile plugins in release mode for good performance: `cargo build --release`. The plugin's shared library will be in the `target/release/` folder of your Cargo project, e.g., `target/release/libmy_plugin.so`.
 
 You then need to specify which plugins you'd like PgDog to load at runtime:
 
 === "pgdog.toml"
+
     ```toml
     [[plugins]]
     name = "my_plugin"
     ```
+
 === "Helm chart"
+
     ```yaml
     plugins:
       - name: my_plugin
@@ -173,11 +172,14 @@ You then need to specify which plugins you'd like PgDog to load at runtime:
 This can be the name of the library (without the `lib` prefix or the `.so`/`.dylib` extension) or a relative/absolute path to the shared library, for example:
 
 === "pgdog.toml"
+
     ```toml
     [[plugins]]
     name = "/usr/lib/libmy_plugin.so"
     ```
+
 === "Helm chart"
+
     ```yaml
     plugins:
       - name: /usr/lib/libmy_plugin.so
@@ -206,7 +208,7 @@ Whatever Rust compiler version is used to build PgDog itself needs to be used to
 PgDog provides the compiler version used to build it at startup:
 
 ```
-INFO pgdog: 🐕 PgDog v0.1.29 [main@ff3fe3e, pgdog-plugin 0.2.0, rustc 1.93.0 (254b59607 2026-01-19)]
+INFO: 🐕 PgDog Enterprise v0.1.61-v2026-10-09-1459 [main@7fca29d, pgdog-plugin 0.5.0, rustc 1.96.0 (ac68faa20 2026-05-25)]
 ```
 
 #### `pgdog-plugin` compatibility
@@ -216,5 +218,5 @@ To ensure your plugin works correctly with PgDog, the `pgdog-plugin` version use
 You can verify the `pgdog-plugin` version of your plugin by checking the PgDog startup logs:
 
 ```
-INFO pgdog: 🐕 PgDog v0.1.29 [main@ff3fe3e, pgdog-plugin 0.2.0, rustc 1.93.0 (254b59607 2026-01-19)]
+INFO: 🐕 PgDog Enterprise v0.1.61-v2026-10-09-1459 [main@7fca29d, pgdog-plugin 0.5.0, rustc 1.96.0 (ac68faa20 2026-05-25)]
 ```

@@ -19,7 +19,7 @@ All features are configurable to fit your environment and can be toggled on/off.
 | [Sharding](sharding/index.md) | Query routing, data migration and schema management to scale PostgreSQL horizontally. |
 | [Prepared statements](connection-pooler/prepared-statements.md) | Support for Postgres named prepared statements in transaction mode. |
 | [Plugins](plugins/index.md) | Pluggable libraries to add functionality to PgDog at runtime, without recompiling code. |
-| [Authentication](authentication.md) | Support for various PostgreSQL user authentication mechanisms, like SCRAM. |
+| [Authentication](auth/index.md) | Support for various PostgreSQL user authentication mechanisms, like SCRAM. |
 | [Session mode](connection-pooler/session-mode.md) | Compatibility mode with direct PostgreSQL connections. |
 | [Metrics](metrics.md) | Real time reporting, including Prometheus/OpenMetrics and an admin database. |
 | [Mirroring](mirroring.md) | Copy queries from one database to another in the background. |

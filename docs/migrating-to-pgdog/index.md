@@ -8,7 +8,7 @@ PgDog attempts to make the migration from other connection poolers as smooth as 
 
 ## Configuration
 
-PgDog uses the **TOML** language for its [configuration](../configuration/index.md) files. If you're coming from PgBouncer, you'll need to rewrite your configs. We separate user [authentication](../features/authentication.md) (usernames, passwords) from the main settings, so you'll still be able to encrypt passwords in production.
+PgDog uses the **TOML** language for its [configuration](../configuration/index.md) files. If you're coming from PgBouncer, you'll need to rewrite your configs. We separate user [authentication](../features/auth/index.md) (usernames, passwords) from the main settings, so you'll still be able to encrypt passwords in production.
 
 See [migrating from PgBouncer](from-pgbouncer.md) for more info.
 

@@ -156,28 +156,34 @@ Plugins need to be compiled and placed into a folder on your machine where PgDog
 You then need to specify which plugins you'd like PgDog to load at runtime:
 
 === "pgdog.toml"
-`toml
+
+    ```toml
     [[plugins]]
     name = "my_plugin"
-    `
+    ```
+
 === "Helm chart"
-`yaml
+
+    ```yaml
     plugins:
       - name: my_plugin
-    `
+    ```
 
 This can be the name of the library (without the `lib` prefix or the `.so`/`.dylib` extension) or a relative/absolute path to the shared library, for example:
 
 === "pgdog.toml"
-`toml
+
+    ```toml
     [[plugins]]
     name = "/usr/lib/libmy_plugin.so"
-    `
+    ```
+
 === "Helm chart"
-`yaml
+
+    ```yaml
     plugins:
       - name: /usr/lib/libmy_plugin.so
-    `
+    ```
 
 ## Examples
 

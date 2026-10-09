@@ -7,6 +7,11 @@ from mkdocs.structure.files import Files
 
 log = logging.getLogger("mkdocs.plugins.macros")
 
+# Released tag for the open source Docker image. Update this in one place;
+# reference it in docs with {{ open_source_tag }}. Can be overridden at build
+# time with the OPEN_SOURCE_TAG environment variable.
+OPEN_SOURCE_TAG = os.environ.get("OPEN_SOURCE_TAG", "v0.1.61")
+
 # Latest released tag for the Enterprise Docker images. Update this in one
 # place; reference it in docs with {{ enterprise_tag }}. Can be overridden at
 # build time with the ENTERPRISE_TAG environment variable.
@@ -15,6 +20,7 @@ ENTERPRISE_TAG = os.environ.get("ENTERPRISE_TAG", "v2026-10-09-1459")
 
 def define_env(env):
 
+    env.variables["open_source_tag"] = OPEN_SOURCE_TAG
     env.variables["enterprise_tag"] = ENTERPRISE_TAG
 
     def _validate_link(href, page):

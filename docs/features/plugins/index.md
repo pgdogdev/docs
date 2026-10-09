@@ -149,8 +149,9 @@ Plugins need to be compiled and placed into a folder on your machine where PgDog
 2. Export the plugin's parent directory into the `LD_LIBRARY_PATH` environment variable, provided to PgDog at runtime
 3. Pass the absolute (or relative) path to the plugin in [`pgdog.toml`](../../configuration/pgdog.toml/plugins.md)
 
-!!! note
-Make sure to compile plugins in release mode for good performance: `cargo build --release`. The plugin's shared library will be in the `target/release/` folder of your Cargo project, e.g., `target/release/libmy_plugin.so`.
+!!! note "Performance"
+
+    Make sure to compile plugins in release mode for good performance: `cargo build --release`. The plugin's shared library will be in the `target/release/` folder of your Cargo project, e.g., `target/release/libmy_plugin.so`.
 
 You then need to specify which plugins you'd like PgDog to load at runtime:
 

@@ -155,7 +155,7 @@ Most configuration options have sensible defaults. This makes single-database co
 
 #### [users.toml](configuration/users.toml/users.md)
 
-This config file contains a mapping between databases, users, and passwords. Unless you configured [passthrough authentication](features/authentication.md#passthrough-authentication), users not specified in this file will not be able to connect:
+This config file contains a mapping between databases, users, and passwords. Unless you configured [passthrough authentication](features/auth/password.md#passthrough-authentication), users not specified in this file will not be able to connect:
 
 === "users.toml"
     ```toml

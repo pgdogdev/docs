@@ -15,7 +15,7 @@ PgDog aims to be the de facto PostgreSQL proxy and pooler. Below is a feature co
 | [Read/write separation](../features/load-balancer/index.md) | No | Basic support | Advanced support handling edge cases |
 | [Failover](../features/load-balancer/healthchecks.md) | No | :material-check-circle-outline: | :material-check-circle-outline: |
 | [Health checks](../features/load-balancer/healthchecks.md) | No | :material-check-circle-outline:  | :material-check-circle-outline: |
-| [Authentication](../features/authentication.md) | :material-check-circle-outline: | `md5`, `plain` | `scram-sha-256`, `md5`, `plain` |
+| [Authentication](../features/auth/index.md) | :material-check-circle-outline: | `md5`, `plain` | `scram-sha-256`, `md5`, `plain` |
 | [Metrics](../features/metrics.md) | Admin database only | OpenMetrics & admin database | OpenMetrics & admin database |
 | [Mirroring](../features/mirroring.md) | No | Partial support | :material-check-circle-outline: |
 | TLS | :material-check-circle-outline: | :material-check-circle-outline: | :material-check-circle-outline: |

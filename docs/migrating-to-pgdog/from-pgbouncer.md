@@ -188,7 +188,7 @@ Settings that control how clients and server connections authenticate.
 
 | PgBouncer | PgDog | Notes |
 |-|-|-|
-| [`auth_type`](https://www.pgbouncer.org/config.html#auth_type) | [`auth_type`](../configuration/pgdog.toml/general.md#auth_type) | PgDog supports only a subset of [authentication](../features/authentication.md) mechanisms.
+| [`auth_type`](https://www.pgbouncer.org/config.html#auth_type) | [`auth_type`](../configuration/pgdog.toml/general.md#auth_type) | PgDog supports only a subset of [authentication](../features/auth/index.md) mechanisms.
 | [`auth_file`](https://www.pgbouncer.org/config.html#auth_file) | N/A | The path to `users.toml` can be passed in as a CLI argument on startup: `--users <PATH>`. |
 | [`auth_hba_file`](https://www.pgbouncer.org/config.html#auth_hba_file) | N/A | HBA authentication is not currently supported. |
 | [`auth_ident_file`](https://www.pgbouncer.org/config.html#auth_ident_file) | N/A | Same as above. |

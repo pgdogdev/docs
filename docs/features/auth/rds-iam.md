@@ -119,7 +119,7 @@ RDS IAM passthrough auth can be configured in `users.toml`, for example:
         serverAuth: rds_iam
     ```
 
-When IAM passthrough is enabled, there are passwords anywhere in the stack: apps, PgDog and Postgres use temporary credentials.
+When IAM passthrough is enabled, there are no passwords anywhere in the stack: apps, PgDog and Postgres use temporary credentials.
 
 Additionally, you can configure the size of the token cache in `pgdog.toml`:
 
@@ -145,7 +145,7 @@ The cache metrics are exported via [OpenMetrics](../metrics.md) and [OTEL](../me
 | Metric                  | Description                                                                                                                                     |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `token_cache_entries`   | Number of tokens in the cache.                                                                                                                  |
-| `token_cache_evictions` | Number of tokens evicted from the cache. If this is high, the cache is too small or applications are not IAM authentication using it correctly. |
+| `token_cache_evictions` | Number of tokens evicted from the cache. If this is high, the cache is too small or applications are not using IAM authentication correctly. |
 | `token_cache_hits`      | Number of times the token an application provided was found in the cache. If this is high, the cache is performing well.                        |
 | `token_cache_misses`    | Number of times PgDog had to connect to RDS to validate a token.                                                                                |
 

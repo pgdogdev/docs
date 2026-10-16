@@ -117,6 +117,12 @@ The name of the PostgreSQL table. Only columns explicitly referencing that table
 
 The name must not contain the schema name, just the table name.
 
+### `prefix`
+
+Treat `name` as a prefix, e.g. `name = "users"` also matches `users_1` and `users_archive`.
+
+Default: `false`
+
 ### `column`
 
 The name of the sharded column.

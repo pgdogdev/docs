@@ -1,3 +1,6 @@
+---
+icon: material/update
+---
 # Upgrading PgDog
 
 PgDog is deployed in front of PostgreSQL. Applications, typically, don't know they are connecting to a proxy. Therefore, PgDog has the same uptime requirements as the database.
@@ -97,19 +100,22 @@ A few examples of ORMs & web frameworks that have this setting (set to 60 second
 
 ## PgDog Helm chart
 
-!!! note "No Kubernetes"
+!!! note "Kubernetes not required"
 
-    You can still achieve the same outcome even if you're not using our [Helm](../installation.md#kubernetes) chart to deploy PgDog.
+    You can still achieve the same outcome even if you're not using our [Helm](../installation.md#kubernetes) chart to deploy PgDog. You'll need to replicate
+    the same behavior using your load balancer (e.g., AWS ELB, if using ECS).
 
 The [Helm](../installation.md#kubernetes) chart exposes three relevant settings:
 
-| Setting                         | Description                                                                                             |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `preStopSleepSeconds`           | Number of seconds to wait before sending `SIGINT` to the PgDog process during shutdown.                 |
-| `shutdownTimeout`               | Number of milliseconds to wait while clients are finishing up active transactions.                      |
-| `terminationGracePeriodSeconds` | Number of seconds to allow graceful shutdown of the PgDog process to complete before sending `SIGKILL`. |
+| Setting                         | Description                                                                                        |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `preStopSleepSeconds`           | Number of seconds to wait before sending `SIGINT` to the PgDog process during shutdown.            |
+| `shutdownTimeout`               | Number of milliseconds to wait while clients are finishing active transactions.                    |
+| `terminationGracePeriodSeconds` | Number of seconds for graceful shutdown of the PgDog process to complete before sending `SIGKILL`. |
 
-In order for graceful shutdown to execute correctly, the maximum connection age in the app's connection pool must be **less than** `preStopSleepSeconds`. If using 60 seconds from the example [above](#connection-pool-configuration), pre-stop waiter should be set to 61 seconds or more:
+### Draining idle clients
+
+In order for graceful shutdown to execute correctly, the maximum connection age in the app's connection pool must be **less than** `preStopSleepSeconds`. If using 60 seconds from the example [above](#connection-pool-configuration), pre-stop waiter should be set to 61 seconds or more, for example:
 
 ```yaml title="values.yaml"
 preStopSleepSeconds: 63
@@ -117,13 +123,15 @@ preStopSleepSeconds: 63
 
 The extra few seconds allow some grace period and for small clock skew between application and PgDog containers.
 
-When the pre-stop timer expires, Kube will send `SIGINT` to PgDog, starting its shutdown sequence, which will wait for any in-flight transactions of connected clients to finish for up to `shutdownTimeout` milliseconds.
+### Draining in-flight transactions
 
-Connection pools don't typically have a configurable setting to enforce maximum transaction time, but Postgres does. To make sure your application doesn't execute long transactions which could span longer than `shutdownTimeout`, set the following setting in your Postgres database:
+When the pre-stop timer expires, Kube will send `SIGINT` to PgDog, starting its shutdown sequence, which will wait for any in-flight transactions of connected clients to finish, for up to `shutdownTimeout` milliseconds.
 
-```sql
-SET transaction_timeout TO '30s';
-```
+Connection pools don't typically have a configurable setting to enforce maximum transaction time, but Postgres does. To make sure your application doesn't execute transactions spanning longer than `shutdownTimeout`, set the following setting in your Postgres database (PG 17 or later required):
+
+| Setting               | Description                                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `transaction_timeout` | Maximum transaction duration, including idle-in-transaction time, before Postgres cancels the transaction and disconnects the client. |
 
 This will make Postgres trigger a recoverable error to your application if their transactions are taking too much time. A corresponding `shutdownTimeout` with a grace period could look like:
 
@@ -131,12 +139,16 @@ This will make Postgres trigger a recoverable error to your application if their
 shutdownTimeout: 33000 # 33 seconds
 ```
 
-Finally, to ensure the PgDog container is terminated if none of these timeouts fire correctly, set the `terminationGracePeriodSeconds` to the total sum of `preStopSleepSeconds` and `shutdownTimeout`, for example:
+The error will be reported to your APM, but the connection pool will also discard and re-create the PgDog connection.
+
+Finally, to ensure the PgDog container is terminated even if none of these timeouts fire correctly, set the `terminationGracePeriodSeconds` to the total sum of `preStopSleepSeconds` and `shutdownTimeout`, with a grace period of its own, for example:
 
 ```yaml title="values.yaml"
 terminationGracePeriodSeconds: 99
 # 63 seconds (pre-stop) + 33 seconds (shutdown timeout) + 3 seconds grace
 ```
+
+### Complete example
 
 The final configuration could look as follows:
 
@@ -148,7 +160,32 @@ The final configuration could look as follows:
     terminationGracePeriodSeconds: 99
     ```
 
-=== "Rails"
+=== "psycopg3 (Python)"
+
+    ```python
+    from psycopg_pool import ConnectionPool
+
+    pool = ConnectionPool(
+        "postgresql://app:password@pgdog:6432/app",
+        max_lifetime=60,  # in seconds
+        kwargs={"options": "-c transaction_timeout=30s"},
+    )
+    ```
+
+=== "SQLAlchemy"
+
+    ```python
+    from sqlalchemy import create_engine
+
+    engine = create_engine(
+        "postgresql+psycopg://app:password@pgdog:6432/app",
+        pool_recycle=60,  # in seconds
+        pool_pre_ping=True,
+        connect_args={"options": "-c transaction_timeout=30s"},
+    )
+    ```
+
+=== "Ruby on Rails"
 
     ```yaml
     production:
@@ -156,4 +193,26 @@ The final configuration could look as follows:
         max_age: 60 # in seconds
         variables:
           transaction_timeout: '30s'
+    ```
+
+=== "pgx (Go)"
+
+    ```go
+    import (
+        "context"
+        "time"
+
+        "github.com/jackc/pgx/v5/pgxpool"
+    )
+
+    func main() {
+        config, err := pgxpool.ParseConfig("postgresql://app:password@pgdog:6432/app")
+        config.MaxConnLifetime = 60 * time.Second
+        config.ConnConfig.RuntimeParams["transaction_timeout"] = "30s"
+
+        pool, err := pgxpool.NewWithConfig(context.Background(), config)
+        defer pool.Close()
+
+        // Run the application using pool.
+    }
     ```

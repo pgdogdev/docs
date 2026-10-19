@@ -130,7 +130,13 @@ Connection pools don't typically have a configurable setting to enforce maximum 
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `transaction_timeout` | Maximum transaction duration, including idle-in-transaction time, before Postgres cancels the transaction and disconnects the client. |
 
-This will make Postgres trigger a recoverable error to your application if their transactions are taking too much time. A corresponding `shutdownTimeout` with a grace period could look like:
+For example:
+
+```sql
+SET transaction_timeout TO '30s';
+```
+
+This will make Postgres trigger a recoverable error to your application if their transactions are taking longer than 30 seconds to complete. A corresponding `shutdownTimeout` with a grace period could look like:
 
 ```yaml title="values.yaml"
 shutdownTimeout: 33000 # 33 seconds

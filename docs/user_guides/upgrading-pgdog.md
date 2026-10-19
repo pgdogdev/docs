@@ -1,6 +1,7 @@
 ---
 icon: material/update
 ---
+
 # Upgrading PgDog
 
 PgDog is deployed in front of PostgreSQL. Applications, typically, don't know they are connecting to a proxy. Therefore, PgDog has the same uptime requirements as the database.
@@ -46,8 +47,6 @@ A few examples of ORMs & web frameworks that have this setting (set to 60 second
     )
     ```
 
-    Keep the pool open for the application's lifetime. Expired connections are replaced when returned to the pool.
-
 === "SQLAlchemy"
 
     Set [`pool_recycle`](https://docs.sqlalchemy.org/en/20/core/pooling.html#setting-pool-recycle) when creating the engine:
@@ -61,8 +60,6 @@ A few examples of ORMs & web frameworks that have this setting (set to 60 second
         pool_pre_ping=True,
     )
     ```
-
-    Reuse the engine across requests. SQLAlchemy replaces expired connections on their next checkout. `pool_pre_ping` also checks for disconnected connections before handing them to the application. Neither setting protects a connection held by a long-running request or transaction.
 
 === "Ruby on Rails"
 

@@ -136,7 +136,7 @@ For example:
 SET transaction_timeout TO '30s';
 ```
 
-This will make Postgres trigger a recoverable error to your application if their transactions are taking longer than 30 seconds to complete. A corresponding `shutdownTimeout` with a grace period could look like:
+This will make Postgres trigger a recoverable error to your application if its transactions are taking longer than 30 seconds to complete. A corresponding `shutdownTimeout` with a grace period could look like:
 
 ```yaml title="values.yaml"
 shutdownTimeout: 33000 # 33 seconds

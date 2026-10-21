@@ -34,8 +34,9 @@ You can connect to the admin database using any PostgreSQL client. It supports c
 
 ## OpenMetrics
 
-[OpenMetrics](https://openmetrics.io/) is a standard for displaying metrics that can be ingested by a multitude of agents, e.g., Datadog, Prometheus, etc. The metrics are shown in a human-readable text format
-and available from an HTTP endpoint.
+[OpenMetrics](https://openmetrics.io/) is a standard for displaying metrics that can be ingested by a multitude of agents, e.g., Datadog, Prometheus, etc. The metrics are shown in a human-readable text format and available from an HTTP endpoint.
+
+We maintain multiple examples of OpenMetrics integrations, including [DataDog](https://github.com/pgdogdev/pgdog/tree/main/examples/datadog) and [Grafana using Prometheus](https://github.com/pgdog/pgdog/tree/main/examples/grafana_prometheus).
 
 ### Configuration
 
@@ -146,9 +147,11 @@ The following metrics are exported via the OpenMetrics endpoint:
 |------------|-------------|------|
 | `clients` | Total number of connected clients. | `gauge` |
 | `cl_waiting` | Clients waiting for a connection from a pool. | `gauge` |
+| `cl_locked` | Clients currently locked to a specific connection. | `gauge` |
 | `sv_active` | Servers currently serving client requests. | `gauge` |
 | `sv_idle` | Servers available for clients to use. | `gauge` |
 | `sv_idle_xact` | Servers currently idle in transaction. | `gauge` |
+| `sv_locked` | Servers currently locked. | `gauge` |
 | `maxwait` | How long the first (oldest) client in the queue has waited (in seconds). | `gauge` |
 | `errors` | Errors that connections in the pool have experienced. | `counter` |
 | `out_of_sync` | Connections that have been returned to the pool in a broken state. | `counter` |

@@ -50,7 +50,7 @@ Since clients re-use prepared statements, this limit isn't enforced for clients:
 Postgres builds an execution plan when a statement is prepared and keeps it for the lifetime of the statement. Since PgDog
 keeps server connections open for a long time, a plan can stay in use long after the data it was built for has changed.
 
-To mitigate this, PgDog can be configured to close statements on server connections after some time. After the statement is closed PgDog will recreate the statement seamlessly when the next client tries to use the same statement again.
+To mitigate this, PgDog can be configured to re-prepare statements on server connections after some time.
 
 To enable TTL, extend `pgdog.toml` with the following [settings](../../configuration/pgdog.toml/general.md#prepared_statements_ttl):
 

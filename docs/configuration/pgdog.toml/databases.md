@@ -99,6 +99,8 @@ Relative weight used when [`load_balancing_strategy`](general.md#load_balancing_
 
 For example, weights of `200` and `100` give the first server approximately twice as much traffic as the second.
 
+Setting this to `0` will effectively disable the server for load balancing, but it will still be used for failover if all other servers are unavailable.
+
 Accepts integers from `0` to `255`. This setting has no effect with other load balancing strategies.
 
 Default: **`255`**

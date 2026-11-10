@@ -82,19 +82,7 @@ If something goes wrong after the traffic is moved to the new (destination) data
 
 For this to work, the original database must remain in the [configuration files](../../../configuration/index.md), so PgDog performs a swap: source becomes destination and destination becomes the source database. This is the equivalent of running `sed s/source/destination/g` (and vice versa) on both `pgdog.toml` and `users.toml` files, making sure the clients don't know the databases have been changed.
 
-The configuration swap happens in memory, but PgDog has the ability to write the new configuration files to disk as well. This is disabled by default, but can be enabled with a setting:
-
-=== "pgdog.toml"
-    ```toml
-    [general]
-    cutover_save_config = true
-    ```
-=== "Helm chart"
-    ```yaml
-    cutoverSaveConfig: true
-    ```
-
-When enabled, PgDog will backup both configuration files, `pgdog.toml` as `pgdog.bak.toml` and `users.toml` as `users.bak.toml`, and save its in-memory configuration to `pgdog.toml` and `users.toml` respectively, so the new cutover configuration persists in case of an error.
+The configuration swap happens in memory.
 
 !!! note "Multi-node deployments"
     If you're running more than one PgDog node, you should consider deploying our [Enterprise Edition](../../../enterprise_edition/index.md), which has support for saving the configuration files on multiple PgDog nodes at the same time.
@@ -167,10 +155,7 @@ To restore traffic to the original cluster, run a `CUTOVER` against the reverse 
 CUTOVER <task_id>;
 ```
 
-This performs the same atomic swap in reverse: the source and destination are swapped back in `pgdog.toml` and `users.toml`, and traffic returns to the original cluster. Because the reverse stream kept the original cluster in sync, no data written to the new cluster is lost. The task's status in `SHOW TASKS` shows `rolling back` while this happens.
-
-!!! note "Restoring the configuration files"
-    The rollback swaps the configuration back in memory (and on disk when [`cutover_save_config`](#swap-the-configuration) is enabled). If you enabled `cutover_save_config`, the configuration as it was before the original cutover is also preserved in the `pgdog.bak.toml` and `users.bak.toml` backups, so you can always restore the previous state by hand.
+This performs the same atomic swap in reverse: the source and destination are swapped back in memory, and traffic returns to the original cluster. Because the reverse stream kept the original cluster in sync, no data written to the new cluster is lost. The task's status in `SHOW TASKS` shows `rolling back` while this happens.
 
 ### Finalizing the migration
 

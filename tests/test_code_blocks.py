@@ -23,7 +23,11 @@ replication = [
 
 def verify(binary):
     for file in glob.glob("docs/**/*.md", recursive=True):
-        skip_toml = file.startswith("docs/enterprise_edition/control_plane/")
+        # Control plane configuration cannot be validated by pgdog configcheck.
+        skip_toml = (
+            file.startswith("docs/enterprise_edition/control_plane/")
+            or file == "docs/enterprise_edition/mcp.md"
+        )
         with open(file, "r") as f:
             content = f.read()
         print(f"Checking {file}")

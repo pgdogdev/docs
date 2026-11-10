@@ -111,14 +111,19 @@ http_headers = { Authorization = "Bearer <TOKEN>" }
 
 ## Tools
 
+!!! info "Tools are read-only"
+
+    All PgDog MCP tools are read-only and don't have any side effects. This makes them pretty safe to use
+    with or without human supervision.
+
 The MCP server comes with four tools:
 
-| Tool                    | Description                                                                                                           |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `pgdog.proxy_instances` | Show an up-to-date list of PgDog instances currently running.                                                            |     |
+| Tool                    | Description                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `pgdog.proxy_instances` | Show an up-to-date list of PgDog instances currently running.                                                             |     |
 | `pgdog.proxy_metrics`   | Fetch real-time PgDog metrics. The tool allows you to filter by database/user, by Kube instance name, and by time window. |
-| `pgdog.proxy_logs`      | Fetch real-time logs from Kube containers running PgDog.                                                              |
-| `pgdog.auth_check`      | A no-op tool that allows you to verify if the harness has the correct Bearer token.                                           |
+| `pgdog.proxy_logs`      | Fetch real-time logs from Kube containers running PgDog.                                                                  |
+| `pgdog.auth_check`      | A no-op tool that allows you to verify if the harness has the correct Bearer token.                                       |
 
 An agent typically doesn't need more instructions to use these tools. For example, a common prompt to debug a production incident could be:
 

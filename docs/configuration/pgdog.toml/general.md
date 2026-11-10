@@ -722,12 +722,6 @@ Replication lag threshold (in bytes) at which PgDog will pause traffic automatic
 
 Default: **`1_000_000`** (1 MiB)
 
-### `cutover_save_config`
-
-Save the swapped configuration to disk after a [traffic cutover](../../features/sharding/resharding/cutover.md#swap-the-configuration). When enabled, PgDog will backup both configuration files as `pgdog.bak.toml` and `users.bak.toml`, and write the new configuration to `pgdog.toml` and `users.toml`.
-
-Default: **`false`** (disabled)
-
 ### `cutover_replication_lag_threshold`
 
 Replication lag (in bytes) that must be reached before PgDog will [swap the configuration](../../features/sharding/resharding/cutover.md#swap-the-configuration) during a cutover.

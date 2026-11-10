@@ -125,7 +125,7 @@ The MCP server comes with four tools:
 | `pgdog.proxy_logs`      | Fetch real-time logs from Kube containers running PgDog.                                                                  |
 | `pgdog.auth_check`      | A no-op tool that allows you to verify if the harness has the correct Bearer token.                                       |
 
-An agent typically doesn't need more instructions to use these tools. For example, a common prompt to debug a production incident could be:
+An agent typically doesn't need special instructions to use these tools. For example, a common prompt to debug a production incident could be:
 
 === "Prompt"
 

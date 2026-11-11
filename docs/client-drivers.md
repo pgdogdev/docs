@@ -10,24 +10,24 @@ Some drivers have known compatibility or performance issues, [documented below](
 
 ## Client drivers
 
-| Driver | Status | Limitations |
-|-|-|-|
-| `psycopg` (Python) | :material-check-circle-outline: | None. |
-| `psycopg2` (Python) | :material-check-circle-outline: | Fully compatible but has some [performance constraints](#psycopg2). |
-| `asyncpg` (Python) | :material-check-circle-outline: | None. |
-| `ruby-pg` (Ruby) | :material-check-circle-outline: | None. |
-| `node-postgres` (Node) | :material-check-circle-outline: | None. |
-| Postgres.js (Node) | :material-check-circle-outline: | None. |
-| Prisma (Node) | :material-check-circle-outline: | Generates a lot of unique prepared statements, consider limiting the [prepared statements cache](#prisma). |
-| Sequelize (Node) | :material-check-circle-outline:  | Uses `node-postgres` under the hood, no limitations. |
-| PDO (PHP) |  :material-check-circle-outline: | None. |
-| SQLx (Rust) |  :material-check-circle-outline: | None. |
-| `tokio_postgres` (Rust) |  :material-check-circle-outline: | None. |
-| `pgx` (Go) |  :material-check-circle-outline: | None. |
-| `lib/pq` (Go) |  :material-check-circle-outline: | None. |
-| `sqlx` (Go) | :material-check-circle-outline:  | Uses `pgx` under the hood, no limitations. |
-| `libpq` (C/C++) | :material-check-circle-outline: | None. |
-| JDBC (Java) | :material-check-circle-outline: | [Manual routing](features/load-balancer/manual-routing.md) requires a bit of [tweaking](#jdbc). |
+| Driver                  | Status                          | Limitations                                                                                                |
+| ----------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `psycopg` (Python)      | :material-check-circle-outline: | None.                                                                                                      |
+| `psycopg2` (Python)     | :material-check-circle-outline: | Fully compatible but has some [performance constraints](#psycopg2).                                        |
+| `asyncpg` (Python)      | :material-check-circle-outline: | None.                                                                                                      |
+| `ruby-pg` (Ruby)        | :material-check-circle-outline: | None.                                                                                                      |
+| `node-postgres` (Node)  | :material-check-circle-outline: | None.                                                                                                      |
+| Postgres.js (Node)      | :material-check-circle-outline: | None.                                                                                                      |
+| Prisma (Node)           | :material-check-circle-outline: | Generates a lot of unique prepared statements, consider limiting the [prepared statements cache](#prisma). |
+| Sequelize (Node)        | :material-check-circle-outline: | Uses `node-postgres` under the hood, no limitations.                                                       |
+| PDO (PHP)               | :material-check-circle-outline: | None.                                                                                                      |
+| SQLx (Rust)             | :material-check-circle-outline: | None.                                                                                                      |
+| `tokio_postgres` (Rust) | :material-check-circle-outline: | None.                                                                                                      |
+| `pgx` (Go)              | :material-check-circle-outline: | None.                                                                                                      |
+| `lib/pq` (Go)           | :material-check-circle-outline: | None.                                                                                                      |
+| `sqlx` (Go)             | :material-check-circle-outline: | Uses `pgx` under the hood, no limitations.                                                                 |
+| `libpq` (C/C++)         | :material-check-circle-outline: | None.                                                                                                      |
+| JDBC (Java)             | :material-check-circle-outline: | [Manual routing](features/load-balancer/manual-routing.md) requires a bit of [tweaking](#jdbc).            |
 
 ## Known issues
 
@@ -48,30 +48,21 @@ Connection conn = DriverManager.getConnection(url, "user", "password");
 
 `psycopg2` doesn't support prepared statements. It will use the simple protocol and inject parameters directly into the query string client-side.
 
-This doesn't cause any query routing issues; however, PgDog can't effectively cache the query syntax tree and has to parse queries _every time_ they are executed. This is computationally expensive. Consider switching to `psycopg` (version 3) or enabling our Rust-native query parser:
-
-=== "pgdog.toml"
-    ```toml
-    [general]
-    query_parser_engine = "pg_query_raw"
-    ```
-=== "Helm chart"
-    ```yaml
-    queryParserEngine: pg_query_raw
-    ```
-
-We benchmarked this to be 5 times faster than normal `pg_query` parsing, which should help.
+This doesn't cause any query routing issues; however, PgDog can't effectively cache the query syntax tree and has to parse queries _every time_ they are executed. This is computationally expensive. Consider switching to `psycopg` (version 3).
 
 ### Prisma
 
 Prisma doesn't correctly use the `IN` clause with arrays, causing it to generate a very large number of unique prepared statements. This is not a big problem, but if left unchecked, can cause heavy memory usage in PgDog. Consider setting a lower prepared statements [cache limit](features/connection-pooler/prepared-statements.md#cache-limit):
 
 === "pgdog.toml"
+
     ```toml
     [general]
     prepared_statements_limit = 1_000
     ```
+
 === "Helm chart"
+
     ```yaml
     preparedStatementsLimit: 1_000
     ```

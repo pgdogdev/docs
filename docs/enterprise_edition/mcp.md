@@ -8,11 +8,11 @@ icon: material/robot
 
     MCP is a new feature. Please test it before deploying to production.
 
-MCP (model context protocol) allows coding agents and harnesses to fetch real time PgDog metrics, logs and deployment information to help debug production incidents or configuration issues.
+MCP (model context protocol) allows coding agents to fetch real time PgDog metrics, logs and deployment information to help debug production incidents or configuration issues.
 
 ## How it works
 
-MCP is an HTTP protocol and most coding harnesses, e.g., Codex, Pi, Claude Code support it out of the box. It's disabled by default, so to enable MCP you need to set the following config in the [control plane](control_plane/index.md):
+MCP is an HTTP protocol and most harnesses, e.g., Codex, Pi, Claude Code support it out of the box. It's disabled by default, so to enable MCP you need to set the following config in the [control plane](control_plane/index.md):
 
 === "Helm chart"
 
@@ -30,16 +30,16 @@ MCP is an HTTP protocol and most coding harnesses, e.g., Codex, Pi, Claude Code 
     enabled = true
     ```
 
-When enabled, the MCP server will be running on the same host and port as the control plane, under the `/mcp` path.
+When enabled, the MCP server will be running on the same host and port as the control plane, under the `/mcp` URL.
 
-### Authentication
+## Authentication
 
 Requests to the MCP server require Bearer token authentication. Unauthenticated requests will be rejected automatically. To configure authentication, you have two options:
 
 1. Hardcode a set of tokens in the configuration
 2. Enable [Raft](control_plane/ha.md) and add tokens via the web dashboard
 
-#### Configuring tokens
+### Configuring tokens
 
 A fixed set of Bearer tokens can be configured as follows:
 
@@ -65,7 +65,7 @@ A fixed set of Bearer tokens can be configured as follows:
 
 If you're running our [Helm chart](control_plane/installation.md), you can also load a comma-separated list of tokens from a Kubernetes Secret.
 
-#### Create a Secret
+### Using a Secret
 
 Create the Secret in the same namespace as the control plane:
 
@@ -91,19 +91,19 @@ control:
         tokensKey: tokens
 ```
 
-#### Dynamic tokens
+### Dynamic tokens
 
-Managing tokens via configuration can be tedious, so the control plane also supports storing authorized tokens in its [Raft](control_plane/ha.md) log. Stored tokens are checked on each request to the MCP server, so tokens can be created and deleted at any time without configuration changes.
+Managing tokens via configuration can be tedious, so the control plane also supports storing Bearer tokens in its [Raft](control_plane/ha.md) log. Those are checked on each request to the MCP server, so they can be created and deleted at any time without configuration changes.
 
 <center>
     <img src="/images/ee/mcp_system.png" width="100%" alt="MCP Add token">
 </center>
 
-### Configuring agents
+## Configuring agents
 
-Most agent harnesses support MCP out of the box, so configuring PgDog's MCP server should be pretty straightforward.
+Most harnesses support MCP out of the box, so configuring PgDog's MCP server should be pretty straightforward.
 
-#### Codex
+### Codex
 
 To add the MCP server to Codex, you can add it to either `.codex/config.toml` or `~/.codex/config.toml` as follows:
 
@@ -122,13 +122,13 @@ http_headers = { Authorization = "Bearer <TOKEN>" }
 
 The MCP server comes with four tools:
 
-| Tool                    | Description                                                                                                               |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `pgdog.proxy_instances` | Show an up-to-date list of PgDog instances currently running.                                                             |     |
-| `pgdog.proxy_metrics`   | Fetch real-time PgDog metrics. The tool allows you to filter by database/user, by Kube instance name, and by time window. |
-| `pgdog.proxy_logs`      | Fetch real-time logs from Kube containers running PgDog.                                                                  |
-| `pgdog.proxy_config`    | Fetch latest configuration loaded into each PgDog instance.                                                               |
-| `pgdog.auth_check`      | A no-op tool that allows you to verify if the harness has the correct Bearer token.                                       |
+| Tool                    | Description                                                                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `pgdog.proxy_instances` | Show an up-to-date list of currently running PgDog instances.                                                                       |
+| `pgdog.proxy_metrics`   | Fetch real-time PgDog instance metrics. This tool allows you to filter by database/user, by Kube instance name, and by time window. |
+| `pgdog.proxy_logs`      | Fetch real-time logs from Kube containers running PgDog. This tool works only if PgDog is deployed in Kube.                         |
+| `pgdog.proxy_config`    | Fetch latest configuration from each PgDog instance.                                                                                |
+| `pgdog.auth_check`      | A no-op tool that allows you to verify if the harness has the correct Bearer token.                                                 |
 
 An agent typically doesn't need special instructions to use these tools. For example, a common prompt to debug a production incident could be:
 

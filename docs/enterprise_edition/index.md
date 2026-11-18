@@ -12,13 +12,13 @@ It comes with a control plane, real-time visibility into PgDog's operations, and
 
 The following features are available exclusively in the Enterprise edition:
 
-| Feature | Description |
-|-|-|
-| [Control plane](control_plane/index.md) (beta) | Manage multiple PgDog nodes and deployments. |
-| Queries | Monitor queries running through PgDog in real-time. |
-| [Plans](plans.md) | Request and track Postgres query plans for slow queries. |
-| Metrics | Second-precision PgDog and resource usage metrics. |
-| [Quality of Service](qos.md) (alpha) | Track and block bad queries automatically. |
+| Feature                                        | Description                                              |
+| ---------------------------------------------- | -------------------------------------------------------- |
+| [Control plane](control_plane/index.md) (beta) | Manage multiple PgDog nodes and deployments.             |
+| Queries                                        | Monitor queries running through PgDog in real-time.      |
+| [Plans](plans.md)                              | Request and track Postgres query plans for slow queries. |
+| Metrics                                        | Second-precision PgDog and resource usage metrics.       |
+| [Quality of Service](qos.md) (alpha)           | Track and block bad queries automatically.               |
 
 ## Demo
 
@@ -33,10 +33,10 @@ curl -sSL \
 
 The demo comes with the control plane, the web dashboard and PgDog configured as follows:
 
-| Setting | Value |
-|-|-|
-| Web dashboard | http://localhost:8099 |
-| PgDog | postgres://postgres:postgres@0.0.0.0:6432/postgres |
+| Setting       | Value                                              |
+| ------------- | -------------------------------------------------- |
+| Web dashboard | http://localhost:8099                              |
+| PgDog         | postgres://postgres:postgres@0.0.0.0:6432/postgres |
 
 For questions about the demo, PgDog Enterprise features, or pricing, [contact us](https://calendly.com/lev-pgdog/30min). PgDog can be deployed on-prem, in your cloud account, or entirely managed by us.
 
@@ -50,13 +50,14 @@ You can obtain the Enterprise edition of PgDog as follows:
 ### Docker repository
 
 !!! note "Enterprise license"
+
     Before deploying these images to production, make sure you purchased our Enterprise Edition license. You're welcome to use these for evaluation purposes, e.g., for an internal demo or in a staging environment.
 
-Both PgDog and the control plane are available as Docker images:
+Both PgDog and the control plane are available as Docker images. The changelog for each version along with Docker tags and repository can be found [here](https://github.com/pgdogdev/pgdog-enterprise/blob/main-ent/CHANGELOG-ENTERPRISE.md).
 
-| Application | Repository | Latest tag |
-|-|-|-|
-| PgDog | `ghcr.io/pgdogdev/pgdog-enterprise` | `{{ enterprise_tag }}` |
+| Application   | Repository                                  | Latest tag             |
+| ------------- | ------------------------------------------- | ---------------------- |
+| PgDog         | `ghcr.io/pgdogdev/pgdog-enterprise`         | `{{ enterprise_tag }}` |
 | Control plane | `ghcr.io/pgdogdev/pgdog-enterprise/control` | `{{ enterprise_tag }}` |
 
 If you're using our [Helm chart](../installation.md#kubernetes), you just need to change the `image.repository` and `image.tag` variables:
@@ -64,7 +65,7 @@ If you're using our [Helm chart](../installation.md#kubernetes), you just need t
 ```yaml
 image:
   repository: ghcr.io/pgdogdev/pgdog-enterprise
-  tag: {{ enterprise_tag }}
+  tag: { { enterprise_tag } }
 ```
 
 #### Control plane
@@ -79,8 +80,8 @@ If you want to manage all aspects of deploying PgDog Enterprise, [get in touch](
 
 PgDog Enterprise is new and in active development. A lot of the features we want aren't fully built yet:
 
-| Feature | Description |
-|-|-|
-| [Quality of Service](qos.md) | Quality of service guarantees, incl. throttling on a per-user/database/query level. |
-| AWS RDS integration | Deploy PgDog on top of AWS RDS, without the hassle of Kubernetes or manual configuration. |
-| Automatic resharding | Detect hot shards and re-shard data without operator intervention. |
+| Feature                      | Description                                                                               |
+| ---------------------------- | ----------------------------------------------------------------------------------------- |
+| [Quality of Service](qos.md) | Quality of service guarantees, incl. throttling on a per-user/database/query level.       |
+| AWS RDS integration          | Deploy PgDog on top of AWS RDS, without the hassle of Kubernetes or manual configuration. |
+| Automatic resharding         | Detect hot shards and re-shard data without operator intervention.                        |

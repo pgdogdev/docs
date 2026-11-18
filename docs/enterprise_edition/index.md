@@ -65,7 +65,7 @@ If you're using our [Helm chart](../installation.md#kubernetes), you just need t
 ```yaml
 image:
   repository: ghcr.io/pgdogdev/pgdog-enterprise
-  tag: { { enterprise_tag } }
+  tag: {{ enterprise_tag }}
 ```
 
 #### Control plane
